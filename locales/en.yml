@@ -483,18 +483,26 @@ tools:
     input:
       label: Your Input
       placeholder: Your UUID with/without hyphen
+
   favorites-import-export:
     title: Favorites import export
     description: Import and export your favorite tools.
     import:
       label: Import
+      button: Import
+      upload: Upload a JSON file
       uploadPlaceholder: Drag and drop a JSON file here
       pastePlaceholder: Paste your JSON text to import here
       typeFile: File
       typeText: Text
       status: Import status
+      statusReady: Ready to import {count} favorite(s).
+      statusNotReady: |
+        Errors in the import. Importing not yet possible.
+        Reason:
+        {errors}
       replacelabel: Replace existing favorites
     export:
       label: Export
-      downloadbutton: Download as fiile
+      downloadbutton: Download as file
       copybutton: Copy as text
