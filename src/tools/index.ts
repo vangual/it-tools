@@ -345,6 +345,7 @@ export const toolsByCategory: ToolCategory[] = [
       htmlCleaner,
       mimeConverter,
       morseConverter,
+      favoritesImportExport,
     ],
   },
   {

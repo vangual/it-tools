@@ -64,5 +64,35 @@ export const useToolStore = defineStore('tools', () => {
     updateFavoriteTools(newOrder: ToolWithCategory[]) {
       favoriteToolsName.value = newOrder.map(tool => tool.path);
     },
+
+    exportFavoriteTools() {
+      const favoriteToolsData = favoriteToolsName.value.map((name) => {
+        const tool = tools.value.find(tool => tool.name === name || tool.path === name);
+        return tool ? { name: tool.name, path: tool.path } : null;
+      }).filter(Boolean);
+
+      return JSON.stringify(favoriteToolsData);
+    },
+
+    importFavoriteTools(favoriteToolsData: string, replace: boolean = false) {
+      try {
+        const parsedData = JSON.parse(favoriteToolsData);
+        if (Array.isArray(parsedData)) {
+          const newFavoriteTools = parsedData.map((tool: { name: string; path: string }) => tool.path);
+          if (replace) {
+            favoriteToolsName.value = newFavoriteTools;
+          }
+          else {
+            favoriteToolsName.value = _.uniq([...favoriteToolsName.value, ...newFavoriteTools]);
+          }
+        }
+        else {
+          console.error('Invalid data format for favorite tools');
+        }
+      }
+      catch (error) {
+        console.error('Error importing favorite tools:', error);
+      }
+    },
   };
 });

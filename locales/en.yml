@@ -483,3 +483,12 @@ tools:
     input:
       label: Your Input
       placeholder: Your UUID with/without hyphen
+  favorites-import-export:
+    title: Favorites import export
+    description: Import and export your favorite tools.
+    import:
+      label: Import
+    export:
+      label: Export
+      downloadbutton: Download as fiile
+      copybutton: Copy as text
