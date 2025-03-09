@@ -120,6 +120,7 @@ declare module '@vue/runtime-core' {
     EtaCalculator: typeof import('./src/tools/eta-calculator/eta-calculator.vue')['default']
     ExtractTextFromHtml: typeof import('./src/tools/extract-text-from-html/extract-text-from-html.vue')['default']
     FavoriteButton: typeof import('./src/components/FavoriteButton.vue')['default']
+    FavoritesImportExport: typeof import('./src/tools/favorites-import-export/favorites-import-export.vue')['default']
     FileHasher: typeof import('./src/tools/file-hasher/file-hasher.vue')['default']
     FileType: typeof import('./src/tools/file-type/file-type.vue')['default']
     FloatingPointNumberConverter: typeof import('./src/tools/floating-point-number-converter/floating-point-number-converter.vue')['default']
