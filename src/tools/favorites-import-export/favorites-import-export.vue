@@ -26,7 +26,7 @@ const importInfosRaw = computedAsync(async () => {
       return {
         tools: parsed_import,
         string: string_content,
-        status: `Ready to import ${parsed_import.length} favorites`,
+        status: t('tools.favorites-import-export.import.statusReady', { count: parsed_import.length }),
         ready: true,
       };
     }
@@ -150,18 +150,15 @@ function importFavoritesFromString() {
 
       <c-divider />
 
-      <!-- <textarea-copyable
-        v-if="importPreview.ready"
-        title="Import preview"
-        :disabled="true"
+      <!-- We use n-alert instead of c-alert as the later has issues updating -->
+      <n-alert
+        v-if="importInfosRaw && importInfosRaw.status"
+        :title="t('tools.favorites-import-export.import.status')"
+        :type="importInfosRaw.ready ? 'info' : 'error'"
         mb-2
-        :value="importPreview.status"
-      /> -->
-      <textarea-copyable
-        :label="t('tools.favorites-import-export.import.status')"
-        mb-2
-        :value="importInfosRaw && importInfosRaw.status"
-      />
+      >
+        {{ importInfosRaw.status }}
+      </n-alert>
 
       <!-- Optional checkbox to make the import replace existing favorites -->
       <n-form-item :label="t('tools.favorites-import-export.import.replacelabel')" label-placement="left">
@@ -179,7 +176,7 @@ function importFavoritesFromString() {
         <c-icon>
           <icon-upload />
         </c-icon>
-        {{t('tools.favorites-import-export.import.button')}}
+        {{ t('tools.favorites-import-export.import.button') }}
       </c-button>
     </c-card>
   </div>
