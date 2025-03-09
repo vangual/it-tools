@@ -26,6 +26,8 @@ const importInfosRaw = computedAsync(async () => {
       return {
         tools: parsed_import,
         string: string_content,
+        status: `Ready to import ${parsed_import.length} favorites`,
+        ready: true,
       };
     }
     else {
@@ -33,12 +35,16 @@ const importInfosRaw = computedAsync(async () => {
       return {
         tools: parsed_import,
         string: content,
+        status: `Ready to import ${parsed_import.length} favorites`,
+        ready: true,
       };
     }
   }
   catch (e: any) {
     return {
       error: e.toString(),
+      status: `Errors in the import. Importing not yet possible.\nReason: \n${e.toString()}`,
+      ready: false,
     };
   }
 });
@@ -119,11 +125,11 @@ function importFavoritesFromString() {
         <n-space>
           <n-radio
             value="file"
-            label="File"
+            :label="t('tools.favorites-import-export.import.typeFile')"
           />
           <n-radio
             value="content"
-            label="Content"
+            :label="t('tools.favorites-import-export.import.typeText')"
           />
         </n-space>
       </n-radio-group>
@@ -144,19 +150,27 @@ function importFavoritesFromString() {
 
       <c-divider />
 
-      <textarea-copyable
-        label="Parsed import"
+      <!-- <textarea-copyable
+        v-if="importPreview.ready"
+        title="Import preview"
+        :disabled="true"
         mb-2
-        :value="JSON.stringify(importInfosRaw, null, 2)"
+        :value="importPreview.status"
+      /> -->
+      <textarea-copyable
+        :label="t('tools.favorites-import-export.import.status')"
+        mb-2
+        :value="importInfosRaw && importInfosRaw.status"
       />
 
       <!-- Optional checkbox to make the import replace existing favorites -->
-      <n-form-item label="Replace existing favorites" label-placement="left">
+      <n-form-item :label="t('tools.favorites-import-export.import.replacelabel')" label-placement="left">
         <n-switch v-model:value="replace" />
       </n-form-item>
 
       <!-- Import button (disabled if there's no parsed input ) -->
       <c-button
+        :disabled="!importInfosRaw || !importInfosRaw.ready"
         size="large"
         type="primary"
         block

@@ -488,6 +488,12 @@ tools:
     description: Import and export your favorite tools.
     import:
       label: Import
+      uploadPlaceholder: Drag and drop a JSON file here
+      pastePlaceholder: Paste your JSON text to import here
+      typeFile: File
+      typeText: Text
+      status: Import status
+      replacelabel: Replace existing favorites
     export:
       label: Export
       downloadbutton: Download as fiile
