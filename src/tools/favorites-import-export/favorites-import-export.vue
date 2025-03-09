@@ -35,7 +35,7 @@ const importInfosRaw = computedAsync(async () => {
       return {
         tools: parsed_import,
         string: content,
-        status: `Ready to import ${parsed_import.length} favorites`,
+        status: t('tools.favorites-import-export.import.statusReady', { count: parsed_import.length }),
         ready: true,
       };
     }
@@ -43,7 +43,7 @@ const importInfosRaw = computedAsync(async () => {
   catch (e: any) {
     return {
       error: e.toString(),
-      status: `Errors in the import. Importing not yet possible.\nReason: \n${e.toString()}`,
+      status: t('tools.favorites-import-export.import.statusNotReady', { errors: e.toString() }),
       ready: false,
     };
   }
@@ -179,7 +179,7 @@ function importFavoritesFromString() {
         <c-icon>
           <icon-upload />
         </c-icon>
-        Import favorites
+        {{t('tools.favorites-import-export.import.button')}}
       </c-button>
     </c-card>
   </div>
