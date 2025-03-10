@@ -27,6 +27,7 @@ import { tool as floatingPointNumberConverter } from './floating-point-number-co
 import { tool as snowflakeIdExtractor } from './snowflake-id-extractor';
 import { tool as qrContactInfoGenerator } from './qr-contact-info-generator';
 import { tool as emailNormalizer } from './email-normalizer';
+import { tool as sharepointDecoder } from './sharepoint-decoder';
 import { tool as jwtGenerator } from './jwt-generator';
 import { tool as gptTokenEstimator } from './gpt-token-estimator';
 import { tool as myIp } from './my-ip';
@@ -374,6 +375,7 @@ export const toolsByCategory: ToolCategory[] = [
       jsonDiff,
       softwareLicenceCompatibility,
       safelinkDecoder,
+      sharepointDecoder,
       micTester,
       snowflakeIdExtractor,
       apiTester,
