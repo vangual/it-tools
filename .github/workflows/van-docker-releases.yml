@@ -3,7 +3,7 @@ name: Build and Push Docker Image (van-docker-releases)
 on:
   push:
     branches:
-      - 'van**'
+      - 'van/build/**'
 
 jobs:
   ci:

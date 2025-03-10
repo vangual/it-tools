@@ -1,10 +1,10 @@
 name: ci
 
-on:
-  pull_request:
-  push:
-    branches:
-      - chore/all-my-stuffs
+#on:
+#  pull_request:
+#  push:
+#    branches:
+#      - chore/all-my-stuffs
 
 jobs:
   ci:
