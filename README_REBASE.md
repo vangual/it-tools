@@ -1,10 +1,54 @@
 # Rebase Van Branches - Summary
 
-This directory contains comprehensive documentation and tools for rebasing the "van" branches onto the `chore/all-my-stuffs` branch.
+This directory contains comprehensive documentation and tools for integrating the "van" branches with the `chore/all-my-stuffs` branch.
+
+## ⚡ Quick Decision: Merge or Rebase?
+
+### 🎯 RECOMMENDED: Use MERGE (Simpler & Faster)
+- ✅ **50-70% less conflict resolution time**
+- ✅ Resolve each conflict **once** instead of multiple times
+- ✅ Consistent with van/devel's existing merge history
+- ✅ **Estimated time: 1-1.5 hours** (vs 2-3 hours for rebase)
+
+```bash
+# Quick merge approach
+./merge-script.sh --auto
+```
+
+### Alternative: Use REBASE (Linear History)
+- ⚠️ More conflicts to resolve (same conflict multiple times)
+- ⚠️ Takes longer (2-3 hours)
+- ✅ Creates clean, linear history
+- ✅ Good for feature branches before PR
+
+```bash
+# Rebase approach
+./rebase-script.sh --auto
+```
+
+**See MERGE_VS_REBASE.md for detailed comparison**
 
 ## Quick Start
 
-### Option 1: Use the Automated Script (Easiest)
+### Option 1: Use the Merge Script (RECOMMENDED - Easiest & Fastest)
+
+```bash
+# Make the script executable
+chmod +x merge-script.sh
+
+# Run the interactive menu
+./merge-script.sh
+
+# Or run fully automated
+./merge-script.sh --auto
+
+# Or just create backups
+./merge-script.sh --backup
+```
+
+**Why merge?** Resolve conflicts once instead of multiple times. See `MERGE_VS_REBASE.md`.
+
+### Option 2: Use the Rebase Script (Linear History)
 
 ```bash
 # Make the script executable
@@ -20,9 +64,21 @@ chmod +x rebase-script.sh
 ./rebase-script.sh --backup
 ```
 
-### Option 2: Manual Rebase (Most Control)
+### Option 3: Manual Merge (Most Control)
 
-Follow the step-by-step guide in `REBASE_GUIDE.md`.
+Follow the step-by-step guide in `REBASE_GUIDE.md` for rebase, or use merge commands:
+
+```bash
+# Quick merge commands (recommended):
+git checkout van/devel
+git merge chore/all-my-stuffs
+# Resolve conflicts (once per file)
+git add <resolved-files>
+git commit
+git push origin van/devel
+```
+
+Or for rebase:
 
 ```bash
 # Quick commands:
@@ -32,6 +88,15 @@ git push origin van/workflows --force
 ```
 
 ## Documentation Files
+
+### 🚀 MERGE_VS_REBASE.md (READ THIS FIRST!)
+**Analysis of merge vs rebase approaches** with conflict comparison.
+- Why merge is simpler (50-70% faster)
+- Conflict resolution comparison
+- Detailed recommendation by branch
+- Practical test results
+
+**Read this first** to choose your approach.
 
 ### 📘 REBASE_GUIDE.md
 **Complete rebase instructions** with detailed commands and explanations.
@@ -60,6 +125,16 @@ git push origin van/workflows --force
 
 **Keep this open** during the rebase process for reference.
 
+### 🤖 merge-script.sh (RECOMMENDED)
+**Automated merge script** with interactive menu.
+- Creates backups automatically
+- Handles merge process
+- Runs tests
+- Pushes changes
+- **Simpler and faster than rebase**
+
+**Use this** for the easiest and fastest experience.
+
 ### 🤖 rebase-script.sh
 **Automated rebase script** with interactive menu.
 - Creates backups automatically
@@ -82,11 +157,16 @@ git push origin van/workflows --force
 ### Key Challenge
 All van branches share common history and are significantly behind the target branch.
 
-## Recommended Approach
+## Recommended Approach (Updated Based on Analysis)
+
+### For van/devel: USE MERGE ✅
+
+van/devel already has merge history, so merging is more consistent and much faster.
 
 ### Step 1: Understand
-1. Read `BRANCH_RELATIONSHIP.md` to understand the branch structure
-2. Read `REBASE_GUIDE.md` for the rebase plan
+1. **READ `MERGE_VS_REBASE.md` FIRST** to understand why merge is better
+2. Read `BRANCH_RELATIONSHIP.md` to understand the branch structure
+3. Read `CONFLICT_RESOLUTION.md` for conflict help (same conflicts, resolve once)
 
 ### Step 2: Prepare
 ```bash
@@ -99,10 +179,11 @@ git branch van/tools/favimpexp-backup van/tools/favimpexp
 git branch van/devel-backup van/devel
 ```
 
-### Step 3: Rebase
-Choose one:
-- **Option A**: Use `./rebase-script.sh` for automation
-- **Option B**: Follow `REBASE_GUIDE.md` for manual control
+### Step 3: Integrate (Choose One)
+
+**Option A (RECOMMENDED)**: Use `./merge-script.sh` for automation
+**Option B**: Use `./rebase-script.sh` for linear history  
+**Option C**: Follow manual commands in `MERGE_VS_REBASE.md` or `REBASE_GUIDE.md`
 
 ### Step 4: Resolve Conflicts
 Keep `CONFLICT_RESOLUTION.md` open for reference when conflicts occur.
@@ -117,18 +198,38 @@ pnpm dev  # Verify tools work
 
 ### Step 6: Push
 ```bash
+# For merge (no force needed)
+git push origin <branch-name>
+
+# For rebase (force required)
 git push origin <branch-name> --force
 ```
 
 ## Important Notes
 
-⚠️ **Force Push Required**: Rebasing rewrites history, requiring force push.
+### About Merge vs Rebase
 
-⚠️ **Team Coordination**: Inform team members before force-pushing shared branches.
+⚡ **MERGE is recommended** for this situation because:
+- van/devel already uses merge strategy
+- 529+ commits to integrate
+- Resolve conflicts once instead of 5-7 times
+- 50-70% time savings
 
-⚠️ **Backups**: Always create backups before rebasing.
+See `MERGE_VS_REBASE.md` for full analysis.
 
-✅ **Test Thoroughly**: Build and test after rebasing before pushing.
+### General Notes
+
+⚠️ **Backups**: Always create backups before starting.
+
+⚠️ **Team Coordination**: Inform team members before pushing changes.
+
+✅ **Test Thoroughly**: Build and test after integrating before pushing.
+
+### About Force Push (Rebase Only)
+
+⚠️ **Force Push Required for Rebase**: Rebasing rewrites history, requiring force push.
+
+✅ **No Force Push for Merge**: Merging preserves history, normal push works.
 
 ## Expected Conflicts
 
@@ -143,11 +244,21 @@ See `CONFLICT_RESOLUTION.md` for detailed resolution steps.
 
 ## Timeline Estimate
 
+### Using Merge (RECOMMENDED)
+- **van/devel**: 30-45 minutes
+- **van/workflows**: 20-30 minutes
+- **van/tools/favimpexp**: 15-20 minutes
+
+**Total: 1-1.5 hours** for all branches including testing.
+
+### Using Rebase
 - **van/workflows**: 30-60 minutes (including testing)
 - **van/tools/favimpexp**: 20-40 minutes (similar to workflows)
 - **van/devel**: 20-40 minutes (using --onto)
 
-Total: ~2-3 hours for all branches including testing.
+**Total: 2-3 hours** for all branches including testing.
+
+**Time Savings with Merge: ~1 hour**
 
 ## Getting Help
 
@@ -171,17 +282,46 @@ After rebasing, verify:
 
 ```
 .
+├── MERGE_VS_REBASE.md       # 🔥 READ FIRST: Merge vs Rebase comparison
+├── README_REBASE.md         # This file (quick reference)
+├── merge-script.sh          # 🔥 RECOMMENDED: Automated merge script
+├── rebase-script.sh         # Alternative: Automated rebase script
 ├── REBASE_GUIDE.md          # Main rebase instructions
 ├── BRANCH_RELATIONSHIP.md   # Branch structure visualization
-├── CONFLICT_RESOLUTION.md   # Conflict resolution guide
-├── rebase-script.sh         # Automated rebase script
-└── README_REBASE.md         # This file (quick reference)
+└── CONFLICT_RESOLUTION.md   # Conflict resolution guide
 ```
 
 ## Quick Command Reference
 
+### Merge Commands (RECOMMENDED)
+
 ```bash
-# Interactive script
+# Interactive merge script
+./merge-script.sh
+
+# Automated merge
+./merge-script.sh --auto
+
+# Create backups only
+./merge-script.sh --backup
+
+# Manual merge
+git checkout van/devel
+git merge chore/all-my-stuffs
+# Resolve conflicts if any
+git add <resolved-files>
+git commit
+git push origin van/devel  # No --force needed!
+
+# Check merge status
+git status
+git log --oneline --graph -10
+```
+
+### Rebase Commands (Alternative)
+
+```bash
+# Interactive rebase script
 ./rebase-script.sh
 
 # Automated rebase
