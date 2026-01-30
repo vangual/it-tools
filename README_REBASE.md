@@ -65,16 +65,16 @@ git push origin van/workflows --force
 - Creates backups automatically
 - Handles rebase process
 - Runs tests
-- Push changes
+- Pushes changes to remote
 
 **Use this** for the easiest experience.
 
 ## The Situation
 
 ### Branches to Rebase
-- **van/workflows** - 12 commits (workflow configuration)
+- **van/workflows** - 12 commits (workflow configuration, superset of favimpexp)
 - **van/tools/favimpexp** - 10 commits (tool development)
-- **van/devel** - 13 commits (includes merge commit)
+- **van/devel** - 13 commits (12 unique commits + 1 merge commit)
 
 ### Target Branch
 - **chore/all-my-stuffs** - 529+ commits ahead with latest features

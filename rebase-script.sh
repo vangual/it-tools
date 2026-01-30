@@ -3,7 +3,13 @@
 # Automated Rebase Script for Van Branches
 # This script automates the rebase process with safety checks and backups
 
-set -e  # Exit on error
+# Configuration
+# This is the merge base commit for van/devel branch
+# If this doesn't match your repository, update it accordingly
+VAN_DEVEL_BASE_COMMIT="8d1d069"
+
+# Note: Removed set -e to allow better error handling in interactive mode
+# Errors are handled explicitly with || operators and return codes
 
 # Colors for output
 RED='\033[0;31m'
@@ -34,7 +40,7 @@ check_repository() {
     # Check if we're in the it-tools repository
     if ! git remote -v | grep -q "it-tools"; then
         print_warning "This doesn't appear to be the it-tools repository."
-        read -p "Continue anyway? (y/n) " -n 1 -r
+        read -p "Continue anyway? (y/n) " -n 1 -r REPLY
         echo
         if [[ ! $REPLY =~ ^[Yy]$ ]]; then
             exit 1
@@ -222,7 +228,7 @@ main() {
         fi
         
         # Rebase van/devel with --onto
-        if rebase_branch "van/devel" "8d1d069"; then
+        if rebase_branch "van/devel" "$VAN_DEVEL_BASE_COMMIT"; then
             run_tests
             push_branch "van/devel"
         fi
@@ -233,7 +239,7 @@ main() {
     # Interactive mode
     while true; do
         show_menu
-        read -p "Enter your choice (1-7): " choice
+        read -p "Enter your choice (1-7): " -r choice
         
         case $choice in
             1)
@@ -252,7 +258,7 @@ main() {
                 ;;
             3)
                 create_backups
-                if rebase_branch "van/devel" "8d1d069"; then
+                if rebase_branch "van/devel" "$VAN_DEVEL_BASE_COMMIT"; then
                     run_tests
                     push_branch "van/devel"
                 fi
@@ -276,7 +282,7 @@ main() {
                     break
                 fi
                 
-                if rebase_branch "van/devel" "8d1d069"; then
+                if rebase_branch "van/devel" "$VAN_DEVEL_BASE_COMMIT"; then
                     print_info "van/devel rebased successfully"
                 else
                     print_error "Failed to rebase van/devel. Stopping."

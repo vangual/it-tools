@@ -10,17 +10,17 @@ This document provides the necessary commands to rebase all branches starting wi
 
 1. **van/devel** - Main development branch
    - Currently at: `75a7bbd`
-   - Contains: 13 commits (12 feature commits + 1 merge commit)
+   - Contains: 13 commits (12 unique commits + 1 merge commit)
    - Merge base with target: `8d1d069`
 
 2. **van/tools/favimpexp** - Tool/workflow development
    - Currently at: `fbd3105`
-   - Contains: 11 commits
+   - Contains: 10 commits
    - Merge base with target: `d80207b`
 
 3. **van/workflows** - Workflow configuration
    - Currently at: `163f697`
-   - Contains: 13 commits  
+   - Contains: 12 commits (superset of favimpexp)
    - Merge base with target: `d80207b`
 
 ### Target Branch
@@ -54,7 +54,7 @@ git branch van/workflows-backup van/workflows
 
 ### Option 1: Rebase van/workflows (Recommended First)
 
-This branch contains workflow configuration changes - fewest conflicts expected.
+This branch contains workflow configuration and is a superset of van/tools/favimpexp - recommended to rebase first as it contains all the work from other branches.
 
 ```bash
 # Checkout the branch to rebase
