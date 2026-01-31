@@ -11,7 +11,7 @@ on:
 jobs:
   ci:
     runs-on: ubuntu-latest
-
+    if: false  # disable upstream workflows
     steps:
       - uses: actions/checkout@v4
       - run: |

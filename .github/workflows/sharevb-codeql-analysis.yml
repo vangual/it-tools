@@ -21,6 +21,7 @@ on:
 jobs:
   analyze:
     name: Analyze
+    if: false  # disable upstream workflows
     runs-on: ubuntu-latest
     permissions:
       actions: read

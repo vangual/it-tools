@@ -1,13 +1,14 @@
 name: Release new versions
 
-#on:
-#  push:
-#    tags:
-#      - 'v*.*.*'
+on:
+  push:
+    tags:
+      - 'v*.*.*'
 
 jobs:
   docker-release:
     runs-on: ubuntu-latest
+    if: false  # disable upstream workflows
     steps:
       - name: Get release version
         run: echo "RELEASE_VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
@@ -40,6 +41,7 @@ jobs:
             ghcr.io/sharevb/it-tools:${{ env.RELEASE_VERSION}}
 
   github-release:
+    if: false  # disable upstream workflows
     runs-on: ubuntu-latest
     needs: docker-release
     steps:

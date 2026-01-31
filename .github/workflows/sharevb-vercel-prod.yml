@@ -10,6 +10,7 @@ on:
       - chore/all-my-stuffs
 jobs:
   Deploy-Production:
+    if: false  # disable upstream workflows
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
