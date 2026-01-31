@@ -9,4 +9,6 @@ export const tool = defineTool({
   component: () => import('./dns-queries.vue'),
   icon: World,
   createdAt: new Date('2024-08-15'),
+  category: 'Network',
+  externAccessDescription: t('tools.dns-queries.externalAccess'),
 });

@@ -9,4 +9,6 @@ export const tool = defineTool({
   component: () => import('./multi-link-downloader.vue'),
   icon: IconFileDownload,
   createdAt: new Date('2024-10-18'),
+  category: 'Network',
+  externAccessDescription: t('tools.multi-link-downloader.externalAccess'),
 });

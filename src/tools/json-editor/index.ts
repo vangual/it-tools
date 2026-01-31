@@ -9,4 +9,6 @@ export const tool = defineTool({
   component: () => import('./json-editor.vue'),
   icon: Braces,
   createdAt: new Date('2024-05-11'),
+  category: 'JSON',
+  externAccessDescription: t('tools.json-editor.externalAccess'),
 });

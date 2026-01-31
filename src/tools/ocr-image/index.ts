@@ -9,4 +9,6 @@ export const tool = defineTool({
   component: () => import('./ocr-image.vue'),
   icon: Scan,
   createdAt: new Date('2024-03-09'),
+  category: 'Images',
+  externAccessDescription: t('tools.ocr-image.externalAccess'),
 });

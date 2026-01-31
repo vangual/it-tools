@@ -9,4 +9,6 @@ export const tool = defineTool({
   component: () => import('./my-ip.vue'),
   icon: World,
   createdAt: new Date('2025-01-01'),
+  category: 'Network',
+  externAccessDescription: t('tools.my-ip.externalAccess'),
 });
