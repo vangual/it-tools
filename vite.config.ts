@@ -1,13 +1,11 @@
 import { URL, fileURLToPath } from 'node:url';
 import { resolve } from 'node:path';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
-import wasm from 'vite-plugin-wasm';
-import { splashScreen } from 'vite-plugin-splash-screen';
 
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import vueJsx from '@vitejs/plugin-vue-jsx';
-import markdown from 'unplugin-vue-markdown/vite';
+import markdown from 'vite-plugin-vue-markdown';
 import svgLoader from 'vite-svg-loader';
 import { VitePWA } from 'vite-plugin-pwa';
 import AutoImport from 'unplugin-auto-import/vite';
@@ -19,7 +17,7 @@ import Icons from 'unplugin-icons/vite';
 import IconsResolver from 'unplugin-icons/resolver';
 import VueI18n from '@intlify/unplugin-vue-i18n/vite';
 
-const baseUrl = process.env.BASE_URL || '/';
+const baseUrl = process.env.BASE_URL ?? '/';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -28,14 +26,7 @@ export default defineConfig({
       runtimeOnly: true,
       compositionOnly: true,
       fullInstall: true,
-      include: !process.env.VITEST
-        ? [
-            resolve(__dirname, 'src/tools/*/locales/**'),
-            resolve(__dirname, 'locales/**'),
-          ]
-        : [
-            resolve(__dirname, 'locales/en.yml'),
-          ],
+      include: [resolve(__dirname, 'locales/**')],
       strictMessage: false,
       escapeHtml: true,
     }),
@@ -63,38 +54,34 @@ export default defineConfig({
     svgLoader(),
     VitePWA({
       registerType: 'autoUpdate',
-      workbox: {
-        globPatterns: (process.env.VITE_VERCEL_DEPLOY ? ["**\/*.{css,html}"] : ["**\/*.{js,wasm,css,html}"]),
-        maximumFileSizeToCacheInBytes: 25 * 1024 ** 2,
-      },
       strategies: 'generateSW',
       manifest: {
         name: 'IT Tools',
         description: 'Aggregated set of useful tools for developers.',
         display: 'standalone',
+        lang: 'fr-FR',
         start_url: `${baseUrl}?utm_source=pwa&utm_medium=pwa`,
-        scope: baseUrl,
         orientation: 'any',
         theme_color: '#18a058',
         background_color: '#f1f5f9',
         icons: [
           {
-            src: `${baseUrl}favicon-16x16.png`,
+            src: '/favicon-16x16.png',
             type: 'image/png',
             sizes: '16x16',
           },
           {
-            src: `${baseUrl}favicon-32x32.png`,
+            src: '/favicon-32x32.png',
             type: 'image/png',
             sizes: '32x32',
           },
           {
-            src: `${baseUrl}android-chrome-192x192.png`,
+            src: '/android-chrome-192x192.png',
             sizes: '192x192',
             type: 'image/png',
           },
           {
-            src: `${baseUrl}android-chrome-512x512.png`,
+            src: '/android-chrome-512x512.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'any maskable',
@@ -110,11 +97,6 @@ export default defineConfig({
     }),
     Unocss(),
     nodePolyfills(),
-    wasm(),
-    splashScreen({
-      logoSrc: 'logo.svg',
-      splashBg: '#383838',
-    }),
   ],
   base: baseUrl,
   resolve: {
@@ -125,9 +107,6 @@ export default defineConfig({
       'fs': fileURLToPath(new URL('./src/_empty.ts', import.meta.url)),
       '@babel/core': fileURLToPath(new URL('./src/_empty.ts', import.meta.url)),
       'isolated-vm': fileURLToPath(new URL('./src/_empty.ts', import.meta.url)),
-      'onnxruntime-node': fileURLToPath(new URL('./src/_empty.ts', import.meta.url)),
-      'unpdf/pdfjs': fileURLToPath(new URL('./src/_empty.ts', import.meta.url)),
-      'webcrypto-liner-shim': !process.env.VERCEL ? 'webcrypto-liner-shim' : fileURLToPath(new URL('./src/_empty.ts', import.meta.url)),
     },
   },
   define: {
@@ -143,35 +122,33 @@ export default defineConfig({
   },
   build: {
     target: 'esnext',
-    // sourcemap: !process.env.VERCEL,
+    // sourcemap: false,
     minify: !process.env.VERCEL,
-    reportCompressedSize: !process.env.VERCEL,
     // cssMinify: false,
-    // modulePreload: false,
     rollupOptions: {
-      external: ['regex', './out/isolated_vm', 'isolated-vm', 'onnxruntime-node', 'unpdf/pdfjs'],
+      external: ['regex', './out/isolated_vm', 'isolated-vm'],
       output: {
         format: 'es',
-        // manualChunks: (id) => {
-        //   // if (id.includes('monaco-editor')) return 'monaco-editor';
-        //   if (id.includes('tesseract.js')) return 'tesseract.js';
-        //   if (id.includes('pdfjs')) return 'pdfjs';
-        //   if (id.includes('unicode')) return 'unicode';
-        //   // if (id.includes('transformers')) return 'transformers';
-        //   // if (id.includes("node_modules")) {
-        //   //   return "vendor";
-        //   // }
-        // },
-        // sourcemapIgnoreList: (relativeSourcePath) => {
-        //   const normalizedPath = path.normalize(relativeSourcePath);
-        //   return normalizedPath.includes("node_modules");
-        // },
+        manualChunks: (id) => {
+          if (id.includes('monaco-editor')) return 'monaco-editor';
+          if (id.includes('tesseract.js')) return 'tesseract.js';
+          if (id.includes('pdfjs')) return 'pdfjs';
+          if (id.includes('unicode')) return 'unicode';
+          // if (id.includes('transformers')) return 'transformers';
+          // if (id.includes("node_modules")) {
+          //   return "vendor";
+          // }
+        },
+        sourcemapIgnoreList: (relativeSourcePath) => {
+          const normalizedPath = path.normalize(relativeSourcePath);
+          return normalizedPath.includes("node_modules");
+        },
       },
       cache: false,
     },
   },
   optimizeDeps: {
-    include: ['isolated-vm', 'pdfjs-dist', 'onnxruntime-node', 'onnxruntime-web', 'unpdf', 'unpdf/pdfjs', ...(process.env.VERCEL ? ['webcrypto-liner-shim'] : [])], // optionally specify dependency name
+    include: ['re2-wasm-embedded', 'isolated-vm', 'pdfjs-dist'], // optionally specify dependency name
     esbuildOptions: {
       supported: {
         'top-level-await': true,

@@ -5,10 +5,9 @@ import { useTheme } from './c-link.theme';
 const props = defineProps<{
   href?: string
   to?: RouteLocationRaw
-  target?: string
 }>();
 
-const { href, to, target } = toRefs(props);
+const { href, to } = toRefs(props);
 
 const theme = useTheme();
 const tag = computed(() => {
@@ -23,7 +22,7 @@ const tag = computed(() => {
 </script>
 
 <template>
-  <component :is="tag" :href="href ?? to" class="c-link" :to="to" :target="target">
+  <component :is="tag" :href="href ?? to" class="c-link" :to="to">
     <slot />
   </component>
 </template>

@@ -1,8 +1,5 @@
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n';
 import { types as extensionToMimeType, extensions as mimeTypeToExtension } from 'mime-types';
-
-const { t } = useI18n();
 
 const mimeInfos = Object.entries(mimeTypeToExtension).map(([mimeType, extensions]) => ({ mimeType, extensions }));
 
@@ -24,23 +21,24 @@ const mimeTypeFound = computed(() => (selectedExtension.value ? extensionToMimeT
 <template>
   <c-card>
     <n-h2 style="margin-bottom: 0">
-      {{ t('tools.mime-types.texts.tag-mime-type-to-extension') }}
+      Mime type to extension
     </n-h2>
     <div style="opacity: 0.8">
-      {{ t('tools.mime-types.texts.tag-know-which-file-extensions-are-associated-to-a-mime-type') }}
+      Know which file extensions are associated to a mime-type
     </div>
     <c-select
       v-model:value="selectedMimeType"
       searchable
       my-4
       :options="mimeToExtensionsOptions"
-      :placeholder="t('tools.mime-types.texts.placeholder-select-your-mimetype-here-ex-application-pdf')"
+      placeholder="Select your mimetype here... (ex: application/pdf)"
     />
 
     <div v-if="extensionsFound.length > 0">
-      {{ t('tools.mime-types.texts.tag-extensions-of-files-with-the') }}<n-tag round :bordered="false">
+      Extensions of files with the <n-tag round :bordered="false">
         {{ selectedMimeType }}
-      </n-tag>{{ t('tools.mime-types.texts.tag-mime-type') }}<div style="margin-top: 10px">
+      </n-tag> mime-type:
+      <div style="margin-top: 10px">
         <n-tag
           v-for="extension of extensionsFound"
           :key="extension"
@@ -57,21 +55,21 @@ const mimeTypeFound = computed(() => (selectedExtension.value ? extensionToMimeT
 
   <c-card>
     <n-h2 style="margin-bottom: 0">
-      {{ t('tools.mime-types.texts.tag-file-extension-to-mime-type') }}
+      File extension to mime type
     </n-h2>
     <div style="opacity: 0.8">
-      {{ t('tools.mime-types.texts.tag-know-which-mime-type-is-associated-to-a-file-extension') }}
+      Know which mime type is associated to a file extension
     </div>
     <c-select
       v-model:value="selectedExtension"
       searchable
       my-4
       :options="extensionToMimeTypeOptions"
-      :placeholder="t('tools.mime-types.texts.placeholder-select-your-mimetype-here-ex-application-pdf')"
+      placeholder="Select your mimetype here... (ex: application/pdf)"
     />
 
     <div v-if="selectedExtension">
-      {{ t('tools.mime-types.texts.tag-mime-type-associated-to-the-extension') }}<n-tag round :bordered="false">
+      Mime type associated to the extension <n-tag round :bordered="false">
         {{ selectedExtension }}
       </n-tag> file
       extension:
@@ -87,8 +85,8 @@ const mimeTypeFound = computed(() => (selectedExtension.value ? extensionToMimeT
     <n-table>
       <thead>
         <tr>
-          <th>{{ t('tools.mime-types.texts.tag-mime-types') }}</th>
-          <th>{{ t('tools.mime-types.texts.tag-extensions') }}</th>
+          <th>Mime types</th>
+          <th>Extensions</th>
         </tr>
       </thead>
       <tbody>

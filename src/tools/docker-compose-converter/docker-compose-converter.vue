@@ -1,12 +1,8 @@
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n';
 import Composeverter from 'composeverter';
 import { useDownloadFileFromBase64 } from '@/composable/downloadBase64';
 import { textToBase64 } from '@/utils/base64';
 import TextareaCopyable from '@/components/TextareaCopyable.vue';
-import { useQueryParamOrStorage } from '@/composable/queryParams';
-
-const { t } = useI18n();
 
 const dockerCompose = ref(
   `nginx:
@@ -16,7 +12,7 @@ const dockerCompose = ref(
         - '/var/run/docker.sock:/tmp/docker.sock:ro'
     image: nginx`,
 );
-const indentSize = useQueryParamOrStorage({ name: 'indent', storageName: 'docker-compose-converter:indent-size', defaultValue: 4 });
+const indentSize = useStorage('docker-compose-converter:indent-size', 4);
 
 const expandVolumes = ref(
   false,
@@ -24,13 +20,13 @@ const expandVolumes = ref(
 const expandPorts = ref(
   false,
 );
-const conversion = useQueryParamOrStorage({ name: 'conv', storageName: 'docker-compose-converter:conversion', defaultValue: 'latest' });
+const conversion = useStorage('docker-compose-converter:conversion', 'latest');
 const conversionOptions = [
-  { value: 'v1ToV2x', label: t('tools.docker-compose-converter.texts.label-v1-to-v2-2-x') },
-  { value: 'v1ToV3x', label: t('tools.docker-compose-converter.texts.label-v1-to-v2-3-x') },
-  { value: 'v2xToV3x', label: t('tools.docker-compose-converter.texts.label-v2-2-x-to-3-x') },
-  { value: 'v3xToV2x', label: t('tools.docker-compose-converter.texts.label-v2-3-x-to-2-x') },
-  { value: 'latest', label: t('tools.docker-compose-converter.texts.label-to-commonspec') },
+  { value: 'v1ToV2x', label: 'V1 to V2 2.x' },
+  { value: 'v1ToV3x', label: 'V1 to V2 3.x' },
+  { value: 'v2xToV3x', label: 'V2 - 2.x to 3.x' },
+  { value: 'v3xToV2x', label: 'V2 - 3.x to 2.x' },
+  { value: 'latest', label: 'To CommonSpec' },
 ];
 
 const conversionResult = computed(() => {
@@ -83,7 +79,7 @@ const MONACO_EDITOR_OPTIONS = {
 
 <template>
   <div>
-    <c-label :label="t('tools.docker-compose-converter.texts.label-paste-your-existing-docker-compose')">
+    <c-label label="Paste your existing Docker Compose:">
       <div relative w-full>
         <c-monaco-editor
           v-model:value="dockerCompose"
@@ -96,7 +92,7 @@ const MONACO_EDITOR_OPTIONS = {
     </c-label>
 
     <div v-if="errors.length > 0">
-      <n-alert :title="t('tools.docker-compose-converter.texts.title-the-following-errors-occured')" type="error" mt-5>
+      <n-alert title="The following errors occured" type="error" mt-5>
         <ul>
           <li v-for="(message, index) of errors" :key="index">
             {{ message }}
@@ -112,14 +108,14 @@ const MONACO_EDITOR_OPTIONS = {
         <c-select
           v-model:value="conversion"
           label-position="top"
-          :label="t('tools.docker-compose-converter.texts.label-docker-compose-conversion')"
+          label="Docker Compose conversion:"
           :options="conversionOptions"
-          :placeholder="t('tools.docker-compose-converter.texts.placeholder-select-docker-compose-conversion')"
+          placeholder="Select Docker Compose conversion"
         />
       </n-gi>
       <n-gi span="2">
-        <n-form-item :label="t('tools.docker-compose-converter.texts.label-indent-size')" label-placement="top" label-width="100" :show-feedback="false">
-          <n-input-number-i18n v-model:value="indentSize" min="0" max="10" w-100px />
+        <n-form-item label="Indent size:" label-placement="top" label-width="100" :show-feedback="false">
+          <n-input-number v-model:value="indentSize" min="0" max="10" w-100px />
         </n-form-item>
       </n-gi>
     </n-grid>
@@ -128,10 +124,10 @@ const MONACO_EDITOR_OPTIONS = {
 
     <div class="mb-6 flex flex-row items-center gap-2">
       <n-checkbox v-model:checked="expandPorts">
-        {{ t('tools.docker-compose-converter.texts.tag-expand-ports') }}
+        Expand Ports
       </n-checkbox>
       <n-checkbox v-model:checked="expandVolumes">
-        {{ t('tools.docker-compose-converter.texts.tag-expand-volumes') }}
+        Expand Volumes
       </n-checkbox>
     </div>
 
@@ -141,7 +137,7 @@ const MONACO_EDITOR_OPTIONS = {
 
     <div mt-5 flex justify-center>
       <c-button :disabled="dockerCompose === ''" secondary @click="download">
-        {{ t('tools.docker-compose-converter.texts.tag-download-converted-docker-compose-yml') }}
+        Download converted docker-compose.yml
       </c-button>
     </div>
   </div>

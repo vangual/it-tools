@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useThemeVars } from 'naive-ui';
-import Memo from './xpath.md';
+import Memo from './xpath-memo.md';
 
 const themeVars = useThemeVars();
 </script>

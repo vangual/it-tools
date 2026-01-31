@@ -1,6 +1,5 @@
 import _ from 'lodash';
 import { addMilliseconds } from 'date-fns';
-import Long from 'long';
 
 export {
   isISO8601DateTimeString,
@@ -19,12 +18,6 @@ export {
   isJSDate,
   fromJSDate,
   toJSDate,
-  isLDAPTimestamp,
-  isWin32FileTime,
-  win32FileTimeToUnix,
-  dateToWin32FileTime,
-  lDAPTimestampToDate,
-  dateToLDAPTimestamp,
 };
 
 const ISO8601_REGEX
@@ -41,8 +34,6 @@ const EXCEL_FORMAT_REGEX = /^-?\d+(\.\d+)?$/;
 
 const JS_DATE_REGEX = /^new\s+Date\(\s*(?:(\d+)\s*,\s*)(?:(\d|11)\s*,\s*(?:(\d+)\s*,\s*(?:(\d+)\s*,\s*(?:(\d+)\s*,\s*(?:(\d+)\s*,\s*)?)?)?)?)?(\d+)\)\s*;?$/;
 
-const LDAP_TIMESTAMP_REGEX = /^([0-9]{4})(0[0-9]|1[012])([012][0-9]|3[01])([01][0-9]|2[0123])([0-5][0-9])([0-5][0-9])Z$/;
-
 function createRegexMatcher(regex: RegExp) {
   return (date?: string) => !_.isNil(date) && regex.test(date);
 }
@@ -56,8 +47,6 @@ const isTimestamp = createRegexMatcher(/^([0-9]{1,13}|[0-9]{16})$/);
 const isTimestampMilliSeconds = createRegexMatcher(/^[0-9]{1,13}$/);
 const isTimestampMicroSeconds = createRegexMatcher(/^[0-9]{16}$/);
 const isMongoObjectId = createRegexMatcher(/^[0-9a-fA-F]{24}$/);
-const isLDAPTimestamp = createRegexMatcher(LDAP_TIMESTAMP_REGEX);
-const isWin32FileTime = createRegexMatcher(/^[0-9]{18}$/);
 
 const isJSDate = createRegexMatcher(JS_DATE_REGEX);
 function fromJSDate(date: string): Date {
@@ -99,44 +88,4 @@ function fromTimestamp(timestamp: string, type: 'auto' | 'milliseconds' | 'micro
     milliSeconds = Number(timestamp);
   }
   return addMilliseconds(new Date(0), milliSeconds);
-}
-
-function win32FileTimeToUnix(ft: string) {
-  const ulong = Long.fromString(ft, true, 10).div(10000);
-  let epochBase = ulong.sub(11644473600000);
-
-  if (epochBase.greaterThan(ulong)) {
-    epochBase = epochBase.toSigned();
-  }
-
-  return new Date(epochBase.toNumber());
-}
-
-function dateToWin32FileTime(date: Date) {
-  const timestamp = +date;
-  const long = Long
-    .fromNumber(timestamp, timestamp >= 0)
-    .add(11644473600000)
-    .mul(10000);
-
-  return long.toString(10);
-}
-
-function lDAPTimestampToDate(ldapTimestamp: string) {
-  const [, yy, mm, dd, hh, nn, ss] = LDAP_TIMESTAMP_REGEX.exec(ldapTimestamp) || [];
-  if (!yy || !mm) {
-    return new Date();
-  }
-  return new Date(
-    Number.parseInt(yy, 10),
-    Number.parseInt(mm, 10) - 1,
-    Number.parseInt(dd, 10),
-    Number.parseInt(hh, 10),
-    Number.parseInt(nn, 10),
-    Number.parseInt(ss, 10));
-}
-
-function dateToLDAPTimestamp(date: Date) {
-  const pad2 = (n: number) => n.toString().padStart(2, '0');
-  return `${date.getUTCFullYear()}${pad2(date.getUTCMonth() + 1)}${pad2(date.getUTCDate())}${pad2(date.getUTCHours())}${pad2(date.getUTCMinutes())}${pad2(date.getUTCSeconds())}Z`;
 }

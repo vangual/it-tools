@@ -1,16 +1,11 @@
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n';
 import decomposerize from 'decomposerize';
 import TextareaCopyable from '@/components/TextareaCopyable.vue';
-import { useQueryParamOrStorage } from '@/composable/queryParams';
-
-const { t } = useI18n();
 
 const detachOption = ref<boolean>(false);
 const removeOption = ref<boolean>(false);
-const longArgsOption = useQueryParamOrStorage({ name: 'long', storageName: 'compose-to-run:l', defaultValue: false });
-const equalAsSepOption = useQueryParamOrStorage({ name: 'sepequal', storageName: 'compose-to-run:e', defaultValue: false });
-const multiline = useQueryParamOrStorage({ name: 'multiline', storageName: 'compose-to-run:m', defaultValue: false });
+const longArgsOption = ref<boolean>(false);
+const equalAsSepOption = ref<boolean>(false);
 
 const dockerCompose = ref(
   `version: '3.3'
@@ -34,7 +29,6 @@ const conversionResult = computed(() => {
       'rm': removeOption.value,
       'long-args': longArgsOption.value,
       'arg-value-separator': equalAsSepOption.value ? '=' : ' ',
-      'multiline': multiline.value,
     };
     return { commands: decomposerize(dockerCompose.value.trim(), config), errors: [] };
   }
@@ -55,7 +49,7 @@ const MONACO_EDITOR_OPTIONS = {
 
 <template>
   <div>
-    <c-label :label="t('tools.docker-compose-to-docker-run-converter.texts.label-paste-your-docker-compose-file-content')">
+    <c-label label="Paste your Docker Compose file content:">
       <div relative w-full>
         <c-monaco-editor
           v-model:value="dockerCompose"
@@ -68,7 +62,7 @@ const MONACO_EDITOR_OPTIONS = {
     </c-label>
 
     <div v-if="errors.length > 0">
-      <n-alert :title="t('tools.docker-compose-to-docker-run-converter.texts.title-the-following-errors-occured')" type="error" mt-5>
+      <n-alert title="The following errors occured" type="error" mt-5>
         <ul>
           <li v-for="(message, index) of errors" :key="index">
             {{ message }}
@@ -81,19 +75,16 @@ const MONACO_EDITOR_OPTIONS = {
 
     <div class="mb-6 flex flex-row items-center gap-2">
       <n-checkbox v-model:checked="detachOption">
-        {{ t('tools.docker-compose-to-docker-run-converter.texts.tag-detach-d') }}
+        Detach (-d)
       </n-checkbox>
       <n-checkbox v-model:checked="removeOption">
-        {{ t('tools.docker-compose-to-docker-run-converter.texts.tag-remove-rm') }}
+        Remove (--rm)
       </n-checkbox>
       <n-checkbox v-model:checked="longArgsOption">
-        {{ t('tools.docker-compose-to-docker-run-converter.texts.tag-long-arguments') }}
-      </n-checkbox>
-      <n-checkbox v-model:checked="multiline">
-        {{ t('tools.docker-compose-to-docker-run-converter.texts.tag-multiline') }}
+        Long Arguments
       </n-checkbox>
       <n-checkbox v-model:checked="equalAsSepOption">
-        {{ t('tools.docker-compose-to-docker-run-converter.texts.tag-equal-sep') }}
+        --<i>arg</i>=<i>value</i> ?
       </n-checkbox>
     </div>
 

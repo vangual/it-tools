@@ -1,11 +1,10 @@
 import { Devices } from '@vicons/tabler';
 import { defineTool } from '../tool';
-import { translate as t } from '@/plugins/i18n.plugin';
 
 export const tool = defineTool({
-  name: t('tools.mac-address-converter.title'),
+  name: 'MAC Address Converter',
   path: '/mac-address-converter',
-  description: t('tools.mac-address-converter.description'),
+  description: 'Change the format of a MAC address and chose between different formats (EUI-48, EUI-64, IPv6)',
   keywords: [
     'converter',
     'mac',
@@ -18,5 +17,4 @@ export const tool = defineTool({
   ],
   component: () => import('./mac-address-converter.vue'),
   icon: Devices,
-  category: 'Network',
 });

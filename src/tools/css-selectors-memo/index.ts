@@ -1,14 +1,12 @@
 import { BrandCss3 } from '@vicons/tabler';
 import { defineTool } from '../tool';
-import { translate as t } from '@/plugins/i18n.plugin';
 
 export const tool = defineTool({
-  name: t('tools.css-selectors-memo.title'),
+  name: 'CSS Selectors Cheatsheet',
   path: '/css-selectors-memo',
-  description: t('tools.css-selectors-memo.description'),
+  description: 'CSS Selectors Syntax Cheatsheet',
   keywords: ['css', 'selectors', 'cheatsheet', 'memo'],
   component: () => import('./css-selectors-memo.vue'),
   icon: BrandCss3,
   createdAt: new Date('2024-08-15'),
-  category: 'Cheatsheets',
 });

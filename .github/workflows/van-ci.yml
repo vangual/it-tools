@@ -1,0 +1,39 @@
+name: van-ci
+
+on:
+  pull_request:
+  push:
+    branches:
+      - 'van**'
+
+jobs:
+  van-ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          echo "Before: corepack version => $(corepack --version || echo 'not installed')"
+          npm install -g corepack@latest
+          echo "After : corepack version => $(corepack --version)"
+          corepack enable
+          pnpm --version
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm i --ignore-scripts
+
+      - name: Run linters
+        run: pnpm lint
+
+      - name: Run unit test
+        run: pnpm test
+
+      - name: Type check
+        run: pnpm typecheck
+
+      - name: Build the app
+        run: pnpm build

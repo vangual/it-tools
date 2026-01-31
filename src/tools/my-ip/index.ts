@@ -1,11 +1,10 @@
 import { World } from '@vicons/tabler';
 import { defineTool } from '../tool';
-import { translate as t } from '@/plugins/i18n.plugin';
 
 export const tool = defineTool({
-  name: t('tools.my-ip.title'),
+  name: 'My IP Address',
   path: '/my-ip',
-  description: t('tools.my-ip.description'),
+  description: 'Get your client IP Address (IPv4/6) using https://www.ipify.org/',
   keywords: ['my', 'client', 'ip'],
   component: () => import('./my-ip.vue'),
   icon: World,

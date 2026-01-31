@@ -1,17 +1,14 @@
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n';
 import cronstrue from 'cronstrue';
 import ctz from 'countries-and-timezones';
 import getTimezoneOffset from 'get-timezone-offset';
 import { type CronType, getLastExecutionTimes, isCronValid } from './crontab-generator.service';
 import { useStyleStore } from '@/stores/style.store';
-import { useQueryParam, useQueryParamOrStorage } from '@/composable/queryParams';
-
-const { t } = useI18n();
+import { useQueryParamOrStorage } from '@/composable/queryParams';
 
 const styleStore = useStyleStore();
 
-const cron = useQueryParam({ tool: 'crontab-gen', name: 'expr', defaultValue: '40 * * * *' });
+const cron = ref('40 * * * *');
 const cronstrueConfig = reactive({
   verbose: true,
   dayOfWeekStartIndexZero: true,
@@ -39,25 +36,25 @@ const commonHelpers = [
   {
     symbol: '*',
     meaning: 'Any value',
-    example: '* * * * *',
+    example: '* * * *',
     equivalent: 'Every minute',
   },
   {
     symbol: '-',
     meaning: 'Range of values',
-    example: '1-10 * * * *',
+    example: '1-10 * * *',
     equivalent: 'Minutes 1 through 10',
   },
   {
     symbol: ',',
     meaning: 'List of values',
-    example: '1,10 * * * *',
+    example: '1,10 * * *',
     equivalent: 'At minutes 1 and 10',
   },
   {
     symbol: '/',
     meaning: 'Step values',
-    example: '*/10 * * * *',
+    example: '*/10 * * *',
     equivalent: 'Every 10 minutes',
   },
 ];
@@ -169,12 +166,7 @@ const getHelpers = computed(() => {
 
 const cronString = computed(() => {
   if (isCronValid(cron.value)) {
-    try {
-      return cronstrue.toString(cron.value, cronstrueConfig);
-    }
-    catch (e: any) {
-      return e.toString();
-    }
+    return cronstrue.toString(cron.value, cronstrueConfig);
   }
   return ' ';
 });
@@ -182,7 +174,7 @@ const cronString = computed(() => {
 const cronValidationRules = [
   {
     validator: (value: string) => isCronValid(value, cronType.value),
-    message: t('tools.crontab-generator.texts.message-this-cron-is-invalid'),
+    message: 'This cron is invalid',
   },
 ];
 
@@ -207,7 +199,7 @@ const executionTimesString = computed(() => {
       <c-input-text
         v-model:value="cron"
         size="large"
-        :placeholder="t('tools.crontab-generator.texts.placeholder-')"
+        placeholder="* * * * *"
         :validation-rules="cronValidationRules"
         mb-3
       />
@@ -217,11 +209,11 @@ const executionTimesString = computed(() => {
       <n-space>
         <n-radio
           value="standard"
-          :label="t('tools.crontab-generator.texts.label-unix-standard')"
+          label="Unix standard"
         />
         <n-radio
           value="aws"
-          :label="t('tools.crontab-generator.texts.label-aws')"
+          label="AWS"
         />
       </n-space>
     </n-radio-group>
@@ -238,22 +230,22 @@ const executionTimesString = computed(() => {
 
     <div flex justify-center>
       <n-form :show-feedback="false" label-width="170" label-placement="left">
-        <n-form-item :label="t('tools.crontab-generator.texts.label-verbose')">
+        <n-form-item label="Verbose">
           <n-switch v-model:value="cronstrueConfig.verbose" />
         </n-form-item>
-        <n-form-item :label="t('tools.crontab-generator.texts.label-use-24-hour-time-format')">
+        <n-form-item label="Use 24 hour time format">
           <n-switch v-model:value="cronstrueConfig.use24HourTimeFormat" />
         </n-form-item>
-        <n-form-item :label="t('tools.crontab-generator.texts.label-days-start-at-0')">
+        <n-form-item label="Days start at 0">
           <n-switch v-model:value="cronstrueConfig.dayOfWeekStartIndexZero" />
         </n-form-item>
-        <n-form-item :label="t('tools.crontab-generator.texts.label-months-start-at-0')">
+        <n-form-item label="Months start at 0">
           <n-switch v-model:value="cronstrueConfig.monthStartIndexZero" />
         </n-form-item>
         <c-select
           v-model:value="currentTimezone"
           searchable
-          :label="t('tools.crontab-generator.texts.label-timezone')"
+          label="Timezone:"
           :options="allTimezones"
         />
       </n-form>
@@ -285,16 +277,17 @@ const executionTimesString = computed(() => {
     <div v-if="styleStore.isSmallScreen">
       <c-card v-for="{ symbol, meaning, example, equivalent } in getHelpers" :key="symbol" mb-3 important:border-none>
         <div>
-          {{ t('tools.crontab-generator.texts.tag-symbol') }}<strong>{{ symbol }}</strong>
+          Symbol: <strong>{{ symbol }}</strong>
         </div>
         <div>
-          {{ t('tools.crontab-generator.texts.tag-meaning') }}<strong>{{ meaning }}</strong>
+          Meaning: <strong>{{ meaning }}</strong>
         </div>
         <div>
-          {{ t('tools.crontab-generator.texts.tag-example') }}<strong><code>{{ example }}</code></strong>
+          Example:
+          <strong><code>{{ example }}</code></strong>
         </div>
         <div>
-          {{ t('tools.crontab-generator.texts.tag-equivalent') }}<strong>{{ equivalent }}</strong>
+          Equivalent: <strong>{{ equivalent }}</strong>
         </div>
       </c-card>
     </div>

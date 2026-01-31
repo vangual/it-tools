@@ -1,27 +1,21 @@
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n';
 import type sshpk from 'sshpk';
 import { generateKeyPair } from './ed25519-key-pair-generator.service';
 import TextareaCopyable from '@/components/TextareaCopyable.vue';
 import { withDefaultOnErrorAsync } from '@/utils/defaults';
 import { computedRefreshableAsync } from '@/composable/computedRefreshable';
-import { useITStorage } from '@/composable/queryParams';
-
-const { t } = useI18n();
 
 const password = ref('');
 const comment = ref('');
-const debouncedComment = useDebounce(comment, 250);
-const debouncedPassword = useDebounce(password, 250);
 const emptyCerts = { publicKey: '', privateKey: '' };
 
-const format = useITStorage('ed25519-key-pair-generator:format', 'ssh');
+const format = useStorage('ed25519-key-pair-generator:format', 'ssh');
 const formatOptions = [
-  { value: 'pem', label: t('tools.ed25519-key-pair-generator.texts.label-pem') },
-  { value: 'pkcs8', label: t('tools.ed25519-key-pair-generator.texts.label-pkcs-8') },
-  { value: 'ssh', label: t('tools.ed25519-key-pair-generator.texts.label-openssh-standard') },
-  { value: 'openssh', label: t('tools.ed25519-key-pair-generator.texts.label-openssh-new') },
-  { value: 'putty', label: t('tools.ed25519-key-pair-generator.texts.label-putty') },
+  { value: 'pem', label: 'PEM' },
+  { value: 'pkcs8', label: 'PKCS#8' },
+  { value: 'ssh', label: 'OpenSSH Standard' },
+  { value: 'openssh', label: 'OpenSSH New' },
+  { value: 'putty', label: 'PuTTY' },
 ];
 
 const supportsPassphrase = computed(() => format.value === 'ssh');
@@ -29,9 +23,9 @@ const supportsPassphrase = computed(() => format.value === 'ssh');
 const [certs, refreshCerts] = computedRefreshableAsync(
   () => withDefaultOnErrorAsync(() => generateKeyPair(
     {
-      password: debouncedPassword.value,
+      password: password.value,
       format: format.value as sshpk.PrivateKeyFormatType,
-      comment: debouncedComment.value,
+      comment: comment.value,
     },
   ), emptyCerts),
   emptyCerts,
@@ -44,42 +38,42 @@ const [certs, refreshCerts] = computedRefreshableAsync(
       <c-select
         v-model:value="format"
         label-position="left"
-        :label="t('tools.ed25519-key-pair-generator.texts.label-format')"
+        label="Format:"
         :options="formatOptions"
-        :placeholder="t('tools.ed25519-key-pair-generator.texts.placeholder-select-a-key-format')"
+        placeholder="Select a key format"
       />
 
-      <n-form-item v-if="supportsPassphrase" :label="t('tools.ed25519-key-pair-generator.texts.label-passphrase')" label-placement="left">
+      <n-form-item v-if="supportsPassphrase" label="Passphrase :" label-placement="left">
         <n-input
           v-model:value="password"
           type="password"
           show-password-on="mousedown"
-          :placeholder="t('tools.ed25519-key-pair-generator.texts.placeholder-passphrase')"
+          placeholder="Passphrase"
         />
       </n-form-item>
     </n-space>
 
     <n-space mb-2>
-      <n-form-item :label="t('tools.ed25519-key-pair-generator.texts.label-comment')" label-placement="left">
+      <n-form-item label="Comment :" label-placement="left">
         <n-input
           v-model:value="comment"
           type="text"
-          :placeholder="t('tools.ed25519-key-pair-generator.texts.placeholder-comment')"
+          placeholder="Comment"
         />
       </n-form-item>
 
       <c-button @click="refreshCerts">
-        {{ t('tools.ed25519-key-pair-generator.texts.tag-refresh-key-pair') }}
+        Refresh key-pair
       </c-button>
     </n-space>
 
     <div>
-      <h3>{{ t('tools.ed25519-key-pair-generator.texts.tag-public-key') }}</h3>
+      <h3>Public key</h3>
       <TextareaCopyable :value="certs.publicKey" :word-wrap="true" />
     </div>
 
     <div>
-      <h3>{{ t('tools.ed25519-key-pair-generator.texts.tag-private-key') }}</h3>
+      <h3>Private key</h3>
       <TextareaCopyable :value="certs.privateKey" />
     </div>
   </div>

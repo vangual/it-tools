@@ -1,14 +1,12 @@
 import { Database } from '@vicons/tabler';
 import { defineTool } from '../tool';
-import { translate as t } from '@/plugins/i18n.plugin';
 
 export const tool = defineTool({
-  name: t('tools.mongo-objectid-converter.title'),
+  name: 'MongoDB ObjectId Converter',
   path: '/mongo-objectid-converter',
-  description: t('tools.mongo-objectid-converter.description'),
+  description: 'Convert between MongoDB ObjectId and internal timestamp',
   keywords: ['mongo', 'objectid', 'converter', 'timestamp'],
   component: () => import('./mongo-objectid-converter.vue'),
   icon: Database,
   createdAt: new Date('2024-08-15'),
-  category: 'Forensic',
 });

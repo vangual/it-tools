@@ -1,19 +1,16 @@
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n';
 import { generateSSLCertificate } from './x509-certificate-generator.service';
 import TextareaCopyable from '@/components/TextareaCopyable.vue';
 import { withDefaultOnErrorAsync } from '@/utils/defaults';
 import { computedRefreshableAsync } from '@/composable/computedRefreshable';
 import { useValidation } from '@/composable/validation';
 
-const { t } = useI18n();
-
 const commonName = ref('test.com');
 const commonNameValidation = useValidation({
   source: commonName,
   rules: [
     {
-      message: t('tools.x509-certificate-generator.texts.message-common-name-domain-name-must-not-be-empty'),
+      message: 'Common Name/Domain Name must not be empty',
       validator: value => value?.trim() !== '',
     },
   ],
@@ -57,26 +54,26 @@ const [certs, refreshCerts] = computedRefreshableAsync(
   <div>
     <div mb-2>
       <n-form-item
-        :label="t('tools.x509-certificate-generator.texts.label-common-name-domain-name')"
+        label="Common Name/Domain Name:"
         label-placement="top"
         :feedback="commonNameValidation.message"
         :validation-status="commonNameValidation.status"
       >
         <n-input
           v-model:value="commonName"
-          :placeholder="t('tools.x509-certificate-generator.texts.placeholder-common-domain-name')"
+          placeholder="Common/Domain Name"
         />
       </n-form-item>
     </div>
 
     <div>
       <n-form-item
-        :label="t('tools.x509-certificate-generator.texts.label-duration-days')"
+        label="Duration (days):"
         label-placement="left" label-width="100"
       >
         <n-input-number
           v-model:value="days"
-          :placeholder="t('tools.x509-certificate-generator.texts.placeholder-duration-days')"
+          placeholder="Duration (days)"
           :min="1"
         />
       </n-form-item>
@@ -84,84 +81,84 @@ const [certs, refreshCerts] = computedRefreshableAsync(
 
     <div>
       <n-form-item
-        :label="t('tools.x509-certificate-generator.texts.label-organization-name')"
+        label="Organization Name:"
         label-placement="left" label-width="100"
       >
         <n-input
           v-model:value="organizationName"
-          :placeholder="t('tools.x509-certificate-generator.texts.placeholder-organization-name')"
+          placeholder="Organization Name"
         />
       </n-form-item>
     </div>
 
     <div>
       <n-form-item
-        :label="t('tools.x509-certificate-generator.texts.label-organizational-unit')"
+        label="Organizational Unit:"
         label-placement="left" label-width="100"
       >
         <n-input
           v-model:value="organizationalUnit"
-          :placeholder="t('tools.x509-certificate-generator.texts.placeholder-organization-unit')"
+          placeholder="Organization Unit"
         />
       </n-form-item>
     </div>
 
     <div>
       <n-form-item
-        :label="t('tools.x509-certificate-generator.texts.label-state')"
+        label="State:"
         label-placement="left" label-width="100"
       >
         <n-input
           v-model:value="state"
-          :placeholder="t('tools.x509-certificate-generator.texts.placeholder-state')"
+          placeholder="State"
         />
       </n-form-item>
     </div>
 
     <div>
       <n-form-item
-        :label="t('tools.x509-certificate-generator.texts.label-city')"
+        label="City:"
         label-placement="left" label-width="100"
       >
         <n-input
           v-model:value="city"
-          :placeholder="t('tools.x509-certificate-generator.texts.placeholder-city')"
+          placeholder="City"
         />
       </n-form-item>
     </div>
 
     <div>
       <n-form-item
-        :label="t('tools.x509-certificate-generator.texts.label-country')"
+        label="Country:"
         label-placement="left" label-width="100"
       >
         <n-input
           v-model:value="country"
-          :placeholder="t('tools.x509-certificate-generator.texts.placeholder-country')"
+          placeholder="Country"
         />
       </n-form-item>
     </div>
 
     <div>
       <n-form-item
-        :label="t('tools.x509-certificate-generator.texts.label-contact-email')"
+        label="Contact Email:"
         label-placement="left" label-width="100"
       >
         <n-input
           v-model:value="contactEmail"
-          :placeholder="t('tools.x509-certificate-generator.texts.placeholder-contact-email')"
+          placeholder="Contact Email"
         />
       </n-form-item>
     </div>
 
     <div>
       <n-form-item
-        :label="t('tools.x509-certificate-generator.texts.label-subject-alternative-names')"
+        label="Subject Alternative Names:"
         label-placement="top"
       >
         <n-input
           v-model:value="subjectAlternativeNames"
-          :placeholder="t('tools.x509-certificate-generator.texts.placeholder-dns-names-emails-ip-uri')"
+          placeholder="DNS Names, emails, IP, URI..."
           type="textarea"
         />
       </n-form-item>
@@ -169,21 +166,21 @@ const [certs, refreshCerts] = computedRefreshableAsync(
 
     <div>
       <n-form-item
-        :label="t('tools.x509-certificate-generator.texts.label-private-key-passphrase')"
+        label="Private Key passphrase:"
         label-placement="top"
       >
         <n-input
           v-model:value="password"
           type="password"
           show-password-on="mousedown"
-          :placeholder="t('tools.x509-certificate-generator.texts.placeholder-passphrase')"
+          placeholder="Passphrase"
         />
       </n-form-item>
     </div>
 
     <div flex justify-center>
       <c-button @click="refreshCerts">
-        {{ t('tools.x509-certificate-generator.texts.tag-refresh-certificate') }}
+        Refresh Certificate
       </c-button>
     </div>
 
@@ -191,22 +188,22 @@ const [certs, refreshCerts] = computedRefreshableAsync(
 
     <div v-if="commonNameValidation.isValid">
       <div>
-        <h3>{{ t('tools.x509-certificate-generator.texts.tag-certificate-pem') }}</h3>
+        <h3>Certificate (PEM)</h3>
         <TextareaCopyable :value="certs.certificatePem" :download-file-name="`${organizationName}.crt`" />
       </div>
 
       <div>
-        <h3>{{ t('tools.x509-certificate-generator.texts.tag-fingerprint') }}</h3>
+        <h3>Fingerprint:</h3>
         <TextareaCopyable :value="certs.fingerprint" word-wrap />
       </div>
 
       <div>
-        <h3>{{ t('tools.x509-certificate-generator.texts.tag-public-key') }}</h3>
+        <h3>Public key</h3>
         <TextareaCopyable :value="certs.publicKeyPem" word-wrap :download-file-name="`${organizationName}.pem`" />
       </div>
 
       <div>
-        <h3>{{ t('tools.x509-certificate-generator.texts.tag-private-key') }}</h3>
+        <h3>Private key</h3>
         <TextareaCopyable :value="certs.privateKeyPem" :download-file-name="`${organizationName}.key`" />
       </div>
     </div>

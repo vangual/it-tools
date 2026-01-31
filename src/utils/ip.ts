@@ -31,49 +31,33 @@ export function parseAsCIDR(form: string) {
   return (ipMatch.convertToMasks() || [])[0]?.convertToSubnet()?.toString() || '';
 }
 
-export interface SubnetInfo {
-  netAddress: string
-  firstIP: string
-  lastIP: string
-  broadcastIP: string
-  prefix: number
-  hostsCount: number
-}
-
-export function getSubnetsInfos(cidr: string): SubnetInfo[] {
+export function getSubnets(cidr: string) {
   const [address, prefix] = cidr.split('/');
   if (isIPv4(address)) {
     const prefix4Int = Number(prefix || '32');
     const getMask = (prefix: number) => (IPv4MAX >> (BigInt(32) - BigInt(prefix))) << (BigInt(32) - BigInt(prefix));
-    const bigInt = BigInt((new Address4(address)).bigInt());
+    const bigInt = BigInt((new Address4(address)).bigInteger());
 
     const subnets = [];
     let startNetwork;
     if (prefix4Int < 8) {
       startNetwork = 0;
     }
+    if (prefix4Int % 8 === 0) {
+      return [];
+    }
     startNetwork = bigInt & getMask(prefix4Int);
     const increment = BigInt(2) ** BigInt(32 - prefix4Int);
-    const netCount = getNetworksCount(cidr) || 1;
+    const netCount = getNetworksCount(cidr);
     for (let netIndex = 0; netIndex < netCount; netIndex += 1) {
-      subnets.push({
-        netAddress: Address4.fromBigInt(startNetwork).correctForm(),
-        firstIP: Address4.fromBigInt(startNetwork + 1n).correctForm(),
-        lastIP: Address4.fromBigInt(startNetwork + increment - 2n).correctForm(),
-        broadcastIP: Address4.fromBigInt(startNetwork + increment - 1n).correctForm(),
-        prefix: prefix4Int,
-        hostsCount: Number(increment - 2n),
-      });
+      const netAddr = Address4.fromBigInteger(startNetwork.toString()).correctForm();
+      subnets.push(`${netAddr}/${prefix4Int}`);
       startNetwork += increment;
     }
     return subnets;
   }
 
   return [];
-}
-
-export function getSubnets(cidr: string) {
-  return getSubnetsInfos(cidr).map(({ netAddress, prefix }) => `${netAddress}/${prefix}`);
 }
 
 export function getNetworksCount(cidr: string) {
@@ -115,31 +99,17 @@ export function getIPNetworkType(address: string) {
 
 export function toARPA(address: string) {
   if (isIPv4(address)) {
-    const bigInt = BigInt((new Address4(address)).bigInt());
+    const bigInt = BigInt((new Address4(address)).bigInteger());
     const reverseIP = (
       [(bigInt & BigInt(255)), (bigInt >> BigInt(8) & BigInt(255)),
         (bigInt >> BigInt(16) & BigInt(255)),
         (bigInt >> BigInt(24) & BigInt(255)),
       ].join('.')
     );
-    return `${reverseIP}.in-addr.arpa.`;
+    return `${reverseIP}.in-addr.arpa`;
   }
 
   return (new Address6(address)).reverseForm();
-}
-
-export function fromARPA(arpa: string) {
-  if (!arpa) {
-    return null;
-  }
-  if (!arpa.endsWith('.')) {
-    arpa = `${arpa}.`;
-  }
-  if (arpa.includes('.in-addr.arpa')) {
-    return Address4.fromArpa(arpa).correctForm();
-  }
-
-  return Address6.fromArpa(arpa).correctForm();
 }
 
 export function toIPv4MappedAddress(address: string) {

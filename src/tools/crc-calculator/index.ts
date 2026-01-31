@@ -1,11 +1,10 @@
 import { EyeOff } from '@vicons/tabler';
 import { defineTool } from '../tool';
-import { translate as t } from '@/plugins/i18n.plugin';
 
 export const tool = defineTool({
-  name: t('tools.crc-calculator.title'),
+  name: 'CRC calculator',
   path: '/crc-calculator',
-  description: t('tools.crc-calculator.description'),
+  description: 'Compute text or file CRC (CRC1, CRC8, CRC8 1-Wire, CRC8 DVB-S2, CRC16, CRC16 CCITT, CRC16 Modbus, CRC16 Kermit, CRC16 XModem, CRC24, CRC32, CRC32 MPEG-2, CRCJAM)',
   keywords: ['crc', 'checksum', 'crc1',
     'crc8',
     'crc8 1-wire',
@@ -22,5 +21,4 @@ export const tool = defineTool({
   component: () => import('./crc-calculator.vue'),
   icon: EyeOff,
   createdAt: new Date('2024-05-11'),
-  category: 'Crypto',
 });

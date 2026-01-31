@@ -1,13 +1,9 @@
 import ICAL from 'ical.js';
-import { v4 as uuidv4 } from 'uuid';
-
-import { translate as t } from '@/plugins/i18n.plugin';
 
 export function mergeIcals(inputs: Array<string>, options: {
   calname?: string
   timezone?: string
   caldesc?: string
-  regenerate_uids?: boolean
 } = {}) {
   let calendar;
   for (const input of inputs) {
@@ -37,18 +33,12 @@ export function mergeIcals(inputs: Array<string>, options: {
       }
     }
     catch (e) {
-      throw new Error(t('tools.ical-merger.service.text.failed-to-merge-e-n-nwith-input-input', [e, input]));
+      throw new Error(`Failed to merge: ${e}\n\nWith input: ${input}`);
     }
   }
 
   if (!calendar) {
-    throw new Error(t('tools.ical-merger.service.text.no-icals-parsed-successfully'));
-  }
-
-  if (options.regenerate_uids) {
-    for (const vevent of calendar.getAllSubcomponents('vevent')) {
-      vevent.updatePropertyWithValue('uid', uuidv4());
-    }
+    throw new Error('No icals parsed successfully');
   }
 
   return calendar.toString();

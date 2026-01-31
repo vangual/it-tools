@@ -1,14 +1,12 @@
 import { EyeOff } from '@vicons/tabler';
 import { defineTool } from '../tool';
-import { translate as t } from '@/plugins/i18n.plugin';
 
 export const tool = defineTool({
-  name: t('tools.url-fanger.title'),
+  name: 'Url Fanger',
   path: '/url-fanger',
-  description: t('tools.url-fanger.description'),
+  description: 'Defang/Refang an URL or email address',
   keywords: ['url', 'fanger', 'fange', 'defang', 'refang'],
   component: () => import('./url-fanger.vue'),
   icon: EyeOff,
   createdAt: new Date('2024-03-09'),
-  category: 'Web',
 });

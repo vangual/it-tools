@@ -1,11 +1,10 @@
 import { Key } from '@vicons/tabler';
 import { defineTool } from '../tool';
-import { translate as t } from '@/plugins/i18n.plugin';
 
 export const tool = defineTool({
-  name: t('tools.jwt-parser.title'),
+  name: 'JWT parser',
   path: '/jwt-parser',
-  description: t('tools.jwt-parser.description'),
+  description: 'Parse and decode your JSON Web Token (jwt) and display its content.',
   keywords: [
     'jwt',
     'parser',
@@ -26,5 +25,4 @@ export const tool = defineTool({
   component: () => import('./jwt-parser.vue'),
   icon: Key,
   npmPackages: ['jwt-decode'],
-  category: 'Crypto',
 });

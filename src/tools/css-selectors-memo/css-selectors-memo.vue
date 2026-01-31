@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useThemeVars } from 'naive-ui';
-import Memo from './css-selectors.md';
+import Memo from './css-selectors-memo.md';
 
 const themeVars = useThemeVars();
 </script>

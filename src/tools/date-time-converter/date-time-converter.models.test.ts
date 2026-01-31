@@ -1,8 +1,6 @@
 import { describe, expect, test } from 'vitest';
 import {
   dateToExcelFormat,
-  dateToLDAPTimestamp,
-  dateToWin32FileTime,
   excelFormatToDate,
   fromJSDate,
   fromTimestamp,
@@ -10,7 +8,6 @@ import {
   isISO8601DateTimeString,
   isISO9075DateString,
   isJSDate,
-  isLDAPTimestamp,
   isMongoObjectId,
   isRFC3339DateString,
   isRFC7231DateString,
@@ -18,10 +15,7 @@ import {
   isTimestampMicroSeconds,
   isUTCDateString,
   isUnixTimestamp,
-  isWin32FileTime,
-  lDAPTimestampToDate,
   toJSDate,
-  win32FileTimeToUnix,
 } from './date-time-converter.models';
 
 describe('date-time-converter models', () => {
@@ -110,29 +104,6 @@ describe('date-time-converter models', () => {
     test('should return false for invalid Unix timestamps', () => {
       expect(isUnixTimestamp('foo')).toBe(false);
       expect(isUnixTimestamp('')).toBe(false);
-    });
-  });
-
-  describe('isWin32FileTime', () => {
-    test('should return true for valid Win32 file time', () => {
-      expect(isWin32FileTime('131461446367662144')).toBe(true);
-    });
-
-    test('should return false for invalid Win32 file time', () => {
-      expect(isWin32FileTime('92233720368547758071')).toBe(false); // too big
-      expect(isWin32FileTime('foo')).toBe(false);
-      expect(isWin32FileTime('')).toBe(false);
-    });
-  });
-
-  describe('isLDAPTimestamp', () => {
-    test('should return true for valid LDAP timestamps', () => {
-      expect(isLDAPTimestamp('20250309122345Z')).toBe(true);
-    });
-
-    test('should return false for invalid LDAP timestamps', () => {
-      expect(isLDAPTimestamp('foo')).toBe(false);
-      expect(isLDAPTimestamp('')).toBe(false);
     });
   });
 
@@ -281,54 +252,5 @@ describe('date-time-converter models', () => {
       expect(toJSDate(new Date(2000, 0, 1, 12, 12, 12))).toEqual('new Date(2000, 0, 1, 12, 12, 12, 0);');
       expect(toJSDate(new Date(2000, 0, 1, 12, 12, 12, 1))).toEqual('new Date(2000, 0, 1, 12, 12, 12, 1);');
     });
-  });
-});
-
-describe('win32FileTimeToUnix', () => {
-  test('should correctly convert Win32 FILETIME to UNIX timestamp', () => {
-    const fileTime = '132271200000000000';
-    const expectedDate = new Date(Date.UTC(2020, 1, 25, 16, 0, 0));
-    expect(win32FileTimeToUnix(fileTime)).toEqual(expectedDate);
-  });
-
-  test('should handle zero FILETIME', () => {
-    expect(win32FileTimeToUnix('0')).toEqual(new Date(1601, 0, 1, 0, 0, 0));
-  });
-});
-
-describe('dateToWin32FileTime', () => {
-  test('should correctly convert Date to Win32 FILETIME', () => {
-    const date = new Date(Date.UTC(2020, 1, 25, 16, 0, 0));
-    const expectedFileTime = '132271200000000000';
-    expect(dateToWin32FileTime(date)).toBe(expectedFileTime);
-  });
-
-  test('should handle epoch (1970-01-01)', () => {
-    const date = new Date(0);
-    const expectedFileTime = '116444736000000000';
-    expect(dateToWin32FileTime(date)).toBe(expectedFileTime);
-  });
-});
-
-describe('lDAPTimestampToDate', () => {
-  test('should correctly parse LDAP timestamp', () => {
-    const ldapTimestamp = '20240101120013Z'; // January 1, 2024, 12:00:13 UTC
-    expect(lDAPTimestampToDate(ldapTimestamp)).toEqual(new Date(Date.UTC(2024, 0, 1, 12, 0, 13)));
-  });
-
-  test('should return current date on invalid input', () => {
-    expect(lDAPTimestampToDate('invalid')).toBeInstanceOf(Date);
-  });
-});
-
-describe('dateToLDAPTimestamp', () => {
-  test('should correctly convert Date to LDAP timestamp', () => {
-    const date = new Date(Date.UTC(2024, 0, 1, 12, 0, 13));
-    expect(dateToLDAPTimestamp(date)).toBe('20240101120013Z');
-  });
-
-  test('should correctly pad single-digit values', () => {
-    const date = new Date(Date.UTC(2024, 4, 9, 4, 5, 6)); // May 9, 2024, 04:05:06 UTC
-    expect(dateToLDAPTimestamp(date)).toBe('20240509040506Z');
   });
 });

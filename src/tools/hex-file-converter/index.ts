@@ -1,14 +1,12 @@
 import { FileDigit } from '@vicons/tabler';
 import { defineTool } from '../tool';
-import { translate as t } from '@/plugins/i18n.plugin';
 
 export const tool = defineTool({
-  name: t('tools.hex-file-converter.title'),
+  name: 'HEX File Converter',
   path: '/hex-file-converter',
-  description: t('tools.hex-file-converter.description'),
+  description: 'Convert between file and hexadecimal representation',
   keywords: ['hex', 'file', 'converter'],
   component: () => import('./hex-file-converter.vue'),
   icon: FileDigit,
   createdAt: new Date('2024-08-15'),
-  category: 'Development',
 });

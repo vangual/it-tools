@@ -1,14 +1,12 @@
 import { FileLike } from '@vicons/tabler';
 import { defineTool } from '../tool';
-import { translate as t } from '@/plugins/i18n.plugin';
 
 export const tool = defineTool({
-  name: t('tools.pdf-linearize.title'),
+  name: 'Pdf Linearize/FastWeb',
   path: '/pdf-linearize',
-  description: t('tools.pdf-linearize.description'),
+  description: 'Create a Linearized version of a PDF (turn to FastWeb)',
   keywords: ['pdf', 'linearize', 'fastweb'],
   component: () => import('./pdf-linearize.vue'),
   icon: FileLike,
   createdAt: new Date('2024-01-09'),
-  category: 'PDF',
 });

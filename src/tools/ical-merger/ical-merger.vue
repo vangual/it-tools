@@ -1,14 +1,10 @@
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n';
 import { mergeIcals } from './ical-merger.service';
-
-const { t } = useI18n();
 
 const fileInputs = ref<Array<File>>([]);
 const mergedOutput = ref('');
 const calendarName = ref('');
 const calendarDescription = ref('');
-const regenerateUids = ref(false);
 const errors = ref('');
 
 function onUploads(files: Array<File>) {
@@ -25,11 +21,7 @@ async function mergeFiles() {
   errors.value = '';
   mergedOutput.value = '';
   try {
-    mergedOutput.value = mergeIcals(fileBuffers, {
-      calname: calendarName.value,
-      caldesc: calendarDescription.value,
-      regenerate_uids: regenerateUids.value,
-    });
+    mergedOutput.value = mergeIcals(fileBuffers);
   }
   catch (e: any) {
     errors.value = e.toString();
@@ -51,38 +43,32 @@ function readFileAsString(file: File) {
 <template>
   <div>
     <c-file-upload
-      :title="t('tools.ical-merger.texts.title-drag-and-drop-ical-file-here-or-click-to-select-a-file')"
+      title="Drag and drop iCal file here, or click to select a file"
       multiple
       mb-2
       @files-upload="onUploads"
     />
 
-    <n-form-item :label="t('tools.ical-merger.texts.label-title')" label-placement="left">
-      <n-input v-model:value="calendarName" :placeholder="t('tools.ical-merger.texts.placeholder-please-input-merge-calendar-title')" />
+    <n-form-item label="Title:" label-placement="left">
+      <n-input v-model:value="calendarName" placeholder="Please input merge calendar title..." />
     </n-form-item>
 
-    <n-form-item :label="t('tools.ical-merger.texts.label-description')">
-      <n-input v-model:value="calendarDescription" :placeholder="t('tools.ical-merger.texts.placeholder-please-input-merged-calendar-description')" />
+    <n-form-item label="Description:">
+      <n-input v-model:value="calendarDescription" placeholder="Please input merged calendar description..." />
     </n-form-item>
-
-    <n-space justify="center">
-      <n-checkbox v-model:checked="regenerateUids">
-        {{ t('tools.ical-merger.text.regenerate-uids') }}
-      </n-checkbox>
-    </n-space>
 
     <ul>
       <li v-for="(file, index) in fileInputs" :key="index" mb-1>
         <n-button mr-2 @click="deleteFile(index)">
-          {{ t('tools.ical-merger.texts.tag-delete') }}
+          Delete
         </n-button>
-        {{ t('tools.ical-merger.texts.file-to-merge-file-name', [file.name]) }}
+        File to merge: {{ file.name }}
       </li>
     </ul>
 
     <div flex justify-center>
       <n-button @click="mergeFiles">
-        {{ t('tools.ical-merger.texts.tag-merge-ical-files') }}
+        Merge iCal files
       </n-button>
     </div>
 
@@ -96,8 +82,8 @@ function readFileAsString(file: File) {
       v-if="mergedOutput"
       v-model:value="mergedOutput"
       download-file-name="merge.ics"
-      :download-button-text="t('tools.ical-merger.texts.download-merged-ical')"
-      :label="t('tools.ical-merger.texts.label-merged-ical')"
+      download-button-text="Download merged iCal"
+      label="Merged ICAL"
       mb-2
     />
   </div>

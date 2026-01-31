@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n';
 import JSStack from 'jsstack.js';
 import JavaStack from 'javastack.js';
 import PythonStack from 'pythonstack.js';
@@ -8,8 +7,6 @@ import domtoimage from 'dom-to-image-more';
 import { useQueryParamOrStorage } from '@/composable/queryParams';
 import { useStyleStore } from '@/stores/style.store';
 import { useCopy } from '@/composable/copy';
-
-const { t } = useI18n();
 
 const styleStore = useStyleStore();
 
@@ -68,8 +65,8 @@ const stackTraceMarkdown = computed(() => {
   return `\`\`\`${lang}\n${formatedStackTrace.value?.innerText}\n\`\`\``;
 });
 
-const { copy: copyText } = useCopy({ source: stackTraceText, text: t('tools.stacktrace-prettier.texts.text-formatted-stacktrace-copied-to-the-clipboard') });
-const { copy: copyMarkdown } = useCopy({ source: stackTraceMarkdown, text: t('tools.stacktrace-prettier.texts.text-markdown-formatted-stacktrace-copied-to-the-clipboard') });
+const { copy: copyText } = useCopy({ source: stackTraceText, text: 'Formatted stacktrace copied to the clipboard' });
+const { copy: copyMarkdown } = useCopy({ source: stackTraceMarkdown, text: 'Markdown Formatted stacktrace copied to the clipboard' });
 
 async function downloadAsPNG() {
   const dataUrl = await domtoimage.toPng(formatedStackTrace.value, { bgcolor: styleStore.isDarkTheme ? '#333' : '#fff' });
@@ -83,37 +80,37 @@ const wrap = ref(true);
 </script>
 
 <template>
-  <div>
+  <div max-w-600px>
     <n-radio-group v-model:value="stackType" name="radiogroup" mb-2 flex justify-center>
       <n-space>
         <n-radio
           value="net"
-          :label="t('tools.stacktrace-prettier.texts.label-net')"
+          label=".Net"
         />
         <n-radio
           value="js"
-          :label="t('tools.stacktrace-prettier.texts.label-javascript')"
+          label="Javascript"
         />
         <n-radio
           value="python"
-          :label="t('tools.stacktrace-prettier.texts.label-python')"
+          label="Python"
         />
         <n-radio
           value="java"
-          :label="t('tools.stacktrace-prettier.texts.label-java')"
+          label="Java"
         />
       </n-space>
     </n-radio-group>
 
     <div mb-2 flex justify-center>
       <n-checkbox v-model:checked="wrap">
-        {{ t('tools.stacktrace-prettier.texts.tag-wrap-lines') }}
+        Wrap lines?
       </n-checkbox>
     </div>
     <c-input-text
       v-model:value="stackTrace"
-      :label="t('tools.stacktrace-prettier.texts.label-stacktrace')"
-      :placeholder="t('tools.stacktrace-prettier.texts.placeholder-paste-your-stacktrace-here')"
+      label="Stacktrace"
+      placeholder="Paste your stacktrace here.."
       multiline
       rows="5"
     />
@@ -124,13 +121,13 @@ const wrap = ref(true);
 
     <div v-if="stackTraceText" flex justify-center gap-1>
       <c-button @click="copyText()">
-        {{ t('tools.stacktrace-prettier.texts.tag-copy-formatted-text') }}
+        Copy Formatted (Text)
       </c-button>
       <c-button @click="copyMarkdown()">
-        {{ t('tools.stacktrace-prettier.texts.tag-copy-formatted-markdown') }}
+        Copy Formatted (Markdown)
       </c-button>
       <c-button @click="downloadAsPNG()">
-        {{ t('tools.stacktrace-prettier.texts.tag-download-as-png') }}
+        Download as PNG
       </c-button>
     </div>
   </div>

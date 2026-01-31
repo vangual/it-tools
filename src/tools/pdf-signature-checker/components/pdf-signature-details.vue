@@ -5,13 +5,11 @@ import TextareaCopyable from '@/components/TextareaCopyable.vue';
 const props = defineProps<{ signature: SignatureInfo }>();
 const { signature } = toRefs(props);
 
-const { t } = useI18n();
-
 const tableHeaders = {
-  validityPeriod: t('tools.pdf-signature-details.text.validity-period'),
-  issuedBy: t('tools.pdf-signature-details.text.issued-by'),
-  issuedTo: t('tools.pdf-signature-details.text.issued-to'),
-  pemCertificate: t('tools.pdf-signature-details.text.pem-certificate'),
+  validityPeriod: 'Validity period',
+  issuedBy: 'Issued by',
+  issuedTo: 'Issued to',
+  pemCertificate: 'PEM certificate',
 };
 
 const certs = computed(() => signature.value.meta.certs.map((certificate, index) => ({
@@ -20,7 +18,7 @@ const certs = computed(() => signature.value.meta.certs.map((certificate, index)
     notBefore: new Date(certificate.validityPeriod.notBefore).toLocaleString(),
     notAfter: new Date(certificate.validityPeriod.notAfter).toLocaleString(),
   },
-  certificateName: t('tools.pdf-signature-details.text.certificate-index-1', [index + 1]),
+  certificateName: `Certificate ${index + 1}`,
 })),
 );
 </script>
@@ -31,10 +29,10 @@ const certs = computed(() => signature.value.meta.certs.map((certificate, index)
       <template #validityPeriod="{ value }">
         <c-key-value-list
           :items="[{
-            label: t('tools.pdf-signature-details.text.not-before'),
+            label: 'Not before',
             value: value.notBefore,
           }, {
-            label: t('tools.pdf-signature-details.text.not-after'),
+            label: 'Not after',
             value: value.notAfter,
           }]"
         />
@@ -43,22 +41,22 @@ const certs = computed(() => signature.value.meta.certs.map((certificate, index)
       <template #issuedBy="{ value }">
         <c-key-value-list
           :items="[{
-            label: t('tools.pdf-signature-details.text.common-name'),
+            label: 'Common name',
             value: value.commonName,
           }, {
-            label: t('tools.pdf-signature-details.text.organization-name'),
+            label: 'Organization name',
             value: value.organizationName,
           }, {
-            label: t('tools.pdf-signature-details.text.country-name'),
+            label: 'Country name',
             value: value.countryName,
           }, {
-            label: t('tools.pdf-signature-details.text.locality-name'),
+            label: 'Locality name',
             value: value.localityName,
           }, {
-            label: t('tools.pdf-signature-details.text.organizational-unit-name'),
+            label: 'Organizational unit name',
             value: value.organizationalUnitName,
           }, {
-            label: t('tools.pdf-signature-details.text.state-or-province-name'),
+            label: 'State or province name',
             value: value.stateOrProvinceName,
           }]"
         />
@@ -67,29 +65,29 @@ const certs = computed(() => signature.value.meta.certs.map((certificate, index)
       <template #issuedTo="{ value }">
         <c-key-value-list
           :items="[{
-            label: t('tools.pdf-signature-details.text.common-name'),
+            label: 'Common name',
             value: value.commonName,
           }, {
-            label: t('tools.pdf-signature-details.text.organization-name'),
+            label: 'Organization name',
             value: value.organizationName,
           }, {
-            label: t('tools.pdf-signature-details.text.country-name'),
+            label: 'Country name',
             value: value.countryName,
           }, {
-            label: t('tools.pdf-signature-details.text.locality-name'),
+            label: 'Locality name',
             value: value.localityName,
           }, {
-            label: t('tools.pdf-signature-details.text.organizational-unit-name'),
+            label: 'Organizational unit name',
             value: value.organizationalUnitName,
           }, {
-            label: t('tools.pdf-signature-details.text.state-or-province-name'),
+            label: 'State or province name',
             value: value.stateOrProvinceName,
           }]"
         />
       </template>
 
       <template #pemCertificate="{ value }">
-        <c-modal-value :value="value" :label="t('tools.pdf-signature-details.text.view-pem-cert')">
+        <c-modal-value :value="value" label="View PEM cert">
           <template #value>
             <TextareaCopyable text-xs :value="value" copy-placement="none" />
           </template>

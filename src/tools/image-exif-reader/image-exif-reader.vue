@@ -1,10 +1,7 @@
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n';
 import ExifReader from 'exifreader';
 import getJpegQuality from 'jpeg-quality-estimator';
 import { formatBytes } from '@/utils/convert';
-
-const { t } = useI18n();
 
 interface Tag {
   id: number
@@ -77,7 +74,7 @@ const addSpacesToTagNames = (label: string) => label.replace(/([A-Z][a-z])/g, ' 
 <template>
   <div style="flex: 0 0 100%">
     <div mx-auto max-w-600px>
-      <c-file-upload :title="t('tools.image-exif-reader.texts.title-drag-and-drop-a-image-file-here-or-click-to-select-a-file')" @file-upload="onImageUploaded" />
+      <c-file-upload title="Drag and drop a Image file here, or click to select a file" @file-upload="onImageUploaded" />
 
       <c-card v-if="file" mt-4 flex gap-2>
         <div font-bold>
@@ -99,9 +96,9 @@ const addSpacesToTagNames = (label: string) => label.replace(/([A-Z][a-z])/g, ' 
         </c-alert>
       </div>
 
-      <c-card v-if="quality >= 0" :title="t('tools.image-exif-reader.texts.title-jpeg-quality')" mt-4>
+      <c-card v-if="quality >= 0" title="JPEG Quality" mt-4>
         <input-copyable
-          :label="t('tools.image-exif-reader.texts.label-jpeg-quality')"
+          label="JPEG Quality (%)"
           label-position="left"
           label-width="150px"
           label-align="right"
@@ -110,24 +107,24 @@ const addSpacesToTagNames = (label: string) => label.replace(/([A-Z][a-z])/g, ' 
         />
       </c-card>
 
-      <c-card v-if="status === 'parsed' && openStreetMapUrl" :title="t('tools.image-exif-reader.texts.title-gps-infos')" mt-4>
+      <c-card v-if="status === 'parsed' && openStreetMapUrl" title="GPS Infos" mt-4>
         <div flex gap-2>
-          <c-label :label="t('tools.image-exif-reader.texts.label-latitude')">
+          <c-label label="Latitude">
             {{ tags.gps?.Latitude?.toFixed(4) }}
           </c-label>
-          <c-label :label="t('tools.image-exif-reader.texts.label-longitude')">
+          <c-label label="Longitude">
             {{ tags.gps?.Longitude?.toFixed(4) }}
           </c-label>
-          <c-label :label="t('tools.image-exif-reader.texts.label-altitude')">
+          <c-label label="Altitude">
             {{ tags.gps?.Altitude?.toFixed(4) }}
           </c-label>
         </div>
         <c-button :href="openStreetMapUrl" target="_blank" mt-4>
-          {{ t('tools.image-exif-reader.texts.tag-localize-on-open-street-map') }}
+          Localize on Open Street Map
         </c-button>
       </c-card>
       <c-card v-if="status === 'parsed' && !openStreetMapUrl" mt-4>
-        {{ t('tools.image-exif-reader.texts.tag-no-gps-information') }}
+        No GPS Information
       </c-card>
 
       <div v-if="status === 'parsed'">
@@ -151,7 +148,7 @@ const addSpacesToTagNames = (label: string) => label.replace(/([A-Z][a-z])/g, ' 
       <div v-if="status === 'parsed'" style="flex: 0 0 100%" mt-5 flex flex-col gap-4 />
 
       <div font-size-3>
-        {{ t('tools.image-exif-reader.texts.tag-made-with') }}<a href="https://github.com/mattiasw/ExifReader" target="_blank">{{ t('tools.image-exif-reader.texts.tag-exifreader') }}</a>
+        Made with <a href="https://github.com/mattiasw/ExifReader" target="_blank">ExifReader</a>
       </div>
     </div>
   </div>

@@ -1,16 +1,12 @@
 import { Atom } from '@vicons/tabler';
 import { defineTool } from '../tool';
-import { translate as t } from '@/plugins/i18n.plugin';
 
 export const tool = defineTool({
-  name: t('tools.pressure-converter.title'),
+  name: 'Pressure Units Converter',
   path: '/pressure-converter',
-  description: t('tools.pressure-converter.description'),
-  keywords: ['pressure', 'converter',
-    'units', 'pascal', 'bar', 'torr', 'atmosphere',
-  ],
+  description: 'Convert values between pressure units',
+  keywords: ['pressure', 'converter'],
   component: () => import('./pressure-converter.vue'),
   icon: Atom,
   createdAt: new Date('2024-08-15'),
-  category: 'Physics',
 });

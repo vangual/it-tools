@@ -11,8 +11,6 @@ import type {
 import * as forge from 'node-forge';
 import jks from 'jks-js';
 
-import { translate as t } from '@/plugins/i18n.plugin';
-
 function convertPKCS12ToPem(p12base64: forge.Bytes | forge.util.ByteBuffer, password: string) {
   const p12Asn1 = forge.asn1.fromDer(p12base64, false);
   const p12 = forge.pkcs12.pkcs12FromAsn1(p12Asn1, false, password);
@@ -32,7 +30,7 @@ function getKeyFromP12(p12: forge.pkcs12.Pkcs12Pfx) {
   }
 
   if (!pkcs8Key?.key) {
-    throw new TypeError(t('tools.ssl-cert-converter.text.unable-to-get-private-key'));
+    throw new TypeError('Unable to get private key.');
   }
 
   return forge.pki.privateKeyToPem(pkcs8Key.key);
@@ -45,29 +43,6 @@ function getCertificateFromP12(p12: any) {
   const pemCertificate = forge.pki.certificateToPem(certificate.cert);
   const commonName = certificate.cert.subject.attributes[0].value;
   return { pemCertificate, commonName };
-}
-
-export function convertCertificates(
-  inputKeyOrCertificateValue: string | Buffer,
-  password: string) {
-  if (typeof inputKeyOrCertificateValue !== 'string') {
-    return convertCertificate(inputKeyOrCertificateValue, password);
-  }
-  const parts = inputKeyOrCertificateValue.toString().trim().split(/(-----BEGIN [^-]+-----\n)/).filter(s => s !== '');
-  if (!parts.length) {
-    return convertCertificate(inputKeyOrCertificateValue, password);
-  }
-  let parsedPEMs: Array<{
-    alias: string
-    key: string
-    der: Certificate
-    pem: string
-  }> = [];
-  for (let i = 0; i < parts.length; i += 2) {
-    const pemPart = parts[i] + parts[i + 1];
-    parsedPEMs = [...parsedPEMs, ...(convertCertificate(pemPart, password) || [])];
-  }
-  return parsedPEMs;
 }
 
 export function convertCertificate(

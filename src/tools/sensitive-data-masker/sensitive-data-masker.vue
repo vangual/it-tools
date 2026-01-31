@@ -1,10 +1,6 @@
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n';
 import { type MatcherNames, maskSensitiveData } from './sensitive-data-masker.service';
 import { withDefaultOnError } from '@/utils/defaults';
-import { useITStorage } from '@/composable/queryParams';
-
-const { t } = useI18n();
 
 const defaultValue = `{
   email: 'john.doe@example.com',
@@ -20,8 +16,8 @@ const defaultValue = `{
   token: 'eyJhbGciOiJIUzI1NiJ9.ew0KICAic3ViIjogIjEyMzQ1Njc4OTAiLA0KICAibmFtZSI6ICJBbGV4IEtvemxvdiIsDQogICJpYXQiOiAxNTE2MjM5MDIyDQp9.PNKysYFTCenU5bekHCmwIxCUXoYG41H_xc3uN3ZF_b8',
 }`;
 
-const customRegex = useITStorage('sensitive-data:regex', '');
-const excludedMatchers = useITStorage('sensitive-data:exclude', [] as string[]);
+const customRegex = useStorage('sensitive-data:regex', '');
+const excludedMatchers = useStorage('sensitive-data:exclude', [] as string[]);
 const allMatchers = [
   'uuid', 'creditCard', 'ssn', 'url', 'ipv4', 'email',
   'passwordInUri', 'mac', 'ipv6', 'urlWithOrWithoutPrefix',
@@ -37,11 +33,11 @@ function transformer(value: string) {
 </script>
 
 <template>
-  <div>
+  <div style="max-width: 600px;">
     <c-input-text
       v-model:value="customRegex"
-      :label="t('tools.sensitive-data-masker.texts.label-your-custom-cleaning-regex-es-case-insensitive')"
-      :placeholder="t('tools.sensitive-data-masker.texts.placeholder-your-custom-cleaning-regex-es')"
+      label="Your custom cleaning regex(es) (case insensitive):"
+      placeholder="Your custom cleaning regex(es)"
       raw-text
       multiline
       rows="4"
@@ -50,7 +46,7 @@ function transformer(value: string) {
 
     <n-select
       v-model:value="excludedMatchers"
-      :placeholder="t('tools.sensitive-data-masker.texts.placeholder-no-fallback')"
+      placeholder="No Fallback"
       multiple
       :fallback-option="false"
       :options="allMatchers.map(v => ({ label: v, value: v }))"
@@ -58,10 +54,10 @@ function transformer(value: string) {
     />
 
     <format-transformer
-      :input-label="t('tools.sensitive-data-masker.texts.input-label-your-log-textual-data')"
+      input-label="Your log/textual data:"
       :input-default="defaultValue"
-      :input-placeholder="t('tools.sensitive-data-masker.texts.input-placeholder-paste-your-log-textual-data-here')"
-      :output-label="t('tools.sensitive-data-masker.texts.output-label-cleaned-version')"
+      input-placeholder="Paste your log/textual data here..."
+      output-label="Cleaned version:"
       :transformer="transformer"
     />
   </div>

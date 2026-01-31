@@ -1,32 +1,28 @@
-import { type MaybeRef, get } from '@vueuse/core';
+import { type MaybeRef, get, useStorage } from '@vueuse/core';
 import { defineStore } from 'pinia';
 import type { Ref } from 'vue';
 import _ from 'lodash';
 import type { Tool, ToolCategory, ToolWithCategory } from './tools.types';
-import { tools as allTools } from './index';
-import { useITStorage } from '@/composable/queryParams';
+import { toolsWithCategory } from './index';
 
 export const useToolStore = defineStore('tools', () => {
-  const favoriteToolsName = useITStorage('favoriteToolsName', []) as Ref<string[]>;
+  const favoriteToolsName = useStorage('favoriteToolsName', []) as Ref<string[]>;
   const { t } = useI18n();
 
-  const tools = computed<ToolWithCategory[]>(() => allTools
-    .map((tool) => {
-      const toolI18nKey = tool.path.replace(/\//g, '');
-      const category = tool.category || 'Development';
+  const tools = computed<ToolWithCategory[]>(() => toolsWithCategory.map((tool) => {
+    const toolI18nKey = tool.path.replace(/\//g, '');
 
-      return ({
-        ...tool,
-        path: tool.path,
-        name: t(`tools.${toolI18nKey}.title`, tool.name),
-        description: t(`tools.${toolI18nKey}.description`, tool.description),
-        category: t(`tools.categories.${category.toLowerCase()}`, category),
-      });
-    }));
+    return ({
+      ...tool,
+      path: tool.path,
+      name: t(`tools.${toolI18nKey}.title`, tool.name),
+      description: t(`tools.${toolI18nKey}.description`, tool.description),
+      category: t(`tools.categories.${tool.category.toLowerCase()}`, tool.category),
+    });
+  }));
 
   const toolsByCategory = computed<ToolCategory[]>(() => {
     return _.chain(tools.value)
-      .orderBy(['category', 'name'], 'asc')
       .groupBy('category')
       .map((components, name, path) => ({
         name,
@@ -46,7 +42,6 @@ export const useToolStore = defineStore('tools', () => {
     tools,
     favoriteTools,
     toolsByCategory,
-    favoriteToolsName,
     newTools: computed(() => tools.value.filter(({ isNew }) => isNew)),
 
     addToolToFavorites({ tool }: { tool: MaybeRef<Tool> }) {
@@ -68,6 +63,36 @@ export const useToolStore = defineStore('tools', () => {
 
     updateFavoriteTools(newOrder: ToolWithCategory[]) {
       favoriteToolsName.value = newOrder.map(tool => tool.path);
+    },
+
+    exportFavoriteTools() {
+      const favoriteToolsData = favoriteToolsName.value.map((name) => {
+        const tool = tools.value.find(tool => tool.name === name || tool.path === name);
+        return tool ? { name: tool.name, path: tool.path } : null;
+      }).filter(Boolean);
+
+      return JSON.stringify(favoriteToolsData);
+    },
+
+    importFavoriteTools(favoriteToolsData: string, replace: boolean = false) {
+      try {
+        const parsedData = JSON.parse(favoriteToolsData);
+        if (Array.isArray(parsedData)) {
+          const newFavoriteTools = parsedData.map((tool: { name: string; path: string }) => tool.path);
+          if (replace) {
+            favoriteToolsName.value = newFavoriteTools;
+          }
+          else {
+            favoriteToolsName.value = _.uniq([...favoriteToolsName.value, ...newFavoriteTools]);
+          }
+        }
+        else {
+          console.error('Invalid data format for favorite tools');
+        }
+      }
+      catch (error) {
+        console.error('Error importing favorite tools:', error);
+      }
     },
   };
 });

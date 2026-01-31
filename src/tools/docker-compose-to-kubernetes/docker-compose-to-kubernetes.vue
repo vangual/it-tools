@@ -1,9 +1,6 @@
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n';
 import { convert as docker2kube } from 'docker2kube';
 import TextareaCopyable from '@/components/TextareaCopyable.vue';
-
-const { t } = useI18n();
 
 const dockerCompose = ref(
   `version: '3.3'
@@ -38,7 +35,7 @@ const MONACO_EDITOR_OPTIONS = {
 
 <template>
   <div>
-    <c-label :label="t('tools.docker-compose-to-kubernetes.texts.label-paste-your-docker-compose-file-content')">
+    <c-label label="Paste your Docker Compose file content:">
       <div relative w-full>
         <c-monaco-editor
           v-model:value="dockerCompose"
@@ -51,7 +48,7 @@ const MONACO_EDITOR_OPTIONS = {
     </c-label>
 
     <div v-if="errors.length > 0">
-      <n-alert :title="t('tools.docker-compose-to-kubernetes.texts.title-the-following-errors-occured')" type="error" mt-5>
+      <n-alert title="The following errors occured" type="error" mt-5>
         <ul>
           <li v-for="(message, index) of errors" :key="index">
             {{ message }}

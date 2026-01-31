@@ -1,11 +1,8 @@
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n';
 import * as fflate from 'fflate';
 import { Base64 } from 'js-base64';
 import TextareaCopyable from '@/components/TextareaCopyable.vue';
 import { withDefaultOnError } from '@/utils/defaults';
-
-const { t } = useI18n();
 
 const compressedInput = ref('');
 const decompressedOutput = computed(() => withDefaultOnError(() => {
@@ -20,69 +17,69 @@ const compressedZlibOutput = computed(() => withDefaultOnError(() => Base64.from
 </script>
 
 <template>
-  <div>
-    <c-card :title="t('tools.gzip-converter.texts.title-compress-string')" mb-5>
+  <div style="max-width: 600px;">
+    <c-card title="Compress string" mb-5>
       <c-input-text
         v-model:value="rawInput"
         multiline
-        :placeholder="t('tools.gzip-converter.texts.placeholder-put-your-string-here')"
+        placeholder="Put your string here..."
         rows="5"
-        :label="t('tools.gzip-converter.texts.label-string-to-compress')"
+        label="String to compress"
         raw-text
         mb-5
       />
 
       <div>
-        <h3>{{ t('tools.gzip-converter.texts.tag-gzip-compressed-string') }}</h3>
+        <h3>GZIP compressed string</h3>
         <TextareaCopyable
           :value="compressedGzipOutput"
           :word-wrap="true"
           multiline
-          :placeholder="t('tools.gzip-converter.texts.placeholder-the-gzip-compressed-version-of-your-string-will-be-here')"
+          placeholder="The GZip compressed version of your string will be here"
           mb-5
         />
       </div>
 
       <div>
-        <h3>{{ t('tools.gzip-converter.texts.tag-zlib-compressed-string') }}</h3>
+        <h3>Zlib compressed string</h3>
         <TextareaCopyable
           :value="compressedZlibOutput"
           :word-wrap="true"
           multiline
-          :placeholder="t('tools.gzip-converter.texts.placeholder-the-zlib-compressed-version-of-your-string-will-be-here')"
+          placeholder="The Zlib compressed version of your string will be here"
           mb-5
         />
       </div>
 
       <div>
-        <h3>{{ t('tools.gzip-converter.texts.tag-deflate-compressed-string') }}</h3>
+        <h3>Deflate compressed string</h3>
         <TextareaCopyable
           :value="compressedDeflateOutput"
           :word-wrap="true"
           multiline
-          :placeholder="t('tools.gzip-converter.texts.placeholder-the-deflate-compressed-version-of-your-string-will-be-here')"
+          placeholder="The Deflate compressed version of your string will be here"
           mb-5
         />
       </div>
     </c-card>
 
-    <c-card :title="t('tools.gzip-converter.texts.title-decompress-string')">
+    <c-card title="Decompress string">
       <c-input-text
         v-model:value="compressedInput"
         multiline
-        :placeholder="t('tools.gzip-converter.texts.placeholder-your-compressed-string')"
+        placeholder="Your compressed string..."
         rows="5"
-        :label="t('tools.gzip-converter.texts.label-compressed-string-to-decompress')"
+        label="Compressed string to decompress"
         mb-5
       />
 
       <div>
-        <h3>{{ t('tools.gzip-converter.texts.tag-decompressed-string') }}</h3>
+        <h3>Decompressed string</h3>
         <TextareaCopyable
           v-model:value="decompressedOutput"
           :word-wrap="true"
           multiline
-          :placeholder="t('tools.gzip-converter.texts.placeholder-the-decompressed-string-will-be-here')"
+          placeholder="The decompressed string will be here"
           mb-5
         />
       </div>

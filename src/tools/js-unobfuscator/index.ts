@@ -1,14 +1,12 @@
 import { BrandJavascript } from '@vicons/tabler';
 import { defineTool } from '../tool';
-import { translate as t } from '@/plugins/i18n.plugin';
 
 export const tool = defineTool({
-  name: t('tools.js-unobfuscator.title'),
+  name: 'Javascript Unobfuscator/Unpacker',
   path: '/js-unobfuscator',
-  description: t('tools.js-unobfuscator.description'),
+  description: 'webcrack is a tool for reverse engineering javascript. It can deobfuscate obfuscator.io, unminify, transpile, and unpack webpack/browserify, to resemble the original source code as much as possible.',
   keywords: ['js', 'unobfuscator', 'obfuscator.io', 'unminify', 'transpile', 'unpack', 'webpack', 'browserify'],
   component: () => import('./js-unobfuscator.vue'),
   icon: BrandJavascript,
   createdAt: new Date('2024-05-11'),
-  category: 'Development',
 });

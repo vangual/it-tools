@@ -11,5 +11,4 @@ export interface PaletteOption {
   keywords?: string[]
   href?: string
   closeOnSelect?: boolean
-  externAccessDescription?: string
 }

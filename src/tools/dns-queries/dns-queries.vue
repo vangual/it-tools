@@ -1,13 +1,9 @@
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n';
 import { combineTXT, query, wellknown } from 'dns-query';
 import types from './dns.records.types.json';
-import { useQueryParam } from '@/composable/queryParams';
 
-const { t } = useI18n();
-
-const type = useQueryParam({ tool: 'dns-queries', name: 'type', defaultValue: 'A' });
-const name = useQueryParam({ tool: 'dns-queries', name: 'domain', defaultValue: 'google.com' });
+const type = ref('A');
+const name = ref('google.com');
 const answers = ref<string[]>([]);
 
 async function queryDNS() {
@@ -35,15 +31,15 @@ async function queryDNS() {
   <div>
     <c-input-text
       v-model:value="name"
-      :label="t('tools.dns-queries.texts.label-name')"
+      label="Name"
       label-position="left"
-      :placeholder="t('tools.dns-queries.texts.placeholder-name-to-query')"
+      placeholder="Name to query"
       mb-2
     />
     <c-select
       v-model:value="type"
       searchable
-      :label="t('tools.dns-queries.texts.label-dns-record-type')"
+      label="DNS record type:"
       label-position="left"
       :options="Object.values(types).map(kv => ({ value: kv.value, label: `${kv.value}: ${kv.label}` }))"
       mb-2
@@ -53,13 +49,13 @@ async function queryDNS() {
       <c-button
         @click="queryDNS"
       >
-        {{ t('tools.dns-queries.texts.tag-send-dns-query') }}
+        Send DNS query
       </c-button>
     </div>
 
     <n-divider />
 
-    <c-card :title="t('tools.dns-queries.texts.title-query-results')">
+    <c-card title="Query results">
       <textarea-copyable
         v-for="(answer, index) in answers"
         :key="index"

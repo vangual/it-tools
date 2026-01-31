@@ -1,14 +1,12 @@
 import { Database } from '@vicons/tabler';
 import { defineTool } from '../tool';
-import { translate as t } from '@/plugins/i18n.plugin';
 
 export const tool = defineTool({
-  name: t('tools.raid-calculator.title'),
+  name: 'RAID Calculator',
   path: '/raid-calculator',
-  description: t('tools.raid-calculator.description'),
+  description: 'Calculate storage capacity, fault tolerance and space efficiency of an array based on the number of disks, size, and RAID type',
   keywords: ['raid', 'calculator'],
   component: () => import('./raid-calculator.vue'),
   icon: Database,
   createdAt: new Date('2024-07-27'),
-  category: 'Network',
 });

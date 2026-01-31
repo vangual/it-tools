@@ -15,7 +15,4 @@ export interface ConvertOptions {
   itemsSeparator?: string
   splitBySeparator?: string
   keepLineBreaks?: boolean
-  filterRegex?: string
-  notFilterRegex?: string
-  outputAsColumn?: boolean
 }

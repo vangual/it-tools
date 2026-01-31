@@ -1,14 +1,12 @@
 import { AspectRatio } from '@vicons/tabler';
 import { defineTool } from '../tool';
-import { translate as t } from '@/plugins/i18n.plugin';
 
 export const tool = defineTool({
-  name: t('tools.aspect-ratio-calculator.title'),
+  name: 'Aspect Ratio Calculator',
   path: '/aspect-ratio-calculator',
-  description: t('tools.aspect-ratio-calculator.description'),
+  description: 'Use this ratio calculator to check the dimensions when resizing images.',
   keywords: ['aspect', 'ratio', 'calculator'],
   component: () => import('./aspect-ratio-calculator.vue'),
   icon: AspectRatio,
   createdAt: new Date('2024-08-14'),
-  category: 'Measurement',
 });

@@ -1,14 +1,11 @@
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n';
 import { generatePort } from './random-port-generator.model';
 import { computedRefreshable } from '@/composable/computedRefreshable';
 import { useCopy } from '@/composable/copy';
 
-const { t } = useI18n();
-
 const [port, refreshPort] = computedRefreshable(() => String(generatePort()));
 
-const { copy } = useCopy({ source: port, text: t('tools.random-port-generator.texts.text-port-copied-to-the-clipboard') });
+const { copy } = useCopy({ source: port, text: 'Port copied to the clipboard' });
 </script>
 
 <template>
@@ -18,10 +15,10 @@ const { copy } = useCopy({ source: port, text: t('tools.random-port-generator.te
     </div>
     <div flex justify-center gap-3>
       <c-button @click="copy()">
-        {{ t('tools.random-port-generator.texts.tag-copy') }}
+        Copy
       </c-button>
       <c-button @click="refreshPort">
-        {{ t('tools.random-port-generator.texts.tag-refresh') }}
+        Refresh
       </c-button>
     </div>
   </c-card>

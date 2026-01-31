@@ -1,14 +1,12 @@
 import { Certificate } from '@vicons/tabler';
 import { defineTool } from '../tool';
-import { translate as t } from '@/plugins/i18n.plugin';
 
 export const tool = defineTool({
-  name: t('tools.pgp-keygen.title'),
+  name: 'PGP keygen',
   path: '/pgp-key-pair-generator',
-  description: t('tools.pgp-keygen.description'),
+  description: 'Generate new random PGP private and public keys (with or without passphrase).',
   keywords: ['pgp', 'key', 'pair', 'generator', 'public', 'private', 'secret', 'ssh', 'pem', 'passphrase', 'password'],
   component: () => import('./pgp-keygen.vue'),
   icon: Certificate,
   createdAt: new Date('2024-04-20'),
-  category: 'Crypto',
 });

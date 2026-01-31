@@ -1,11 +1,8 @@
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n';
 import { TidyURL } from 'tidy-url';
 import { Check as CheckIcon, LetterX as CrossIcon } from '@vicons/tabler';
 import TextareaCopyable from '@/components/TextareaCopyable.vue';
 import { withDefaultOnError } from '@/utils/defaults';
-
-const { t } = useI18n();
 
 const inputUrl = ref('');
 const cleanedUrl = computed(() => withDefaultOnError(() => TidyURL.clean(inputUrl.value), undefined));
@@ -13,11 +10,11 @@ const isClean = computed(() => withDefaultOnError(() => TidyURL.clean(inputUrl.v
 </script>
 
 <template>
-  <c-card :title="t('tools.url-cleaner.texts.title-clean-url')">
+  <c-card title="Clean url">
     <c-input-text
       v-model:value="inputUrl"
-      :placeholder="t('tools.url-cleaner.texts.placeholder-put-your-url-here')"
-      :label="t('tools.url-cleaner.texts.label-url-to-clean')"
+      placeholder="Put your url here..."
+      label="Url to clean"
     />
 
     <n-divider />
@@ -26,17 +23,19 @@ const isClean = computed(() => withDefaultOnError(() => TidyURL.clean(inputUrl.v
       <n-p v-if="isClean" text-center>
         <n-icon color="green">
           <CheckIcon />
-        </n-icon>{{ t('tools.url-cleaner.texts.tag-is-clean') }}
+        </n-icon>
+        Is clean
       </n-p>
       <n-p v-if="!isClean" text-center>
         <n-icon color="red">
           <CrossIcon />
-        </n-icon>{{ t('tools.url-cleaner.texts.tag-was-not-clean') }}
+        </n-icon>
+        Was not clean
       </n-p>
       <TextareaCopyable
-        :label="t('tools.url-cleaner.texts.label-cleaned-url')"
+        label="Cleaned url"
         :value="cleanedUrl?.url || ''"
-        :placeholder="t('tools.url-cleaner.texts.placeholder-the-cleaned-url-will-be-here')"
+        placeholder="The cleaned url will be here"
         mb-5
         mt-5
       />

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n';
 import {
   formatISO,
   formatISO9075,
@@ -12,15 +11,10 @@ import {
   isValid,
   parseISO,
 } from 'date-fns';
-import { ticksFromDate, ticksToDate } from 'tick-time';
 import { UTCDate } from '@date-fns/utc';
-import { formatInTimeZone } from 'date-fns-tz';
-import { getAllTimezones } from 'countries-and-timezones';
 import type { DateFormat, ToDateMapper } from './date-time-converter.types';
 import {
   dateToExcelFormat,
-  dateToLDAPTimestamp,
-  dateToWin32FileTime,
   excelFormatToDate,
   fromJSDate,
   fromTimestamp,
@@ -28,25 +22,18 @@ import {
   isISO8601DateTimeString,
   isISO9075DateString,
   isJSDate,
-  isLDAPTimestamp,
   isMongoObjectId,
   isRFC3339DateString,
   isRFC7231DateString,
   isTimestamp,
   isUTCDateString,
   isUnixTimestamp,
-  isWin32FileTime,
-  lDAPTimestampToDate,
   toJSDate,
-  win32FileTimeToUnix,
 } from './date-time-converter.models';
 import { withDefaultOnError } from '@/utils/defaults';
 import { useValidation } from '@/composable/validation';
-import { useQueryParam } from '@/composable/queryParams';
 
-const { t } = useI18n();
-
-const inputDate = useQueryParam({ tool: 'date-time-converter', name: 'date', defaultValue: '' });
+const inputDate = ref('');
 
 const toDate: ToDateMapper = date => new Date(date);
 
@@ -123,45 +110,10 @@ const formats: DateFormat[] = [
     toDate: date => fromJSDate(date),
     formatMatcher: isJSDate,
   },
-  {
-    name: 'LDAP YMD Timestamp',
-    fromDate: date => dateToLDAPTimestamp(date),
-    toDate: date => lDAPTimestampToDate(date),
-    formatMatcher: isLDAPTimestamp,
-  },
-  {
-    name: 'Win32 FileTime/LDAP 18 digits Timestamp',
-    fromDate: date => dateToWin32FileTime(date),
-    toDate: date => win32FileTimeToUnix(date),
-    formatMatcher: isWin32FileTime,
-  },
-  {
-    name: '.Net ticks',
-    fromDate: date => ticksFromDate(date),
-    toDate: date => ticksToDate(date) || new Date(),
-    formatMatcher: date => /\d+/.test(date || ''),
-  },
 ];
 
 const formatIndex = ref(6);
 const now = useNow();
-
-// Timezone conversion functionality
-const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
-const selectedTimezones = useStorage<{ name: string }[]>(
-  'date-time-converter:timezones',
-  [],
-);
-
-const allTimezones = computed(() => {
-  return Object.values(getAllTimezones())
-    .map(tz => ({
-      value: tz.name,
-      label: `${tz.name} (${tz.utcOffsetStr})`,
-    }))
-    .sort((a, b) => a.label.localeCompare(b.label));
-});
 
 const normalizedDate = computed(() => {
   if (!inputDate.value) {
@@ -190,7 +142,7 @@ const validation = useValidation({
   watch: [formatIndex],
   rules: [
     {
-      message: t('tools.date-time-converter.texts.message-this-date-is-invalid-for-this-format'),
+      message: 'This date is invalid for this format',
       validator: value =>
         withDefaultOnError(() => {
           if (value === '') {
@@ -211,16 +163,6 @@ function formatDateUsingFormatter(formatter: (date: Date) => string, date?: Date
 
   return withDefaultOnError(() => formatter(date), '');
 }
-
-function formatDateInTimezone(date: Date | undefined, timezone: string): string {
-  if (!date || !validation.isValid || !timezone) {
-    return '';
-  }
-
-  return withDefaultOnError(() => {
-    return formatInTimeZone(date, timezone, 'yyyy-MM-dd HH:mm:ss XXX');
-  }, '');
-}
 </script>
 
 <template>
@@ -229,7 +171,7 @@ function formatDateInTimezone(date: Date | undefined, timezone: string): string 
       <c-input-text
         v-model:value="inputDate"
         autofocus
-        :placeholder="t('tools.date-time-converter.texts.placeholder-put-your-date-string-here')"
+        placeholder="Put your date string here..."
         clearable
         test-id="date-time-converter-input"
         :validation="validation"
@@ -244,46 +186,6 @@ function formatDateInTimezone(date: Date | undefined, timezone: string): string 
       />
     </div>
 
-    <!-- Timezone conversion section -->
-    <div v-if="selectedTimezones.length > 0" mb-4 mt-4>
-      <n-dynamic-input
-        v-model:value="selectedTimezones"
-        show-sort-button
-        :on-create="() => ({ name: browserTimezone })"
-      >
-        <template #default="{ value }">
-          <div w-full flex items-center gap-2>
-            <c-select
-              v-model:value="value.name"
-              searchable
-              filterable
-              :placeholder="t('tools.date-time-converter.texts.placeholder-select-timezone')"
-              :options="allTimezones"
-              style="flex: 0 0 350px"
-            />
-
-            <input-copyable
-              :value="formatDateInTimezone(normalizedDate, value.name)"
-              :placeholder="t('tools.date-time-converter.texts.placeholder-invalid-date')"
-              readonly
-              label-width="0"
-              style="flex: 1; min-width: 0"
-            />
-          </div>
-        </template>
-      </n-dynamic-input>
-    </div>
-
-    <!-- Add timezone button (shown when list is empty) -->
-    <div v-else mb-4 mt-4>
-      <c-button
-        size="small"
-        @click="selectedTimezones.push({ name: browserTimezone })"
-      >
-        {{ t('tools.date-time-converter.texts.button-add-timezone') }}
-      </c-button>
-    </div>
-
     <n-divider />
 
     <input-copyable
@@ -294,7 +196,7 @@ function formatDateInTimezone(date: Date | undefined, timezone: string): string 
       label-position="left"
       label-align="right"
       :value="formatDateUsingFormatter(fromDate, normalizedDate)"
-      :placeholder="t('tools.date-time-converter.texts.placeholder-invalid-date')"
+      placeholder="Invalid date..."
       :test-id="name"
       readonly
       mt-2

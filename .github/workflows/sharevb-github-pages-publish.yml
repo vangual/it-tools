@@ -26,6 +26,7 @@ concurrency:
 jobs:
   # Single deploy job since we're just deploying
   deploy:
+    if: false  # disable upstream workflows
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

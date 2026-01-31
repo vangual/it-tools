@@ -1,11 +1,10 @@
 import { World } from '@vicons/tabler';
 import { defineTool } from '../tool';
-import { translate as t } from '@/plugins/i18n.plugin';
 
 export const tool = defineTool({
-  name: t('tools.api-tester.title'),
+  name: 'API Tester',
   path: '/api-tester',
-  description: t('tools.api-tester.description'),
+  description: 'HTTP API Tester',
   keywords: ['api', 'http', 'call', 'tester'],
   component: () => import('./api-tester.vue'),
   icon: World,

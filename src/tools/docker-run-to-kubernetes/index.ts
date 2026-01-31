@@ -1,14 +1,12 @@
 import { BrandDocker } from '@vicons/tabler';
 import { defineTool } from '../tool';
-import { translate as t } from '@/plugins/i18n.plugin';
 
 export const tool = defineTool({
-  name: t('tools.docker-run-to-kubernetes.title'),
+  name: 'Docker run to kubernetes',
   path: '/docker-run-to-kubernetes',
-  description: t('tools.docker-run-to-kubernetes.description'),
+  description: 'Docker run command(s) to Kubernetes manifests',
   keywords: ['docker', 'run', 'convert', 'kubernetes'],
   component: () => import('./docker-run-to-kubernetes.vue'),
   icon: BrandDocker,
   createdAt: new Date('2024-02-18'),
-  category: 'Docker',
 });

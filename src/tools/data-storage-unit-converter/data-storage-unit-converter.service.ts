@@ -6,7 +6,7 @@ export type AllSupportedUnits = BibytesUnits | BytesUnits | BitsUnits;
 export function displayStorageAndRateUnits(
   { value, unit, precision = 3, appendUnit = false }:
   { value: number; unit: AllSupportedUnits; precision?: number ; appendUnit?: boolean }): string {
-  return value.toFixed(precision) + (appendUnit ? unit : ''); // NOSONAR
+  return value.toFixed(precision).replace(/0+$/, '').replace(/\.$/, '') + (appendUnit ? unit : ''); // NOSONAR
 }
 
 export function convertStorageAndRateUnitsDisplay(

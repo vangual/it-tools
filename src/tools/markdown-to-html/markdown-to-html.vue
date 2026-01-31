@@ -30,7 +30,6 @@ const outputHtml = computed(() => {
   }
   return md.render(inputMarkdown.value);
 });
-const { t } = useI18n();
 
 function printHtml() {
   const w = window.open();
@@ -47,41 +46,41 @@ function printHtml() {
     <c-input-text
       v-model:value="inputMarkdown"
       multiline raw-text
-      :placeholder="t('tools.markdown-to-html.markdownInput')"
+      placeholder="Your Markdown content..."
       rows="8"
       autofocus
-      :label="t('tools.markdown-to-html.markdown')"
+      label="Your Markdown to convert:"
     />
 
     <n-space justify="center" gap-1>
       <n-checkbox v-model:checked="handleHtml">
-        {{ t('tools.markdown-to-html.texts.tag-allow-html-tags') }}
+        Allow HTML tags
       </n-checkbox>
       <n-checkbox v-model:checked="sanitize" :disabled="!handleHtml">
-        {{ t('tools.markdown-to-html.texts.tag-sanitize-html') }}
+        Sanitize HTML
       </n-checkbox>
       <n-checkbox v-model:checked="handleSubSup">
-        {{ t('tools.markdown-to-html.texts.tag-allow-superscript-and-subscript') }}
+        Allow Superscript (^) and Subscript (~)
       </n-checkbox>
       <n-checkbox v-model:checked="handleAlign">
-        {{ t('tools.markdown-to-html.texts.tag-handle') }}<n-a href="https://mdit-plugins.github.io/align.html#syntax" target="blank">
-          {{ t('tools.markdown-to-html.texts.tag-alignment') }}
+        Handle <n-a href="https://mdit-plugins.github.io/align.html#syntax" target="blank">
+          alignment
         </n-a>
       </n-checkbox>
       <n-checkbox v-model:checked="handleMark">
-        {{ t('tools.markdown-to-html.texts.tag-allow-mark') }}
+        Allow Mark (==)
       </n-checkbox>
     </n-space>
 
     <n-divider />
 
-    <n-form-item :label="t('tools.markdown-to-html.html')">
-      <TextareaCopyable :value="outputHtml" :word-wrap="true" language="html" download-file-name="output.htm" />
+    <n-form-item label="Output HTML:">
+      <TextareaCopyable :value="outputHtml" :word-wrap="true" language="html" />
     </n-form-item>
 
     <div flex justify-center>
       <n-button @click="printHtml">
-        {{ t('tools.markdown-to-html.texts.tag-print-ie-use-a-pdf-printer-to-get-a-pdf-file') }}
+        Print (ie, use a PDF Printer to get a PDF file)
       </n-button>
     </div>
   </div>

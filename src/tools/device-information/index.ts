@@ -1,11 +1,11 @@
 import { DeviceDesktop } from '@vicons/tabler';
 import { defineTool } from '../tool';
-import { translate as t } from '@/plugins/i18n.plugin';
+import { translate } from '@/plugins/i18n.plugin';
 
 export const tool = defineTool({
-  name: t('tools.device-information.title'),
+  name: translate('tools.device-information.title'),
   path: '/device-information',
-  description: t('tools.device-information.description'),
+  description: translate('tools.device-information.description'),
   keywords: [
     'device',
     'information',
@@ -21,5 +21,4 @@ export const tool = defineTool({
   ],
   component: () => import('./device-information.vue'),
   icon: DeviceDesktop,
-  category: 'Web',
 });

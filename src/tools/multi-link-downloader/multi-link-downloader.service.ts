@@ -1,7 +1,5 @@
 import JSZip from 'jszip';
 
-import { translate as t } from '@/plugins/i18n.plugin';
-
 export async function downloadLinks(links: string): Promise<void> {
   // Split links by newline and filter out empty ones
   const linksArray: string[] = links.split('\n').filter(link => link.trim() !== '');
@@ -37,7 +35,7 @@ export async function downloadLinks(links: string): Promise<void> {
     try {
       const response: Response = await fetch(linkUrl);
       if (!response.ok) {
-        throw new Error(t('tools.multi-link-downloader.service.text.failed-to-fetch-linkurl', [linkUrl]));
+        throw new Error(`Failed to fetch ${linkUrl}`);
       }
 
       // Get file as blob
@@ -72,7 +70,7 @@ export async function downloadLinks(links: string): Promise<void> {
         try {
           const response: Response = await fetch(linkUrl);
           if (!response.ok) {
-            throw new Error(t('tools.multi-link-downloader.service.text.failed-to-fetch-linkurl-0', [linkUrl]));
+            throw new Error(`Failed to fetch ${linkUrl}`);
           }
           const blob: Blob = await response.blob();
 
@@ -86,7 +84,7 @@ export async function downloadLinks(links: string): Promise<void> {
           zip.file(fileName, blob);
         }
         catch (error) {
-          console.error(`Error downloading file from ${linkUrl}:${error}`);
+          console.error(`Error downloading file from ${linkUrl}:`, error);
         }
       }),
     );

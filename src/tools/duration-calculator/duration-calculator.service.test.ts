@@ -86,7 +86,7 @@ describe('duration-calculator', () => {
         total: {
           days: -0.043090277777777776,
           hours: -1.0341666666666667,
-          iso8601Duration: 'P0Y0M0DT-1H-2M-3S',
+          iso8601Duration: 'P0Y0M0DT1H2M3S',
           milliseconds: -3723000,
           minutes: -62.05,
           prettified: '-1h 2m 3s',

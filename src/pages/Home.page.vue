@@ -1,140 +1,24 @@
 <script setup lang="ts">
-import { IconDragDrop, IconHeart } from '@tabler/icons-vue';
+import { IconDragDrop, IconFileDescription, IconHeart } from '@tabler/icons-vue';
 import { useHead } from '@vueuse/head';
-import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue';
+import { computed } from 'vue';
 import Draggable from 'vuedraggable';
-import VueMarkdown from 'vue-markdown-render';
 import ColoredCard from '../components/ColoredCard.vue';
 import ToolCard from '../components/ToolCard.vue';
 import { useToolStore } from '@/tools/tools.store';
 import { config } from '@/config';
 
-const base = import.meta.env.BASE_URL ?? '/';
-const homeCustomMarkdown = computedAsync(async () => {
-  try {
-    const remoteCustomHomeMarkdownResponse = await fetch(`${base}home.custom.md`);
-    if (remoteCustomHomeMarkdownResponse.ok) {
-      return await remoteCustomHomeMarkdownResponse.text();
-    }
-  }
-  catch {}
-  return '';
-});
-
 const toolStore = useToolStore();
-const desc = 'Collection of handy online tools for developers, with great UX. IT Tools is a free and open-source collection of handy online tools for developers & people working in IT.';
-const title = 'IT Tools - Handy online tools for developers';
 
-useHead({
-  title,
-  meta: [
-    {
-      itemprop: 'name',
-      content: title,
-    },
-    {
-      property: 'og:title',
-      content: title,
-    },
-    {
-      property: 'twitter:title',
-      content: title,
-    },
-    {
-      name: 'description',
-      content: desc,
-    },
-    {
-      itemprop: 'description',
-      content: desc,
-    },
-    {
-      property: 'og:description',
-      content: desc,
-    },
-    {
-      property: 'twitter:description',
-      content: desc,
-    },
-  ],
-});
+useHead({ title: 'IT Tools - Handy online tools for developers' });
 const { t } = useI18n();
 
 const favoriteTools = computed(() => toolStore.favoriteTools);
 
-const isOrderingFavorites = ref(false);
-
-window.addEventListener('contextmenu', (e) => {
-  if (isOrderingFavorites.value) {
-    e.preventDefault();
-    e.stopPropagation();
-    e.stopImmediatePropagation();
-    return false;
-  }
-});
-
-function startOrderingFavorites() {
-  isOrderingFavorites.value = true;
-}
-
 // Update favorite tools order when drag is finished
-function stopOrderingFavorites() {
-  isOrderingFavorites.value = false;
+function onUpdateFavoriteTools() {
   toolStore.updateFavoriteTools(favoriteTools.value); // Update the store with the new order
 }
-
-// Batch loading logic for tool cards
-const TOOLS_PER_ROW = 4; // Based on xl:grid-cols-4
-const ROWS_PER_BATCH = 6;
-const TOOLS_PER_BATCH = TOOLS_PER_ROW * ROWS_PER_BATCH; // 32 tools per batch
-
-const visibleToolsCount = ref(TOOLS_PER_BATCH); // Start with first batch
-let loadingObserver: IntersectionObserver | null = null;
-
-// Computed property for visible tools
-const visibleTools = computed(() => {
-  return toolStore.tools.slice(0, visibleToolsCount.value);
-});
-
-// Function to load next batch
-function loadNextBatch() {
-  if (visibleToolsCount.value < toolStore.tools.length) {
-    visibleToolsCount.value = Math.min(
-      visibleToolsCount.value + TOOLS_PER_BATCH,
-      toolStore.tools.length,
-    );
-  }
-}
-
-// Start intersection observer on component mount
-onMounted(() => {
-  nextTick(() => {
-    // Load first batch immediately
-    loadNextBatch();
-
-    // Setup intersection observer for lazy loading
-    const loadingIndicator = document.querySelector('[data-loading-indicator]');
-    if (loadingIndicator) {
-      loadingObserver = new IntersectionObserver(
-        (entries) => {
-          if (entries[0]?.isIntersecting && visibleToolsCount.value < toolStore.tools.length) {
-            loadNextBatch();
-          }
-        },
-        { rootMargin: '200px' },
-      );
-      loadingObserver.observe(loadingIndicator);
-    }
-  });
-});
-
-// Clean up on component unmount
-onUnmounted(() => {
-  if (loadingObserver) {
-    loadingObserver.disconnect();
-    loadingObserver = null;
-  }
-});
 </script>
 
 <template>
@@ -152,6 +36,24 @@ onUnmounted(() => {
           {{ $t('home.follow.thankYou') }}
           <n-icon :component="IconHeart" />
         </ColoredCard>
+
+        <a href="https://renderize.tech?utm_source=it-tools&utm_medium=banner" target="_blank" rel="noopener" class="text-current decoration-none">
+          <c-card v-if="config.showSponsorBanner" class="cursor-pointer !border-2px !hover:border-primary">
+            <div class="flex items-center justify-between">
+              <n-icon :component="IconFileDescription" class="text-neutral-400 dark:text-neutral-600" size="40" />
+              <div class="rounded-full bg-#eeeeee px-10px py-2px text-xs text-black dark:bg-#333333 dark:text-white">
+                Sponsor
+              </div>
+            </div>
+
+            <div class="my-5px flex items-baseline gap-4 text-balance text-lg text-black dark:text-white">
+              Generate PDFs from HTML with Renderize API
+            </div>
+            <div class="text-neutral-500 dark:text-neutral-400">
+              Automate your document generation with our fast, developer-friendly API. Start with a free forever plan.
+            </div>
+          </c-card>
+        </a>
       </div>
 
       <transition name="height">
@@ -167,9 +69,7 @@ onUnmounted(() => {
             class="grid grid-cols-1 gap-12px lg:grid-cols-3 md:grid-cols-3 sm:grid-cols-2 xl:grid-cols-4"
             ghost-class="ghost-favorites-draggable"
             item-key="name"
-            :delay="100"
-            @start="startOrderingFavorites"
-            @end="stopOrderingFavorites"
+            @end="onUpdateFavoriteTools"
           >
             <template #item="{ element: tool }">
               <ToolCard :tool="tool" />
@@ -187,22 +87,11 @@ onUnmounted(() => {
         </div>
       </div>
 
-      <div v-if="homeCustomMarkdown">
-        <VueMarkdown :source="homeCustomMarkdown" />
-      </div>
-
       <h3 class="mb-5px mt-25px font-500 text-neutral-400">
         {{ $t('home.categories.allTools') }}
       </h3>
       <div class="grid grid-cols-1 gap-12px lg:grid-cols-3 md:grid-cols-3 sm:grid-cols-2 xl:grid-cols-4">
-        <ToolCard v-for="tool in visibleTools" :key="tool.name" :tool="tool" />
-      </div>
-
-      <!-- Loading indicator when more tools are coming -->
-      <div v-if="visibleToolsCount < toolStore.tools.length" data-loading-indicator mt-6 text-center>
-        <div text-14px op-70>
-          {{ t('home.loading-more-tools') }} <span>({{ visibleTools.length }}/{{ toolStore.tools.length }})</span>
-        </div>
+        <ToolCard v-for="tool in toolStore.tools" :key="tool.name" :tool="tool" />
       </div>
     </div>
   </div>

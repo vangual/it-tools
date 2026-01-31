@@ -1,5 +1,4 @@
 import { MD5 } from 'crypto-js';
-import { translate as t } from '@/plugins/i18n.plugin';
 
 export { getAuthHeaderCheckResult };
 
@@ -32,6 +31,6 @@ function extractComponent(regex: string, source: string): string {
     return matchResult[1];
   }
   else {
-    return t('tools.sip-auth.text.not-found');
+    return 'Not Found';
   }
 }

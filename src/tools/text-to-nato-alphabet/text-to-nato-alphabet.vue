@@ -1,18 +1,14 @@
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n';
 import { textToNatoAlphabet } from './text-to-nato-alphabet.service';
 import { allLanguagesAndCountries } from './text-to-nato-alphabet.constants';
 import { useCopy } from '@/composable/copy';
-import { useQueryParam, useQueryParamOrStorage } from '@/composable/queryParams';
 
-const { t } = useI18n();
-
-const lang = useQueryParamOrStorage({ name: 'lang', storageName: 'text-to-nato:lang', defaultValue: '(International)' });
-const input = useQueryParam({ tool: 'text-to-nato', name: 'text', defaultValue: '' });
-const useDigitsNames = useQueryParamOrStorage({ name: 'digits', storageName: 'text-to-nato:digits', defaultValue: false });
-const usePunctuationsNames = useQueryParamOrStorage({ name: 'puncts', storageName: 'text-to-nato:puncts', defaultValue: false });
+const lang = useStorage('text-to-nato:lang', '(International)');
+const input = ref('');
+const useDigitsNames = useStorage('text-to-nato:digits', false);
+const usePunctuationsNames = useStorage('text-to-nato:puncts', false);
 const natoText = computed(() => textToNatoAlphabet({ text: input.value, langOrCountry: lang.value }));
-const { copy } = useCopy({ source: natoText, text: t('tools.text-to-nato-alphabet.texts.text-nato-alphabet-string-copied') });
+const { copy } = useCopy({ source: natoText, text: 'NATO alphabet string copied.' });
 </script>
 
 <template>
@@ -24,18 +20,18 @@ const { copy } = useCopy({ source: natoText, text: t('tools.text-to-nato-alphabe
     />
 
     <div flex justify-center>
-      <n-form-item :label="t('tools.text-to-nato-alphabet.texts.label-use-digits-pronunciation')">
+      <n-form-item label="Use digits pronunciation">
         <n-checkbox v-model:checked="usePunctuationsNames" />
       </n-form-item>
-      <n-form-item :label="t('tools.text-to-nato-alphabet.texts.label-use-punctuations-pronunciation')">
+      <n-form-item label="Use punctuations pronunciation">
         <n-checkbox v-model:checked="useDigitsNames" />
       </n-form-item>
     </div>
 
     <c-input-text
       v-model:value="input"
-      :label="t('tools.text-to-nato-alphabet.texts.label-your-text-to-convert-to-nato-phonetic-alphabet')"
-      :placeholder="t('tools.text-to-nato-alphabet.texts.placeholder-put-your-text-here')"
+      label="Your text to convert to NATO phonetic alphabet"
+      placeholder="Put your text here..."
       clearable
       mb-5
     />
@@ -50,7 +46,7 @@ const { copy } = useCopy({ source: natoText, text: t('tools.text-to-nato-alphabe
 
       <div mt-3 flex justify-center>
         <c-button autofocus @click="copy()">
-          {{ t('tools.text-to-nato-alphabet.texts.tag-copy-nato-string') }}
+          Copy NATO string
         </c-button>
       </div>
     </div>

@@ -1,14 +1,12 @@
 import { EqualNot } from '@vicons/tabler';
 import { defineTool } from '../tool';
-import { translate as t } from '@/plugins/i18n.plugin';
 
 export const tool = defineTool({
-  name: t('tools.math-formats-converter.title'),
+  name: 'Math Formats Converter',
   path: '/math-formats-converter',
-  description: t('tools.math-formats-converter.description'),
+  description: 'Convert mathematical expression between formats',
   keywords: ['math', 'formats', 'converter', 'latex', 'mathml', 'asciimath', 'omml', 'html'],
   component: () => import('./math-formats-converter.vue'),
   icon: EqualNot,
   createdAt: new Date('2024-05-11'),
-  category: 'Maths',
 });

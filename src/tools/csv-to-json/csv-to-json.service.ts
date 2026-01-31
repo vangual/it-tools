@@ -1,21 +1,19 @@
-import detectCSV from 'detect-csv';
-
 export { getHeaders, convertCsvToArray };
 
-function getHeaders(csv: string, delimiter: string): string[] {
+function getHeaders(csv: string): string[] {
   if (csv.trim() === '') {
     return [];
   }
 
   const firstLine = csv.split('\n')[0];
-  return firstLine.split(new RegExp(`[${delimiter}]`)).map(header => header.trim());
+  return firstLine.split(/[,;]/).map(header => header.trim());
 }
-function deserializeValue(value: string, tryParseValues: boolean): unknown {
+function deserializeValue(value: string): unknown {
   if (value === 'null') {
     return null;
   }
 
-  if (value === '' || typeof value === 'undefined') {
+  if (value === '') {
     return undefined;
   }
 
@@ -25,26 +23,18 @@ function deserializeValue(value: string, tryParseValues: boolean): unknown {
     return valueAsString.slice(1, -1);
   }
 
-  if (!tryParseValues) {
-    return valueAsString;
-  }
-  try {
-    return JSON.parseBigNum(valueAsString);
-  }
-  catch (_) {
-    return valueAsString;
-  }
+  return valueAsString;
 }
 
-function convertCsvToArray(csv: string, tryParseValues: boolean = false): Record<string, unknown>[] {
-  const delimiter = detectCSV(csv)?.delimiter || ',';
-  const headers = getHeaders(csv, delimiter);
+function convertCsvToArray(csv: string): Record<string, unknown>[] {
+  const lines = csv.split('\n');
+  const headers = getHeaders(csv);
 
-  return csv.split('\n').slice(1).map((line) => {
+  return lines.slice(1).map((line) => {
     // Split on comma or semicolon not within quotes
-    const data = line.split(new RegExp(`[${delimiter}](?=(?:(?:[^"]*"){2})*[^"]*$)`)).map(value => value.trim());
+    const data = line.split(/[,;](?=(?:(?:[^"]*"){2})*[^"]*$)/).map(value => value.trim());
     return headers.reduce((obj, header, index) => {
-      obj[header] = deserializeValue(data[index], tryParseValues);
+      obj[header] = deserializeValue(data[index]);
       return obj;
     }, {} as Record<string, unknown>);
   });

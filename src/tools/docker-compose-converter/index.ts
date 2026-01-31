@@ -1,14 +1,12 @@
 import { BrandDocker } from '@vicons/tabler';
 import { defineTool } from '../tool';
-import { translate as t } from '@/plugins/i18n.plugin';
 
 export const tool = defineTool({
-  name: t('tools.docker-compose-converter.title'),
+  name: 'Docker Compose Format Converter',
   path: '/docker-compose-converter',
-  description: t('tools.docker-compose-converter.description'),
+  description: 'Convert Docker Compose file between V1, 2.x, 3.x or CommonSpec and may expand ports/volumes syntaxes',
   keywords: ['docker', 'compose', 'converter'],
   component: () => import('./docker-compose-converter.vue'),
   icon: BrandDocker,
   createdAt: new Date('2024-01-04'),
-  category: 'Docker',
 });

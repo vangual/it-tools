@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useThemeVars } from 'naive-ui';
-import Memo from './jq.md';
+import Memo from './jq-memo.md';
 
 const themeVars = useThemeVars();
 </script>

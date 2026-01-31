@@ -4,7 +4,7 @@ import type { CLabelProps } from '../c-label/c-label.types';
 import type { CSelectOption } from './c-select.types';
 import { useTheme } from './c-select.theme';
 import { clamp } from '@/modules/shared/number.models';
-import { useFlexSearch } from '@/composable/flexSearch';
+import { useFuzzySearch } from '@/composable/fuzzySearch';
 
 const props = withDefaults(
   defineProps<{
@@ -74,12 +74,13 @@ watch(
   },
 );
 
-const { searchResult: filteredOptions } = useFlexSearch<CSelectOption<T>>({
+const { searchResult: filteredOptions } = useFuzzySearch<CSelectOption<T>>({
   search: searchQuery,
   data: options.value,
   options: {
     keys: ['label'],
     shouldSort: false,
+    threshold: 0.3,
     filterEmpty: false,
   },
 });

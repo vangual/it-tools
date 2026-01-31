@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { useThemeVars } from 'naive-ui';
-import Memo from './jsonpath.md';
+import Memo from './jsonpath-memo.md';
 
 const themeVars = useThemeVars();
 </script>
 
 <template>
-  <div max-w-1200px>
+  <div max-w-600px>
     <Memo style="overflow-x: auto;" />
   </div>
 </template>

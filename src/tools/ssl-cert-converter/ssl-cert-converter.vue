@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import { Buffer } from 'node:buffer';
-import { useI18n } from 'vue-i18n';
-import { convertCertificates } from './ssl-cert-converter.service';
-
-const { t } = useI18n();
+import { convertCertificate } from './ssl-cert-converter.service';
 
 const inputKeyOrCertificate = ref('');
 const fileInput = ref() as Ref<Buffer>;
@@ -41,7 +38,7 @@ const convertedCertificates = computed(() => {
     inputKeyOrCertificateValue = inputContent;
   }
 
-  return convertCertificates(inputKeyOrCertificateValue, passphrase.value);
+  return convertCertificate(inputKeyOrCertificateValue, passphrase.value);
 });
 </script>
 
@@ -52,26 +49,26 @@ const convertedCertificates = computed(() => {
         <n-space>
           <n-radio
             value="file"
-            :label="t('tools.ssl-cert-converter.texts.label-file')"
+            label="File"
           />
           <n-radio
             value="content"
-            :label="t('tools.ssl-cert-converter.texts.label-content')"
+            label="Content"
           />
         </n-space>
       </n-radio-group>
 
       <c-file-upload
         v-if="inputType === 'file'"
-        :title="t('tools.ssl-cert-converter.texts.title-drag-and-drop-a-pem-der-jks-or-pkcs-12-file-here-or-click-to-select-a-file')"
+        title="Drag and drop a PEM, DER, JKS or PKCS#12 file here, or click to select a file"
         @file-upload="onUpload"
       />
 
       <c-input-text
         v-if="inputType === 'content'"
         v-model:value="inputKeyOrCertificate"
-        :label="t('tools.ssl-cert-converter.texts.label-paste-your-certificate-store')"
-        :placeholder="t('tools.ssl-cert-converter.texts.placeholder-your-certificate-store')"
+        label="Paste your Certificate/Store:"
+        placeholder="Your Certificate/Store..."
         multiline
         rows="8"
         data-test-id="input"
@@ -80,8 +77,8 @@ const convertedCertificates = computed(() => {
 
     <c-input-text
       v-model:value="passphrase"
-      :label="t('tools.ssl-cert-converter.texts.label-passphrase-for-encrypted-certificate-store')"
-      :placeholder="t('tools.ssl-cert-converter.texts.placeholder-passphrase-for-encrypted-certificate-store')"
+      label="Passphrase (for encrypted certificate/store):"
+      placeholder="Passphrase (for encrypted certificate/store)..."
       type="password"
       data-test-id="pass"
     />
@@ -89,25 +86,25 @@ const convertedCertificates = computed(() => {
     <n-divider />
 
     <c-alert v-if="!convertedCertificates">
-      {{ t('tools.ssl-cert-converter.texts.tag-please-provide-an-input-or-enter-the-good-password') }}
+      Please provide an input or enter the good password!
     </c-alert>
 
     <c-card v-for="(cert, ix) in convertedCertificates" :key="ix" :title="cert.alias">
-      <n-form-item v-if="cert.key" :label="t('tools.ssl-cert-converter.texts.label-key-pem')">
+      <n-form-item v-if="cert.key" label="Key (PEM)">
         <textarea-copyable :value="cert.key" />
       </n-form-item>
-      <n-form-item v-if="cert.pem" :label="t('tools.ssl-cert-converter.texts.label-certificate-pem')">
+      <n-form-item v-if="cert.pem" label="Certificate (PEM)">
         <textarea-copyable :value="cert.pem" />
       </n-form-item>
       <div flex justify-center gap-1>
         <c-button v-if="cert.der" @click="downloadFile(cert.der, `${cert.alias}.der`)">
-          {{ t('tools.ssl-cert-converter.texts.tag-download-der') }}
+          Download DER
         </c-button>
         <c-button v-if="cert.pem" @click="downloadFile(cert.pem, `${cert.alias}.pem`)">
-          {{ t('tools.ssl-cert-converter.texts.tag-download-pem') }}
+          Download PEM
         </c-button>
         <c-button v-if="cert.key" @click="downloadFile(cert.key, `${cert.alias}.key.pem`)">
-          {{ t('tools.ssl-cert-converter.texts.tag-download-key-pem') }}
+          Download Key (PEM)
         </c-button>
       </div>
     </c-card>

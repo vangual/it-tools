@@ -1,10 +1,7 @@
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n';
 import jsonar from 'jsonar-mod';
 import type { UseValidationRule } from '@/composable/validation';
 import { withDefaultOnError } from '@/utils/defaults';
-
-const { t } = useI18n();
 
 const defaultValue = `array(
   "a" => "b",
@@ -24,17 +21,17 @@ function transformer(value: string) {
 const rules: UseValidationRule<string>[] = [
   {
     validator: (v: string) => v === '' || jsonar.parse(v),
-    message: t('tools.php-array-to-json.texts.message-provided-php-array-is-not-valid'),
+    message: 'Provided PHP Array is not valid.',
   },
 ];
 </script>
 
 <template>
   <format-transformer
-    :input-label="t('tools.php-array-to-json.texts.input-label-your-php-array')"
+    input-label="Your PHP Array"
     :input-default="defaultValue"
-    :input-placeholder="t('tools.php-array-to-json.texts.input-placeholder-paste-your-php-array-here')"
-    :output-label="t('tools.php-array-to-json.texts.output-label-json-version')"
+    input-placeholder="Paste your PHP Array here..."
+    output-label="JSON version"
     output-language="json"
     :input-validation-rules="rules"
     :transformer="transformer"

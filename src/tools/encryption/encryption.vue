@@ -1,53 +1,53 @@
 <script setup lang="ts">
-import type { KeyEncoding } from './encryption.service';
-import { algos } from './encryption.service';
+import { AES, RC4, Rabbit, TripleDES, enc } from 'crypto-js';
 import { computedCatch } from '@/composable/computed/catchedComputed';
 
-const { t } = useI18n();
+const algos = { AES, TripleDES, Rabbit, RC4 };
+type KeyEncoding = 'Text' | 'Hex';
 
 const cypherInput = ref('Lorem ipsum dolor sit amet');
-const cypherAlgo = ref<keyof typeof algos>('AES-CBC');
-const cypherSecret = ref('my secret key 16');
+const cypherAlgo = ref<keyof typeof algos>('AES');
+const cypherSecret = ref('my secret key');
 const cypherSecretEncoding = ref<KeyEncoding>('Text');
-const [cypherOutput, cypherError] = computedCatch(() => algos[cypherAlgo.value].encrypt(cypherInput.value, cypherSecret.value, cypherSecretEncoding.value), {
+const [cypherOutput, cypherError] = computedCatch(() => algos[cypherAlgo.value].encrypt(cypherInput.value, cypherSecretEncoding.value === 'Text' ? cypherSecret.value : enc.Hex.parse(cypherSecret.value), { iv: enc.Hex.parse('') }).toString(), {
   defaultValue: '',
-  defaultErrorMessage: t('tools.encryption.defaultErrorMessage'),
+  defaultErrorMessage: 'Unable to cypher your text',
 });
 
-const decryptInput = ref('dopEIE7v5TJlhHl+0+mA4Q+BxNj4xcdTsiVGw4tmpLlkDln8lzmzavO3egJuzpCD');
-const decryptAlgo = ref<keyof typeof algos>('AES-CBC');
-const decryptSecret = ref('my secret key 16');
+const decryptInput = ref('U2FsdGVkX1/EC3+6P5dbbkZ3e1kQ5o2yzuU0NHTjmrKnLBEwreV489Kr0DIB+uBs');
+const decryptAlgo = ref<keyof typeof algos>('AES');
+const decryptSecret = ref('my secret key');
 const decryptSecretEncoding = ref<KeyEncoding>('Text');
-const [decryptOutput, decryptError] = computedCatch(() => algos[decryptAlgo.value].decrypt(decryptInput.value, decryptSecret.value, decryptSecretEncoding.value), {
+const [decryptOutput, decryptError] = computedCatch(() => algos[decryptAlgo.value].decrypt(decryptInput.value, decryptSecretEncoding.value === 'Text' ? decryptSecret.value : enc.Hex.parse(decryptSecret.value), { iv: enc.Hex.parse('') }).toString(enc.Utf8), {
   defaultValue: '',
-  defaultErrorMessage: t('tools.encryption.defaultErrorMessage'),
+  defaultErrorMessage: 'Unable to decrypt your text',
 });
 </script>
 
 <template>
-  <c-card :title="t('tools.encryption.title-encrypt')">
+  <c-card title="Encrypt">
     <div flex gap-3>
       <c-input-text
         v-model:value="cypherInput"
-        :label="t('tools.encryption.texts.label-your-text')"
-        :placeholder="t('tools.encryption.texts.placeholder-the-string-to-cypher')"
+        label="Your text:"
+        placeholder="The string to cypher"
         rows="4"
         multiline raw-text monospace autosize flex-1
       />
       <div flex flex-1 flex-col gap-2>
-        <c-input-text v-model:value="cypherSecret" :label="t('tools.encryption.texts.label-your-secret-key')" clearable raw-text />
+        <c-input-text v-model:value="cypherSecret" label="Your secret key:" clearable raw-text />
 
         <c-select
-          v-model:value="cypherSecretEncoding" :label="t('tools.encryption.texts.label-key-encoding')"
+          v-model:value="cypherSecretEncoding" label="Key encoding"
           flex-1
-          :placeholder="t('tools.encryption.texts.placeholder-select-the-key-encoding')"
+          placeholder="Select the key encoding..."
           :options="[
             {
-              label: t('tools.encryption.texts.label-plain-text'),
+              label: 'Plain Text',
               value: 'Text',
             },
             {
-              label: t('tools.encryption.texts.label-hexadecimal-text'),
+              label: 'Hexadecimal Text',
               value: 'Hex',
             },
           ]"
@@ -55,45 +55,45 @@ const [decryptOutput, decryptError] = computedCatch(() => algos[decryptAlgo.valu
 
         <c-select
           v-model:value="cypherAlgo"
-          :label="t('tools.encryption.texts.label-encryption-algorithm')"
+          label="Encryption algorithm:"
           :options="Object.keys(algos).map((label) => ({ label, value: label }))"
         />
       </div>
     </div>
-    <c-alert v-if="cypherError" type="error" mt-12 :title="t('tools.encryption.texts.title-error-while-cyphering')">
+    <c-alert v-if="cypherError" type="error" mt-12 title="Error while cyphering">
       {{ cypherError }}
     </c-alert>
     <c-input-text
-      :label="t('tools.encryption.texts.label-your-text-encrypted')"
+      label="Your text encrypted:"
       :value="cypherOutput"
       rows="3"
-      :placeholder="t('tools.encryption.texts.placeholder-your-string-hash')"
+      placeholder="Your string hash"
       multiline monospace readonly autosize mt-5
     />
   </c-card>
-  <c-card :title="t('tools.encryption.title-decrypt')">
+  <c-card title="Decrypt">
     <div flex gap-3>
       <c-input-text
         v-model:value="decryptInput"
-        :label="t('tools.encryption.texts.label-your-encrypted-text')"
-        :placeholder="t('tools.encryption.texts.placeholder-the-string-to-cypher')"
+        label="Your encrypted text:"
+        placeholder="The string to cypher"
         rows="4"
         multiline raw-text monospace autosize flex-1
       />
       <div flex flex-1 flex-col gap-2>
-        <c-input-text v-model:value="decryptSecret" :label="t('tools.encryption.texts.label-your-secret-key')" clearable raw-text />
+        <c-input-text v-model:value="decryptSecret" label="Your secret key:" clearable raw-text />
 
         <c-select
-          v-model:value="decryptSecretEncoding" :label="t('tools.encryption.texts.label-key-encoding')"
+          v-model:value="decryptSecretEncoding" label="Key encoding"
           flex-1
-          :placeholder="t('tools.encryption.texts.placeholder-select-the-key-encoding')"
+          placeholder="Select the key encoding..."
           :options="[
             {
-              label: t('tools.encryption.texts.label-plain-text'),
+              label: 'Plain Text',
               value: 'Text',
             },
             {
-              label: t('tools.encryption.texts.label-hexadecimal-text'),
+              label: 'Hexadecimal Text',
               value: 'Hex',
             },
           ]"
@@ -101,19 +101,19 @@ const [decryptOutput, decryptError] = computedCatch(() => algos[decryptAlgo.valu
 
         <c-select
           v-model:value="decryptAlgo"
-          :label="t('tools.encryption.texts.label-encryption-algorithm')"
+          label="Encryption algorithm:"
           :options="Object.keys(algos).map((label) => ({ label, value: label }))"
         />
       </div>
     </div>
-    <c-alert v-if="decryptError" type="error" mt-12 :title="t('tools.encryption.texts.title-error-while-decrypting')">
+    <c-alert v-if="decryptError" type="error" mt-12 title="Error while decrypting">
       {{ decryptError }}
     </c-alert>
     <c-input-text
       v-else
-      :label="t('tools.encryption.texts.label-your-decrypted-text')"
+      label="Your decrypted text:"
       :value="decryptOutput"
-      :placeholder="t('tools.encryption.texts.placeholder-your-string-hash')"
+      placeholder="Your string hash"
       rows="3"
       multiline monospace readonly autosize mt-5
     />

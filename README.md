@@ -1,62 +1,26 @@
-## BREAKING CHANGE for Container Image
+## BREAKING CHANGE for Docker Image
 
-Since the *base image* is now `nginx-unpriviledged` the container will now listen to port **8080** and not 80. So you need to update your port mapping, i.e. from `8080:80` to `8080:8080`.
+Since *Docker base image* is now `nginx-unpriviledged`, docker image now listen to **8080** and no more 80. So you need to update your port mapping, ie from `8080:80` to `8080:8080`.
 
-You can override listening port using environment variable `PORT` (docker option `-e PORT=8888`).
+### Check out these change here: <https://sharevb-it-tools.vercel.app/>
 
-If the container needs to listen to IPv6, it needs to be enabled: https://serverfault.com/questions/1147296/how-to-enable-ipv6-on-ubuntu-20-04. Alternatively, you can mount your own `nginx.conf` own using docker option `-v "./nginx.conf:/etc/nginx/templates/default.conf.template"` (with `listen [::]:8080;` removed)
-
-## PR Welcome
-
-Especially for UI improvements and translation. And for anything else.
-
-Want to support this fork of IT Tools: [Buy me a coffee](https://www.buymeacoffee.com/sharevb)
-
-## HTTPS is recommended
-
-Some tools like PGP encryption rely on WebCrypto API that is only available in HTTPS/SSL. Also, if you want to use PWA, HTTPS is required.
-
-So even on internal installations, you should enable HTTPS using Let's Encrypt using DNS Challenge
-
-Some docs about DNS Challenge:
-- https://medium.com/@life-is-short-so-enjoy-it/homelab-nginx-proxy-manager-setup-ssl-certificate-with-domain-name-in-cloudflare-dns-732af64ddc0b
-- https://doc.traefik.io/traefik/user-guides/docker-compose/acme-dns/
-- https://medium.com/@svenvanginkel/traefik-letsencrypt-dns01-challenge-with-ovhcloud-52f2a2c6d08a
-
-Related doc for CyberPanel: https://community.cyberpanel.net/t/reverse-proxy-traffic-to-docker-container-on-cyberpanel/30644
-
-### Check out these change here: <https://sharevb-it-tools.vercel.app/> or <https://sharevb.github.io/it-tools/>
-
-You can use my image in your docker-compose/quadlet file if you want an up-to-date version of it-tools (with my PR and some of others) until the main branch has been updated.
+You can use my image in your docker-compose file if you want an update to date version of it-tools (with my PR and some of others) until the main branch has been updated.
 
 - github action triggers on every push to this branch - [view package here](https://github.com/sharevb/it-tools/pkgs/container/it-tools)
 
 (Thanks to [gitmotion](https://github.com/gitmotion/it-tools) for this model of README fork)
 
-## Contributors
-
-Big thanks to all the people who have already contributed!
-
-[![contributors](https://contrib.rocks/image?repo=sharevb/it-tools&refresh=1)](https://github.com/sharevb/it-tools/graphs/contributors)
-
-## Development under Windows
-
-Use of WSL2 is recommended to develop using VSCode on Windows. Direct development is tricky (because of some dependencies)
-
 ## Added features
 
-- Almost [all tools PR, 192 of mine, of original it-tools](https://github.com/CorentinTh/it-tools/pulls)
-- 95% of [issues if original it-tools](https://github.com/CorentinTh/it-tools/issues)
-- Full UI translation in many language (Google Translated)
-- Many [new tools](https://sharevb-it-tools.vercel.app/about)
-- Many bug fixes and enhancements
-- Many customizations (Docker version), see below
+Almost [all tools PR of it-tools](https://github.com/sharevb/it-tools/pulls).
 
-## Container images
+## Build docker image for a subfolder
 
-[GitHub Container Registry](https://github.com/sharevb/it-tools/pkgs/container/it-tools): `ghcr.io/sharevb/it-tools:latest`
-
-[Docker Hub](https://hub.docker.com/r/sharevb/it-tools): `sharevb/it-tools:latest`
+According to https://github.com/sharevb/it-tools/pull/461#issuecomment-1602506049:
+```
+docker build -t it-tools --build-arg BASE_URL="/my-folder/" .
+docker run -d --name it-tools --restart unless-stopped -p 8080:8080 it-tools
+```
 
 ## Use in Docker Compose file
 
@@ -64,196 +28,62 @@ Use of WSL2 is recommended to develop using VSCode on Windows. Direct developmen
 services:
   it-tools:
     container_name: it-tools
-    image: sharevb/it-tools:latest
+    image: ghcr.io/sharevb/it-tools:nightly
     pull_policy: always
     restart: unless-stopped
     ports:
       - 8080:8080
 ```
 
-## Use in Podman Quadlet file
+## Installation methods
 
-```
-[Unit]
-Description=IT Tools container
-After=network-online.target
+| Docker Image                            | Local Installation                                                                                                          |
+|-----------------------------------------|-----------------------------------------------------------------------------------------------------------------------------|
+| <span title="triple click me!">`ghcr.io/sharevb/it-tools:latest`</span> | <span title="triple click me!">`git clone -b chore/all-my-stuffs https://github.com/sharevb/it-tools.git && cd it-tools/ && pnpm i && pnpm dev`</span> |
+| replace your current image with this image | copy & paste oneliner (from github repo) |
+| You may need to clear cache and hard reload to get new features loading | Installing packages for the first time may take some time; please wait until it finishes |
 
-[Container]
-AutoUpdate=registry
-Image=ghcr.io/sharevb/it-tools:latest
-PublishPort=8080:8080
-Label=io.containers.autoupdate=registry
+<picture>
+    <source srcset="./.github/logo-dark.png" media="(prefers-color-scheme: light)">
+    <source srcset="./.github/logo-white.png" media="(prefers-color-scheme: dark)">
+    <img src="./.github/logo-dark.png" alt="logo">
+</picture>
 
-[Install]
-WantedBy=multi-user.target default.target
+<details>
 
-[Service]
-Restart=always
-```
+Useful tools for developer and people working in IT. [Have a look !](https://it-tools.tech).
 
+## Functionalities and roadmap
 
-## Filter tools and add home custom content
+Please check the [issues](https://github.com/sharevb/it-tools/issues) to see if some feature listed to be implemented.
 
-You can add custom content in Home page by mounting a `home.custom.md` in `/usr/share/nginx/html`.
+You have an idea of a tool? Submit a [feature request](https://github.com/sharevb/it-tools/issues/new/choose)!
 
-You can filter available tools by mounting `tools-filter.json` in `/usr/share/nginx/html`. It can contains the following filtering regex:
-```json
-{
-  "excludeCategoryFilterRegex": "",
-  "includeCategoryFilterRegex": "",
-  "excludeToolsFilterRegex": "",
-  "includeToolsFilterRegex": ""
-}
-```
-Category matches on category (English) names ; Tools matches on tools path/url.
+## Self host
 
-See [docker-tools-filter-and-home-content](https://github.com/sharevb/it-tools)
+Self host solutions for your homelab
 
-## Add custom external tools
+**From docker hub:**
 
-You can add custom external tools (href or markdownContent) by mounting a `external-tools.json` in `/usr/share/nginx/html` with the following structure:
-
-```json
-[
-  {
-    "name": "GitHub",
-    "path": "/github",
-    "description": "Link to Github",
-    "keywords": ["github"],
-    "category": "Links",
-    "href": "https://github.com"
-  },
-  {
-    "name": "Some text",
-    "path": "/some-text",
-    "description": "Some description",
-    "keywords": ["some"],
-    "category": "Links",
-    "markdownContent": "Some useful **text**\n\nin *markdown*"
-  }
-]
+```sh
+docker run -d --name it-tools --restart unless-stopped -p 8080:8080 corentinth/it-tools:latest
 ```
 
-See [docker-tools-filter-and-home-content](https://github.com/sharevb/it-tools)
+**From github packages:**
 
-## Setting default tools parameters / default UI language at runtime
-
-You can set default tool parameters by mounting a `tools-setting.json` in `/usr/share/nginx/html`.
-
-It is a two level json, with the first level being for `tool name` and the second level for `parameter name`:
-```json
-{
-  "regex-tester": {
-    "multi": true,
-    "regex": "some regex",
-    "global": false
-  }
-}
+```sh
+docker run -d --name it-tools --restart unless-stopped -p 8080:8080 ghcr.io/corentinth/it-tools:latest
 ```
 
-You can find `tool name` and `parameter name` in the tools source code `src/tools` subfolder :
-- example pattern for `const global = useQueryParamOrStorage({ storageName: 'regex-tester:g', name: 'global', defaultValue: true });`:
-```json
-{
-  "regex-tester": {
-    "global": false
-  }
-}
-```
-- example pattern for `const value = useQueryParam({ tool: 'barcode-gen', name: 'text', defaultValue: '123456789' });`:
-```json
-{
-  "barcode-gen": {
-    "text": "4356"
-  }
-}
-```
-- example pattern for `const width = useITStorage('ascii-text-drawer:width', 80);`:
-```json
-{
-  "ascii-text-drawer": {
-    "width": 80
-  }
-}
-```
+**Other solutions:**
 
-To define the default UI language, add a `default_locale` key to json:
-```json
-{
-  "default_locale": "fr"
-}
-```
-
-## To build using a custom default language:
-
-```
-docker build -t it-tools-fr --build-arg VITE_LANGUAGE=fr .
-docker run -d --name it-tools-fr --restart unless-stopped -p 8080:8080 it-tools-fr
-```
-
-## Build container image for a custom subfolder
-
-According to https://github.com/sharevb/it-tools/pull/461#issuecomment-1602506049 and https://github.com/CorentinTh/it-tools/pull/461:
-```
-docker build -t it-tools  --build-arg BASE_URL="/my-folder/" .
-docker run -d --name it-tools --restart unless-stopped -p 8080:8080 it-tools
-```
-
-Then if you go to `http://localhost:8080` you'll get a blank page, but opening the DevTools (& refreshing) you'll notice in the Network tab that the app is trying to fetch assets from `/my-folder/...`
-
-So you would need to put another server in front of it, like [Nginx Proxy Manager](https://nginxproxymanager.com/), [Traefik](https://traefik.io/traefik/), [caddy](https://caddyserver.com/) etc. Then setup a reverse proxy pass using `/my-folder`
-
-## Docker compose for hosting in a `/it-tools/` subfolder
-
-For `/it-tools/` subfolder, you can use `baseurl-it-tools` tag.
-
-See [sample of docker-compose.yml and nginx.conf](https://github.com/sharevb/it-tools/tree/chore/all-my-stuffs/docker-subfolder-sample), this docker image needs to have another reverse proxy in front of it, like [Nginx Proxy Manager](https://nginxproxymanager.com/), [Traefik](https://traefik.io/traefik/), [caddy](https://caddyserver.com/) etc. 
-
-Setup a reverse proxy pass using `/it-tools/`. And you should be able to access it-tools in `/it-tools/` of your server.
-
-An example of nginx reverse proxy configuration is available at: https://github.com/sharevb/it-tools/tree/chore/all-my-stuffs/docker-subfolder-sample
-
-To run the sample:
-
-```bash
-git clone https://github.com/sharevb/it-tools
-cd it-tools/docker-subfolder-sample/
-docker compose up
-```
-
-Then navigate to http://localhost:8080/it-tools/
-
-## To build using a custom folder:
-
-1. `BASE_URL="/it-tools/" pnpm build`
-2. Rename the generated `dist` folder to `it-tools` and serve on `https://your-domain.com/it-tools`
-
-## To build for GitHub Pages:
-
-1. Enable GitHub Pages build and deployment option in your fork, under **Settings** > **Pages** and select **GitHub Actions** as the source
-2. Add the following GitHub action to your repo: https://github.com/sharevb/it-tools/tree/chore/all-my-stuffs/.github/workflows/sharevb-github-pages-publish.yml
-
-## To add authentication
-
-Assuming you're already hosting it-tools behind a reverse proxy, you can configure forward-auth and enforce authentication from the reverse proxy
-
-* [Official guides](https://docs.goauthentik.io/docs/add-secure-apps/providers/proxy/server_nginx) with nginx. Guides with other reverse proxy setups are available
-* [Step-by-step setup guide with nginx-proxy-manager](https://geekscircuit.com/set-up-authentik-sso-with-nginx-proxy-manager/)
-
-(thanks @jogerj)
-
-## Deploy as LXC container
-
-In Proxmox VE, you can use docker image directly:
-```bash
-sudo lxc-create -n sharevb-it-tools -t oci -- --url docker://ghcr.io/sharevb/it-tools:latest
-```
+- [Cloudron](https://www.cloudron.io/store/tech.ittools.cloudron.html)
+- [Tipi](https://www.runtipi.io/docs/apps-available)
+- [Unraid](https://unraid.net/community/apps?q=it-tools)
 
 ## Contribute
 
 ### Recommended IDE Setup
-
-To install VSCode in WSL2 (Windows), see: https://learn.microsoft.com/en-us/windows/wsl/tutorials/wsl-vscode
 
 [VSCode](https://code.visualstudio.com/) with the following extensions:
 
@@ -289,7 +119,7 @@ If the standalone TypeScript plugin doesn't feel fast enough to you, Volar has a
 ### Project Setup
 
 ```sh
-pnpm install --ignore-scripts
+pnpm install
 ```
 
 ### Compile and Hot-Reload for Development
@@ -316,14 +146,6 @@ pnpm test
 pnpm lint
 ```
 
-### Ensure CI (lock, eslint, typecheck) will succeed
-
-Before submitting a PR, run:
-
-```sh
-pnpm install --ignore-scripts && pnpm lint --fix && pnpm typecheck
-```
-
 ### Create a new tool
 
 To create a new tool, there is a script that generate the boilerplate of the new tool, simply run:
@@ -332,57 +154,7 @@ To create a new tool, there is a script that generate the boilerplate of the new
 pnpm run script:create:tool my-tool-name
 ```
 
-It will create a directory in `src/tools` with the correct files. You will need to fill `src/tools/_my-tool-name_/index.ts` with tool name, category, description... and then develop the tool.
-
-## Installation methods
-
-Local installation required installing first: `python3 make g++`
-
-| Container Image                         | Local Installation                                                                                                          |
-|-----------------------------------------|-----------------------------------------------------------------------------------------------------------------------------|
-| GitHub Container Registry: <span title="triple click me!">`ghcr.io/sharevb/it-tools:latest`</span><br/>Docker Hub: <span title="triple click me!">`sharevb/it-tools:latest`</span> | <span title="triple click me!">`sudo apt-get install python3 make g++ && git clone -b chore/all-my-stuffs https://github.com/sharevb/it-tools.git && cd it-tools/ && pnpm i --ignore-scripts && pnpm dev`</span> |
-| replace your current image with this image | copy & paste oneliner (from github repo) |
-| You may need to clear cache and hard reload to get new features loading | Installing packages for the first time may take some time; please wait until it finishes |
-
-<picture>
-    <source srcset="./.github/logo-dark.png" media="(prefers-color-scheme: light)">
-    <source srcset="./.github/logo-white.png" media="(prefers-color-scheme: dark)">
-    <img src="./.github/logo-dark.png" alt="logo">
-</picture>
-
-<details>
-
-Useful tools for developer and people working in IT. [Have a look !](https://sharevb-it-tools.vercel.app).
-
-## Functionalities and roadmap
-
-Please check the [issues](https://github.com/sharevb/it-tools/issues) to see if some feature listed to be implemented.
-
-You have an idea of a tool? Submit a [feature request](https://github.com/sharevb/it-tools/issues/new/choose)!
-
-## Self host
-
-Self host solutions for your homelab
-
-**From docker hub:**
-
-```sh
-docker run -d --name it-tools --restart unless-stopped -p 8080:8080 corentinth/it-tools:latest
-```
-
-**From github packages:**
-
-```sh
-docker run -d --name it-tools --restart unless-stopped -p 8080:8080 ghcr.io/corentinth/it-tools:latest
-```
-
-**Other solutions:**
-
-- [Cloudron](https://www.cloudron.io/store/tech.ittools.cloudron.html)
-- [Tipi](https://www.runtipi.io/docs/apps-available)
-- [Unraid](https://unraid.net/community/apps?q=it-tools)
-- [YunoHost](https://apps.yunohost.org/app/it-tools)
-
+It will create a directory in `src/tools` with the correct files, and a the import in `src/tools/index.ts`. You will just need to add the imported tool in the proper category and develop the tool.
 
 ## Contributors
 

@@ -1,16 +1,13 @@
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n';
 import type { Ref } from 'vue';
 import { type CSSType, imageToCSS } from './image-to-css.service';
 import TextareaCopyable from '@/components/TextareaCopyable.vue';
 
-const { t } = useI18n();
-
 const typeOptions = [
-  { label: t('tools.image-to-css.texts.label-background'), value: 'Background' },
-  { label: t('tools.image-to-css.texts.label-border'), value: 'Border' },
-  { label: t('tools.image-to-css.texts.label-listitem-bullet'), value: 'ListItemBullet' },
-  { label: t('tools.image-to-css.texts.label-css-data-url'), value: 'Url' },
+  { label: 'Background', value: 'Background' },
+  { label: 'Border', value: 'Border' },
+  { label: 'ListItem Bullet', value: 'ListItemBullet' },
+  { label: 'CSS Data Url', value: 'Url' },
 ];
 
 const inputType = ref<'file' | 'content'>('file');
@@ -37,7 +34,7 @@ async function onUpload(file: File) {
   }
 }
 
-watch(svgContent, (newValue) => {
+watch(svgContent, (_, newValue) => {
   if (newValue !== '') {
     fileInput.value = null;
   }
@@ -50,18 +47,18 @@ watch(svgContent, (newValue) => {
       <n-space>
         <n-radio
           value="file"
-          :label="t('tools.image-to-css.texts.label-file')"
+          label="File"
         />
         <n-radio
           value="content"
-          :label="t('tools.image-to-css.texts.label-content')"
+          label="Content"
         />
       </n-space>
     </n-radio-group>
 
     <c-file-upload
       v-if="inputType === 'file'"
-      :title="t('tools.image-to-css.texts.title-drag-and-drop-an-image-here-or-click-to-select-a-file')"
+      title="Drag and drop an image here, or click to select a file"
       paste-image
       @file-upload="onUpload"
     />
@@ -71,8 +68,8 @@ watch(svgContent, (newValue) => {
       v-model:value="svgContent"
       multiline
       rows="5"
-      :label="t('tools.image-to-css.texts.label-svg-content')"
-      :placeholder="t('tools.image-to-css.texts.placeholder-paste-your-svg-content-here')"
+      label="SVG Content"
+      placeholder="Paste your SVG content here"
       mb-2
     />
 
@@ -81,18 +78,17 @@ watch(svgContent, (newValue) => {
     <c-select
       v-model:value="type"
       label-position="top"
-      :label="t('tools.image-to-css.texts.label-css-type')"
+      label="CSS Type:"
       :options="typeOptions"
-      :placeholder="t('tools.image-to-css.texts.placeholder-select-css-type')"
+      placeholder="Select CSS Type"
     />
 
     <div v-if="cssCode !== ''">
       <n-divider />
 
-      <h3>{{ t('tools.image-to-css.texts.tag-css-code') }}</h3>
+      <h3>CSS Code</h3>
       <TextareaCopyable
         :value="cssCode"
-        download-file-name="output.css"
         word-wrap
       />
     </div>

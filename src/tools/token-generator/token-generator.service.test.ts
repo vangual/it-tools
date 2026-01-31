@@ -69,20 +69,6 @@ describe('token-generator', () => {
       expect(token).toMatch(/^[0-9]+$/);
     });
 
-    it('should generate a random string with just hexa numbers if only withHexaNumbers is set', () => {
-      const token = createToken({
-        withLowercase: false,
-        withUppercase: false,
-        withNumbers: false,
-        withHexaNumbers: true,
-        withSymbols: false,
-        length: 256,
-      });
-
-      expect(token).toHaveLength(256);
-      expect(token).toMatch(/^[0-9a-f]+$/);
-    });
-
     it('should generate a random string with just symbols if only withSymbols is set', () => {
       const token = createToken({
         withLowercase: false,

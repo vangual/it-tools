@@ -1,21 +1,12 @@
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n';
 import { addSlashes, removeSlashes } from 'slashes';
 import TextareaCopyable from '@/components/TextareaCopyable.vue';
-import { useQueryParam, useQueryParamOrStorage } from '@/composable/queryParams';
 
-const { t } = useI18n();
-
-const wrapInQuotes = useQueryParamOrStorage({ name: 'wrap', storageName: 'json-escaper:wrap', defaultValue: false });
-const unescapedInput = useQueryParam({ tool: 'json-escaper', name: 'escape', defaultValue: '' });
+const unescapedInput = ref('');
 const escapedOutput = computed(
   () => {
     try {
-      const slashedString = addSlashes(unescapedInput.value);
-      if (wrapInQuotes.value) {
-        return `"${slashedString}"`;
-      }
-      return slashedString;
+      return addSlashes(unescapedInput.value);
     }
     catch (e: any) {
       return e.toString();
@@ -23,7 +14,7 @@ const escapedOutput = computed(
   },
 );
 
-const escapedInput = useQueryParam({ tool: 'json-escaper', name: 'unescape', defaultValue: '' });
+const escapedInput = ref('');
 const unescapedOutput = computed(
   () => {
     try {
@@ -38,27 +29,21 @@ const unescapedOutput = computed(
 
 <template>
   <div max-w-600>
-    <c-card :title="t('tools.json-escaper.texts.title-escape-json-string')">
+    <c-card title="Escape JSON string">
       <c-input-text
         v-model:value="unescapedInput"
-        :placeholder="t('tools.json-escaper.texts.placeholder-put-your-string-to-escape')"
-        :label="t('tools.json-escaper.texts.label-string-to-escape')"
+        placeholder="Put your string to escape..."
+        label="String to escape"
         raw-text
         multiline
         rows="5"
-        mb-1
+        mb-5
       />
-
-      <n-space justify="center">
-        <n-form-item mb-5 label-placement="left" :label="t('tools.json-escaper.texts.label-wrap-in-quotes')">
-          <n-checkbox v-model:checked="wrapInQuotes" />
-        </n-form-item>
-      </n-space>
 
       <n-divider />
 
       <TextareaCopyable
-        :label="t('tools.json-escaper.texts.label-escaped-string')"
+        label="Escaped string"
         :value="escapedOutput"
         multiline
         readonly
@@ -67,11 +52,11 @@ const unescapedOutput = computed(
       />
     </c-card>
 
-    <c-card :title="t('tools.json-escaper.texts.title-unescape-json-string')" mt-5>
+    <c-card title="Unescape JSON string" mt-5>
       <c-input-text
         v-model:value="escapedInput"
-        :placeholder="t('tools.json-escaper.texts.placeholder-put-your-string-to-unescape')"
-        :label="t('tools.json-escaper.texts.label-string-to-unescape')"
+        placeholder="Put your string to unescape..."
+        label="String to unescape"
         raw-text
         multiline
         rows="5"
@@ -81,7 +66,7 @@ const unescapedOutput = computed(
       <n-divider />
 
       <TextareaCopyable
-        :label="t('tools.json-escaper.texts.label-unescaped-string')"
+        label="Unescaped string"
         :value="unescapedOutput"
         multiline
         readonly

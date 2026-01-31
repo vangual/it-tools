@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import * as monacoEditor from 'monaco-editor';
-import { VueMonacoEditor, loader } from '@guolao/vue-monaco-editor';
 import type { MonacoEditor } from '@guolao/vue-monaco-editor';
 import EditorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker';
 import JsonWorker from 'monaco-editor/esm/vs/language/json/json.worker?worker';
@@ -53,9 +52,6 @@ globalThis.MonacoEnvironment = {
     return new EditorWorker();
   },
 };
-
-// loaded monaco-editor from `node_modules`
-loader.config({ monaco: monacoEditor });
 
 export interface EditorProps {
   defaultValue?: string
@@ -117,7 +113,7 @@ export default {
 </script>
 
 <template>
-  <VueMonacoEditor
+  <vue-monaco-editor
     v-bind="inheritedAttrs"
     v-model:value="value"
     @before-mount="(monaco: MonacoEditor) => emits('beforeMount', monaco)"

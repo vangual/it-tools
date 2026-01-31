@@ -1,18 +1,16 @@
 <script setup lang="ts">
 import { useStorage } from '@vueuse/core';
 import { useThemeVars } from 'naive-ui';
-import { useRoute } from 'vue-router';
+import { RouterLink, useRoute } from 'vue-router';
 import MenuIconItem from './MenuIconItem.vue';
-import MenuItemWithTooltip from './MenuItemTooltip.vue';
 import type { Tool, ToolCategory } from '@/tools/tools.types';
 
 const props = withDefaults(defineProps<{ toolsByCategory?: ToolCategory[] }>(), { toolsByCategory: () => [] });
 const { toolsByCategory } = toRefs(props);
 const route = useRoute();
 
-// Memoize component creation functions
-const makeLabel = (tool: Tool) => () => h(MenuItemWithTooltip, { tool, key: tool.path });
-const makeIcon = (tool: Tool) => () => h(MenuIconItem, { tool, key: tool.path });
+const makeLabel = (tool: Tool) => () => h(RouterLink, { to: tool.path }, { default: () => tool.name });
+const makeIcon = (tool: Tool) => () => h(MenuIconItem, { tool });
 
 const collapsedCategories = useStorage<Record<string, boolean>>(
   'menu-tool-option:collapsed-categories',
@@ -27,68 +25,14 @@ const collapsedCategories = useStorage<Record<string, boolean>>(
   },
 );
 
-// Initialize default values for all categories
-watchEffect(() => {
-  const updates: Record<string, boolean> = {};
-  let hasChanges = false;
-
-  toolsByCategory.value.forEach(({ name }) => {
-    if (!(name in collapsedCategories.value)) {
-      updates[name] = true;
-      hasChanges = true;
-    }
-  });
-
-  if (hasChanges) {
-    Object.assign(collapsedCategories.value, updates);
-  }
-});
-
-const isToggling = ref(false);
-
 function toggleCategoryCollapse({ name }: { name: string }) {
   collapsedCategories.value[name] = !collapsedCategories.value[name];
-}
-
-const areAllCollapsed = computed(() => {
-  return toolsByCategory.value.every(({ name }) =>
-    collapsedCategories.value[name] !== false,
-  );
-});
-
-async function toggleAllCategories() {
-  if (isToggling.value) {
-    return;
-  }
-
-  isToggling.value = true;
-
-  const shouldCollapse = !areAllCollapsed.value;
-  const updates: Record<string, boolean> = {};
-
-  toolsByCategory.value.forEach(({ name }) => {
-    updates[name] = shouldCollapse;
-  });
-
-  Object.assign(collapsedCategories.value, updates);
-
-  await nextTick();
-  isToggling.value = false;
-}
-
-// Function to calculate animation duration based on number of items
-function getAnimationDuration(itemCount: number): number {
-  const baseDuration = 250;
-  const durationIncrement = 5;
-
-  return baseDuration + (Math.min(itemCount, 30) * durationIncrement);
 }
 
 const menuOptions = computed(() =>
   toolsByCategory.value.map(({ name, components }) => ({
     name,
     isCollapsed: collapsedCategories.value[name],
-    animationDuration: getAnimationDuration(components.length),
     tools: components.map(tool => ({
       label: makeLabel(tool),
       icon: makeIcon(tool),
@@ -101,37 +45,18 @@ const themeVars = useThemeVars();
 </script>
 
 <template>
-  <div class="top-controls" mb-12px ml-12px>
-    <c-button :disabled="isToggling" @click="toggleAllCategories">
-      <span v-if="isToggling">
-        {{ areAllCollapsed ? 'Expanding...' : 'Collapsing...' }}
-      </span>
-      <span v-else>
-        {{ areAllCollapsed ? 'Expand All Tools' : 'Collapse All Tools' }}
-      </span>
-    </c-button>
-  </div>
-
-  <div v-for="{ name, tools, isCollapsed, animationDuration } of menuOptions" :key="name" class="category-container">
-    <button
-      class="category-button"
-      flex cursor-pointer items-center op-60
-      @click="toggleCategoryCollapse({ name })"
-    >
-      <span :class="{ 'rotate-0': isCollapsed, 'rotate-90': !isCollapsed }" text-16px lh-1 op-50 transition-transform duration-200>
+  <div v-for="{ name, tools, isCollapsed } of menuOptions" :key="name">
+    <div ml-6px mt-12px flex cursor-pointer items-center op-60 @click="toggleCategoryCollapse({ name })">
+      <span :class="{ 'rotate-0': isCollapsed, 'rotate-90': !isCollapsed }" text-16px lh-1 op-50 transition-transform>
         <icon-mdi-chevron-right />
       </span>
 
       <span ml-8px text-13px>
         {{ name }}
       </span>
-    </button>
+    </div>
 
-    <div
-      class="menu-container"
-      :class="{ collapsed: isCollapsed }"
-      :style="{ '--animation-duration': `${animationDuration}ms` }"
-    >
+    <n-collapse-transition :show="!isCollapsed">
       <div class="menu-wrapper">
         <div class="toggle-bar" @click="toggleCategoryCollapse({ name })" />
 
@@ -145,74 +70,44 @@ const themeVars = useThemeVars();
           :default-expand-all="true"
         />
       </div>
-    </div>
+    </n-collapse-transition>
   </div>
 </template>
 
 <style scoped lang="less">
-.category-button {
-  border: none;
-  background: transparent;
-  padding: 6px;
-  width: 100%;
-  color: v-bind('themeVars.textColor1');
-  text-align: left;
-  user-select: none;
+.menu-wrapper {
+  display: flex;
+  flex-direction: row;
+  .menu {
+    flex: 1;
+    margin-bottom: 5px;
 
-  &:hover {
-    background-color: v-bind('themeVars.buttonColor2Hover');
-    opacity: 0.8;
+    ::v-deep(.n-menu-item-content::before) {
+      left: 0;
+      right: 13px;
+    }
   }
-}
-.category-container {
-.menu-container {
-  display: grid;
-  grid-template-rows: 1fr;
-  transition: grid-template-rows var(--animation-duration, 250ms) ease-out;
-  will-change: grid-template-rows;
 
-    &.collapsed {
-      grid-template-rows: 0fr;
+  .toggle-bar {
+    width: 24px;
+    opacity: 0.1;
+    transition: opacity ease 0.2s;
+    position: relative;
+    cursor: pointer;
+
+    &::before {
+      width: 2px;
+      height: 100%;
+      content: ' ';
+      background-color: v-bind('themeVars.textColor3');
+      border-radius: 2px;
+      position: absolute;
+      top: 0;
+      left: 14px;
     }
 
-    .menu-wrapper {
-      display: flex;
-      flex-direction: row;
-      overflow: hidden;
-
-      .menu {
-        flex: 1;
-        margin-bottom: 5px;
-
-        ::v-deep(.n-menu-item-content::before) {
-          left: 0;
-          right: 13px;
-          transition: none !important; // Disables hover transition effect to instantly show hover state
-        }
-      }
-
-      .toggle-bar {
-        width: 24px;
-        opacity: 0.1;
-        transition: opacity ease 0.2s;
-        position: relative;
-        cursor: pointer;
-
-        &::before {
-          width: 2px;
-          height: 100%;
-          content: ' ';
-          background-color: v-bind('themeVars.textColor3');
-          border-radius: 2px;
-          position: absolute;
-          top: 0;
-          left: 14px;
-        }
-
-        &:hover {
-          opacity: 0.5;
-        }
-      }
+    &:hover {
+      opacity: 0.5;
     }
   }
 }

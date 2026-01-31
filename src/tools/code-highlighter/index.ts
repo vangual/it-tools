@@ -1,14 +1,12 @@
 import { Code } from '@vicons/tabler';
 import { defineTool } from '../tool';
-import { translate as t } from '@/plugins/i18n.plugin';
 
 export const tool = defineTool({
-  name: t('tools.code-highlighter.title'),
+  name: 'Code/Scripts Highlighter',
   path: '/code-highlighter',
-  description: t('tools.code-highlighter.description'),
+  description: 'Highlight programming code fragments',
   keywords: ['code', 'highlighter'],
   component: () => import('./code-highlighter.vue'),
   icon: Code,
   createdAt: new Date('2024-08-15'),
-  category: 'Development',
 });

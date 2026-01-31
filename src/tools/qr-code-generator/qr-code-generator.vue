@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n';
 import type {
   CornerDotType,
   CornerSquareType,
@@ -10,9 +9,7 @@ import type {
 import qrcodeConsole from 'qrcode-terminal-nooctal';
 import { useQRCodeStyling } from './useQRCode';
 import { useDownloadFileFromBase64 } from '@/composable/downloadBase64';
-import { useQueryParam, useQueryParamOrStorage } from '@/composable/queryParams';
-
-const { t } = useI18n();
+import { useQueryParamOrStorage } from '@/composable/queryParams';
 
 const foreground = useQueryParamOrStorage({ name: 'fg', storageName: 'qr-code-gen:fg', defaultValue: '#000000ff' });
 const background = useQueryParamOrStorage({ name: 'bg', storageName: 'qr-code-gen:bg', defaultValue: '#ffffffff' });
@@ -52,7 +49,7 @@ const dotTypes = ['dots',
 const cornersDotTypes = ['dot', 'square', 'heart'];
 const cornersSquareTypes = ['dot', 'square', 'extra-rounded'];
 
-const text = useQueryParam({ tool: 'qr-code-gen', name: 'text', defaultValue: 'https://sharevb-it-tools.vercel.app' });
+const text = ref('https://it-tools.tech');
 const { qrcode } = useQRCodeStyling({
   text,
   color: { background, foreground },
@@ -74,7 +71,7 @@ const qrcodeTerminal = computedAsync(() => {
   return new Promise<string>((resolve, _reject) => {
     try {
       qrcodeConsole.setErrorLevel(level);
-      qrcodeConsole.generate(textValue.trim(), { small }, (qrcode: string) => {
+      qrcodeConsole.generate(textValue, { small }, (qrcode: string) => {
         resolve(qrcode);
       });
     }
@@ -84,65 +81,9 @@ const qrcodeTerminal = computedAsync(() => {
   });
 });
 
-const filename = useQueryParam({ tool: 'qr-code-gen', name: 'file', defaultValue: 'qr-code' });
-const extension = computed(() => {
-  // Explicitly access the reactive value
-  const type = outputType.value;
-  return type.toString();
-});
+const filename = ref('qr-code');
+const extension = computed(() => outputType.value.toString());
 const { download } = useDownloadFileFromBase64({ source: qrcode, filename, extension });
-
-const isCopied = ref(false);
-
-async function copyQRCode() {
-  try {
-    // Convert base64 to blob
-    const response = await fetch(qrcode.value);
-    const blob = await response.blob();
-
-    // Convert to PNG if it's not already PNG for clipboard compatibility
-    let clipboardBlob = blob;
-    if (blob.type !== 'image/png') {
-      // Create a canvas to convert the image to PNG
-      const img = new Image();
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-
-      await new Promise((resolve) => {
-        img.onload = () => {
-          canvas.width = img.width;
-          canvas.height = img.height;
-          ctx?.drawImage(img, 0, 0);
-          canvas.toBlob((pngBlob) => {
-            if (pngBlob) {
-              clipboardBlob = pngBlob;
-            }
-            resolve(undefined);
-          }, 'image/png');
-        };
-        img.src = qrcode.value;
-      });
-    }
-
-    // Copy to clipboard using the Clipboard API
-    await navigator.clipboard.write([
-      new ClipboardItem({
-        'image/png': clipboardBlob,
-      }),
-    ]);
-
-    // Show success feedback
-    isCopied.value = true;
-    setTimeout(() => {
-      isCopied.value = false;
-    }, 2000); // Reset after 2 seconds
-  }
-  catch (error) {
-    console.error('Failed to copy QR code:', error);
-    // Show error feedback and reset
-    isCopied.value = false;
-  }
-}
 </script>
 
 <template>
@@ -154,65 +95,57 @@ async function copyQRCode() {
           label-position="left"
           label-width="130px"
           label-align="right"
+          label="Text:"
           multiline
-          :label="t('tools.qr-code-generator.texts.label-text')"
           rows="1"
-          :placeholder="t('tools.qr-code-generator.texts.placeholder-your-link-or-text')"
-          autosize mb-6
+          autosize
+          placeholder="Your link or text..."
+          mb-6
         />
         <n-form label-width="130" label-placement="left">
-          <n-form-item :label="t('tools.qr-code-generator.texts.label-foreground-color')">
+          <n-form-item label="Foreground color:">
             <n-color-picker v-model:value="foreground" :modes="['hex']" />
           </n-form-item>
-          <n-form-item :label="t('tools.qr-code-generator.texts.label-background-color')">
+          <n-form-item label="Background color:">
             <n-color-picker v-model:value="background" :modes="['hex']" />
           </n-form-item>
-          <n-form-item :label="t('tools.qr-code-generator.texts.label-width')">
-            <n-input-number-i18n v-model:value="width" :min="0" />
+          <n-form-item label="Width:">
+            <n-input-number v-model:value="width" :min="0" />
           </n-form-item>
-          <n-form-item :label="t('tools.qr-code-generator.texts.label-margin')">
-            <n-input-number-i18n v-model:value="margin" :min="0" />
+          <n-form-item label="Margin:">
+            <n-input-number v-model:value="margin" :min="0" />
           </n-form-item>
           <c-select
             v-model:value="errorCorrectionLevelSelectValue"
-            :label="t('tools.qr-code-generator.texts.label-error-resistance')"
+            label="Error resistance:"
             label-position="left"
             label-width="130px"
             label-align="right"
             :options="errorCorrectionLevels.map((value) => ({ label: value, value }))"
           />
-          <c-select
-            v-model:value="outputType"
-            mt-3
-            :label="t('tools.qr-code-generator.texts.label-output-format')"
-            label-position="left"
-            label-width="130px"
-            label-align="right"
-            :options="outputTypes.map((value) => ({ label: value.toUpperCase(), value }))"
-          />
         </n-form>
-        <c-card :title="t('tools.qr-code-generator.texts.title-image')" mt-3>
-          <c-file-upload :title="t('tools.qr-code-generator.texts.title-drag-and-drop-an-image-here-or-click-to-select-an-image')" @file-upload="onUpload" />
+        <c-card title="Image" mt-3>
+          <c-file-upload title="Drag and drop an image here, or click to select an image" @file-upload="onUpload" />
 
           <n-form label-width="130" label-placement="left" mt-3>
-            <n-form-item :label="t('tools.qr-code-generator.texts.label-size')">
-              <n-input-number-i18n v-model:value="imageSize" :min="0" step="0.1" />
+            <n-form-item label="Size:">
+              <n-input-number v-model:value="imageSize" :min="0" step="0.1" />
             </n-form-item>
-            <n-form-item :label="t('tools.qr-code-generator.texts.label-margin')">
-              <n-input-number-i18n v-model:value="imageMargin" :min="0" />
+            <n-form-item label="Margin:">
+              <n-input-number v-model:value="imageMargin" :min="0" />
             </n-form-item>
           </n-form>
         </c-card>
         <c-card mt-3>
           <details>
-            <summary>{{ t('tools.qr-code-generator.texts.tag-dots-options') }}</summary>
+            <summary>Dots Options</summary>
             <n-form label-width="130" label-placement="left">
-              <n-form-item :label="t('tools.qr-code-generator.texts.label-color')">
+              <n-form-item label="Color:">
                 <n-color-picker v-model:value="dotColor" :modes="['hex']" />
               </n-form-item>
               <c-select
                 v-model:value="dotType"
-                :label="t('tools.qr-code-generator.texts.label-type')"
+                label="Type:"
                 label-position="left"
                 label-width="130px"
                 label-align="right"
@@ -223,14 +156,14 @@ async function copyQRCode() {
         </c-card>
         <c-card mt-3>
           <details>
-            <summary>{{ t('tools.qr-code-generator.texts.tag-corners-dots-options') }}</summary>
+            <summary>Corners Dots Options</summary>
             <n-form label-width="130" label-placement="left">
-              <n-form-item :label="t('tools.qr-code-generator.texts.label-color')">
+              <n-form-item label="Color:">
                 <n-color-picker v-model:value="cornersDotColor" :modes="['hex']" />
               </n-form-item>
               <c-select
                 v-model:value="cornersDotType"
-                :label="t('tools.qr-code-generator.texts.label-type')"
+                label="Type:"
                 label-position="left"
                 label-width="130px"
                 label-align="right"
@@ -241,14 +174,14 @@ async function copyQRCode() {
         </c-card>
         <c-card mt-3>
           <details>
-            <summary>{{ t('tools.qr-code-generator.texts.tag-corners-square-options') }}</summary>
+            <summary>Corners Square Options</summary>
             <n-form label-width="130" label-placement="left">
-              <n-form-item :label="t('tools.qr-code-generator.texts.label-color')">
+              <n-form-item label="Color:">
                 <n-color-picker v-model:value="cornersSquareColor" :modes="['hex']" />
               </n-form-item>
               <c-select
                 v-model:value="cornersSquareType"
-                :label="t('tools.qr-code-generator.texts.label-type')"
+                label="Type:"
                 label-position="left"
                 label-width="130px"
                 label-align="right"
@@ -257,29 +190,30 @@ async function copyQRCode() {
             </n-form>
           </details>
         </c-card>
+        <c-select
+          v-model:value="outputType"
+          mt-3
+          label="Output format:"
+          label-position="left"
+          label-width="130px"
+          label-align="right"
+          :options="outputTypes.map((value) => ({ label: value.toUpperCase(), value }))"
+        />
       </n-gi>
       <n-gi>
         <div flex flex-col items-center gap-3>
-          <n-image :src="qrcode" width="250" />
-          <div flex gap-3>
-            <c-button @click="copyQRCode">
-              {{ isCopied ? 'Copied!' : 'Copy' }}
-              <icon-mdi-check v-if="isCopied" ml-2 style="color: #10b981;" />
-              <icon-mdi-content-copy v-else ml-2 />
-            </c-button>
-            <c-button @click="download">
-              Download ({{ outputType.toString().toUpperCase() }})
-              <icon-mdi-download ml-2 />
-            </c-button>
-          </div>
+          <n-image :src="qrcode" width="200" />
+          <c-button @click="download">
+            Download qr-code ({{ outputType.toString().toUpperCase() }})
+          </c-button>
         </div>
 
         <n-divider />
 
         <n-checkbox v-model:checked="smallTerminal">
-          {{ t('tools.qr-code-generator.texts.tag-small-terminal') }}
+          Small Terminal
         </n-checkbox>
-        <n-form-item :label="t('tools.qr-code-generator.texts.label-terminal-output')" mt-1>
+        <n-form-item label="Terminal output:" mt-1>
           <TextareaCopyable
             :value="qrcodeTerminal"
             multiline

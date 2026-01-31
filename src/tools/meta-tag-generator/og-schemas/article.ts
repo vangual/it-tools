@@ -1,35 +1,33 @@
 import type { OGSchemaType } from '../OGSchemaType.type';
 
-import { translate as t } from '@/plugins/i18n.plugin';
-
 export const article: OGSchemaType = {
-  name: t('tools.meta-tag-generator.website.text.article'),
+  name: 'Article',
   elements: [
     {
       type: 'input',
-      label: t('tools.meta-tag-generator.article.text.publishing-date'),
+      label: 'Publishing date',
       key: 'article:published_time',
-      placeholder: t('tools.meta-tag-generator.article.text.when-the-article-was-first-published'),
+      placeholder: 'When the article was first published...',
     },
     {
       type: 'input',
-      label: t('tools.meta-tag-generator.article.text.modification-date'),
+      label: 'Modification date',
       key: 'article:modified_time',
-      placeholder: t('tools.meta-tag-generator.article.text.when-the-article-was-last-changed'),
+      placeholder: 'When the article was last changed...',
     },
     {
       type: 'input',
-      label: t('tools.meta-tag-generator.article.text.expiration-date'),
+      label: 'Expiration date',
       key: 'article:expiration_time',
-      placeholder: t('tools.meta-tag-generator.article.text.when-the-article-is-out-of-date-after'),
+      placeholder: 'When the article is out of date after...',
     },
-    { type: 'input', label: t('tools.meta-tag-generator.article.text.author'), key: 'article:author', placeholder: t('tools.meta-tag-generator.article.text.writers-of-the-article') },
+    { type: 'input', label: 'Author', key: 'article:author', placeholder: 'Writers of the article...' },
     {
       type: 'input',
-      label: t('tools.meta-tag-generator.article.text.section'),
+      label: 'Section',
       key: 'article:section',
-      placeholder: t('tools.meta-tag-generator.article.text.a-high-level-section-name-e-g-technology'),
+      placeholder: 'A high-level section name. E.g. Technology..',
     },
-    { type: 'input', label: t('tools.meta-tag-generator.article.text.tag'), key: 'article:tag', placeholder: t('tools.meta-tag-generator.article.text.tag-words-associated-with-this-article') },
+    { type: 'input', label: 'Tag', key: 'article:tag', placeholder: 'Tag words associated with this article...' },
   ],
 };

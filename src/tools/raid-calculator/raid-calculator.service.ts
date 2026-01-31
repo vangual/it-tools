@@ -1,5 +1,3 @@
-import { translate as t } from '@/plugins/i18n.plugin';
-
 export { raidCalculations };
 
 interface RaidType {
@@ -13,8 +11,8 @@ interface RaidType {
 
 const raidCalculations: { [key: string]: RaidType } = {
   raid_0: {
-    about: t('tools.raid-calculator.service.text.raid-0-splits-data-evenly-across-2-or-more-disks-without-redunancy-or-fault-tolerance-creating-one-large-storage-space'),
-    requirements: t('tools.raid-calculator.service.text.raid-0-requires-at-least-1-disk'),
+    about: 'RAID 0 splits data evenly across 2 or more disks without redunancy or fault tolerance creating one large storage space.',
+    requirements: 'RAID 0 requires at least 1 disk',
     validate(num: number, _size: number, _stripeSize: number) {
       return num > 1;
     },
@@ -27,12 +25,12 @@ const raidCalculations: { [key: string]: RaidType } = {
       return 100;
     },
     fault(_num: number, _size: number, _unit: number) {
-      return t('tools.mac-address-generator.texts.label-none');
+      return 'None';
     },
   },
   raid_1: {
-    about: t('tools.raid-calculator.service.text.raid-1-consists-of-an-exact-copy-of-the-data-mirror-across-two-or-more-disks-the-array-will-operate-as-long-as-at-least-one-drive-is-operational'),
-    requirements: t('tools.raid-calculator.service.text.raid-1-requires-at-least-1-disk'),
+    about: 'RAID 1 consists of an exact copy of the data (mirror) across two or more disks. The array will operate as long as at least one drive is operational.',
+    requirements: 'RAID 1 requires at least 1 disk',
     validate(num: number, _size: number, _stripeSize: number) {
       return num > 1;
     },
@@ -46,12 +44,12 @@ const raidCalculations: { [key: string]: RaidType } = {
     },
     fault(num: number, _size: number, _unit: number) {
       // FT = total - 1
-      return t('tools.raid-calculator.text.num-1-drive-failures', [num - 1]);
+      return `${num - 1} drive failures`;
     },
   },
   raid_5: {
-    about: t('tools.raid-calculator.service.text.raid-5-uses-block-level-striping-with-parity-this-allows-for-fault-tolerance-with-a-storage-reduction-equal-to-one-drive-for-the-parity-information'),
-    requirements: t('tools.raid-calculator.service.text.raid-5-requires-at-least-3-disks'),
+    about: 'RAID 5 uses block level striping with parity. This allows for fault tolerance with a storage reduction equal to one drive for the parity information.',
+    requirements: 'RAID 5 requires at least 3 disks',
     validate(num: number, _size: number, _stripeSize: number) {
       return num >= 3;
     },
@@ -65,12 +63,12 @@ const raidCalculations: { [key: string]: RaidType } = {
     },
     fault(_num: number, _size: number, _unit: number) {
       // always 1 failure
-      return t('tools.raid-calculator.service.text.1-drive-failure');
+      return '1 drive failure';
     },
   },
   raid_6: {
-    about: t('tools.raid-calculator.service.text.raid-6-is-similiar-to-raid-5-but-with-an-additional-parity-block-this-allows-for-an-additional-disk-failure-at-the-cost-of-storage-reduction-equal-to-two-drives'),
-    requirements: t('tools.raid-calculator.service.text.raid-6-requires-at-least-4-disks'),
+    about: 'RAID 6 is similiar to RAID 5 but with an additional parity block. This allows for an additional disk failure at the cost of storage reduction equal to two drives.',
+    requirements: 'RAID 6 requires at least 4 disks',
     validate(num: number, _size: number, _stripeSize: number) {
       return num >= 4;
     },
@@ -84,12 +82,12 @@ const raidCalculations: { [key: string]: RaidType } = {
     },
     fault(_num: number, _size: number, _unit: number) {
       // always 2 drive failures
-      return t('tools.raid-calculator.service.text.2-drive-failures');
+      return '2 drive failures';
     },
   },
   raid_7: {
-    about: t('tools.raid-calculator.service.text.raid-7-raid-tp-non-standard-is-similiar-to-raid-5-and-raid-6-but-with-a-third-parity-block-this-allows-for-a-third-disk-failure-at-the-cost-of-storage-reduction-equal-to-three-drives'),
-    requirements: t('tools.raid-calculator.service.text.raid-7-requires-at-least-5-disks'),
+    about: 'RAID 7/RAID TP (non-standard) is similiar to RAID 5 and RAID 6 but with a third parity block. This allows for a third disk failure at the cost of storage reduction equal to three drives.',
+    requirements: 'RAID 7 requires at least 5 disks',
     validate(num: number, _size: number, _stripeSize: number) {
       return num >= 5;
     },
@@ -103,12 +101,12 @@ const raidCalculations: { [key: string]: RaidType } = {
     },
     fault(_num: number, _size: number, _unit: number) {
       // always 3 drive failures
-      return t('tools.raid-calculator.service.text.3-drive-failures');
+      return '3 drive failures';
     },
   },
   raid_10: {
-    about: t('tools.raid-calculator.service.text.raid-10-is-a-stripe-of-mirrors-raid-1-raid-0-each-set-of-drives-is-mirrored-and-striped-together-so-that-each-drive-in-the-set-is-fault-tolerant-within-the-group'),
-    requirements: t('tools.raid-calculator.service.text.raid-10-requires-an-even-number-of-at-least-4-disks'),
+    about: 'RAID 10 is a stripe of mirrors (RAID 1 + RAID 0). Each set of drives is mirrored and striped together so that each drive in the set is fault tolerant within the group.',
+    requirements: 'RAID 10 requires an even number of at least 4 disks',
     validate(num: number, _size: number, _stripeSize: number) {
       return num >= 4 && num % 2 === 0;
     },
@@ -122,12 +120,12 @@ const raidCalculations: { [key: string]: RaidType } = {
     },
     fault(_num: number, _size: number, _unit: number) {
       // one per mirror
-      return t('tools.raid-calculator.service.text.1-drive-failure-per-mirrored-set');
+      return '1 drive failure per mirrored set';
     },
   },
   raid_50: {
-    about: t('tools.raid-calculator.service.text.raid-50-stripes-multiple-raid-5-arrays-together-raid-5-raid-0-each-raid-5-set-can-sustain-a-single-drive-failure'),
-    requirements: t('tools.raid-calculator.service.text.raid-50-requires-at-least-6-disks-with-3-minimum-per-stripe-stripes-must-contain-an-equal-number-of-disks'),
+    about: 'RAID 50 stripes multiple RAID 5 arrays together (RAID 5 + RAID 0). Each RAID 5 set can sustain a single drive failure.',
+    requirements: 'RAID 50 requires at least 6 disks with 3 minimum per stripe. Stripes must contain an equal number of disks.',
     validate(num: number, size: number, stripeSize: number) {
       return num >= 6 && stripeSize >= 3 && num % stripeSize === 0;
     },
@@ -144,12 +142,12 @@ const raidCalculations: { [key: string]: RaidType } = {
     },
     fault(_num: number, _size: number, _unit: number) {
       // one per set
-      return t('tools.raid-calculator.service.text.1-drive-failure-per-raid-5-set');
+      return '1 drive failure per RAID 5 set';
     },
   },
   raid_60: {
-    about: t('tools.raid-calculator.service.text.raid-60-stripes-multiple-raid-6-arrays-together-raid-6-raid-0-each-raid-6-set-can-sustain-two-drive-failures'),
-    requirements: t('tools.raid-calculator.service.text.raid-60-requires-at-least-8-disks-with-4-minimum-per-stripe-stripes-must-contain-an-equal-number-of-disks'),
+    about: 'RAID 60 stripes multiple RAID 6 arrays together (RAID 6 + RAID 0). Each RAID 6 set can sustain two drive failures.',
+    requirements: 'RAID 60 requires at least 8 disks with 4 minimum per stripe. Stripes must contain an equal number of disks.',
     validate(num: number, size: number, stripeSize: number) {
       return num >= 8 && stripeSize >= 4 && num % stripeSize === 0;
     },
@@ -166,12 +164,12 @@ const raidCalculations: { [key: string]: RaidType } = {
     },
     fault(_num: number, _size: number, _unit: number) {
       // 2 per set
-      return t('tools.raid-calculator.service.text.2-drive-failures-per-raid-6-set');
+      return '2 drive failures per RAID 6 set';
     },
   },
   raid_70: {
-    about: t('tools.raid-calculator.service.text.raid-70-stripes-multiple-raid-7-arrays-together-raid-7-raid-0-each-raid-7-set-can-sustain-three-drive-failures'),
-    requirements: t('tools.raid-calculator.service.text.raid-70-requires-at-least-10-disks-with-5-minimum-per-stripe-stripes-must-contain-an-equal-number-of-disks'),
+    about: 'RAID 70 stripes multiple RAID 7 arrays together (RAID 7 + RAID 0). Each RAID 7 set can sustain three drive failures.',
+    requirements: 'RAID 70 requires at least 10 disks with 5 minimum per stripe. Stripes must contain an equal number of disks.',
     validate(num: number, size: number, stripeSize: number) {
       return num >= 10 && stripeSize >= 5 && num % stripeSize === 0;
     },
@@ -188,7 +186,7 @@ const raidCalculations: { [key: string]: RaidType } = {
     },
     fault(_num: number, _size: number, _unit: number) {
       // 2 per set
-      return t('tools.raid-calculator.service.text.3-drive-failures-per-raid-7-set');
+      return '3 drive failures per RAID 7 set';
     },
   },
 };

@@ -1,11 +1,10 @@
 import { Scan } from '@vicons/tabler';
 import { defineTool } from '../tool';
-import { translate as t } from '@/plugins/i18n.plugin';
 
 export const tool = defineTool({
-  name: t('tools.ocr-image.title'),
+  name: 'OCRize image and PDF',
   path: '/ocr-image',
-  description: t('tools.ocr-image.description'),
+  description: 'Perform OCR (Tesseract) on an image or PDF',
   keywords: ['ocr', 'image', 'tesseract', 'pdf'],
   component: () => import('./ocr-image.vue'),
   icon: Scan,

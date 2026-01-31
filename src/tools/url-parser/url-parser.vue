@@ -1,13 +1,9 @@
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n';
 import InputCopyable from '../../components/InputCopyable.vue';
 import { isNotThrowing } from '@/utils/boolean';
 import { withDefaultOnError } from '@/utils/defaults';
-import { useQueryParam } from '@/composable/queryParams';
 
-const { t } = useI18n();
-
-const urlToParse = useQueryParam({ tool: 'url-parser', name: 'url', defaultValue: 'https://me:pwd@sharevb-it-tools.vercel.app:3000/url-parser?key=value&keyarr=value1&keyarr=value2&otherarg#the-hash' });
+const urlToParse = ref('https://me:pwd@it-tools.tech:3000/url-parser?key=value&keyarr=value1&keyarr=value2&otherarg#the-hash');
 
 const urlParsed = computed(() => withDefaultOnError(() => new URL(urlToParse.value), undefined));
 const urlParsedParams = computed(() => {
@@ -36,7 +32,7 @@ const urlParsedParams = computed(() => {
 const urlValidationRules = [
   {
     validator: (value: string) => isNotThrowing(() => new URL(value)),
-    message: t('tools.url-parser.texts.message-invalid-url'),
+    message: 'Invalid url',
   },
 ];
 
@@ -45,10 +41,8 @@ const properties: { title: string; key: keyof URL }[] = [
   { title: 'Username', key: 'username' },
   { title: 'Password', key: 'password' },
   { title: 'Hostname', key: 'hostname' },
-  { title: 'Host', key: 'host' },
   { title: 'Port', key: 'port' },
   { title: 'Path', key: 'pathname' },
-  { title: 'Fragment', key: 'hash' },
   { title: 'Params', key: 'search' },
 ];
 </script>
@@ -57,8 +51,8 @@ const properties: { title: string; key: keyof URL }[] = [
   <c-card>
     <c-input-text
       v-model:value="urlToParse"
-      :label="t('tools.url-parser.texts.label-your-url-to-parse')"
-      :placeholder="t('tools.url-parser.texts.placeholder-your-url-to-parse')"
+      label="Your url to parse:"
+      placeholder="Your url to parse..."
       raw-text
       :validation-rules="urlValidationRules"
     />
@@ -88,11 +82,8 @@ const properties: { title: string; key: keyof URL }[] = [
         <icon-mdi-arrow-right-bottom />
       </div>
 
-      <InputCopyable :value="param.key" readonly mr-1 style="width: 40%" />
-      <InputCopyable :value="param.value" readonly mr-1 />
-      <c-button v-if="/^[a-z]+:\/\//.test(param.value || '')" target="_blank" :href="param.value">
-        {{ t('tools.url-parser.texts.button-open-url') }}
-      </c-button>
+      <InputCopyable :value="param.key" readonly />
+      <InputCopyable :value="param.value" readonly />
     </div>
   </c-card>
 </template>

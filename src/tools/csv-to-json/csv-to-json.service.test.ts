@@ -1,47 +1,24 @@
 import { describe, expect, it } from 'vitest';
 import { convertCsvToArray, getHeaders } from './csv-to-json.service';
-import '@/utils/json5-bignum';
 
 describe('csv-to-json service', () => {
   describe('getHeaders', () => {
     it('extracts all the keys from the first line of the CSV', () => {
-      expect(getHeaders('a,b,c\n1,2,3\n4,5,6', ',')).toEqual(['a', 'b', 'c']);
+      expect(getHeaders('a,b,c\n1,2,3\n4,5,6')).toEqual(['a', 'b', 'c']);
     });
 
     it('returns an empty array if the CSV is empty', () => {
-      expect(getHeaders('', ',')).toEqual([]);
+      expect(getHeaders('')).toEqual([]);
     });
   });
 
   describe('convertCsvToArray', () => {
-    it('detects and converts with different separators', () => {
-      const res = [
-        { a: '1', b: '2' },
-        { a: '3', b: '4' },
-      ];
-
-      expect(convertCsvToArray('a,b\n1,2\n3,4')).toEqual(res);
-      expect(convertCsvToArray('a;b\n1;2\n3;4')).toEqual(res);
-      expect(convertCsvToArray('a\tb\n1\t2\n3\t4')).toEqual(res);
-      expect(convertCsvToArray('a|b\n1|2\n3|4')).toEqual(res);
-    });
-
     it('converts a CSV string to an array of objects', () => {
       const csv = 'a,b\n1,2\n3,4';
 
       expect(convertCsvToArray(csv)).toEqual([
         { a: '1', b: '2' },
         { a: '3', b: '4' },
-      ]);
-    });
-
-    it('converts a CSV string to an array of typed objects', () => {
-      const csv = 'a,b\n1,2\ntrue, false\ntruc, bidule';
-
-      expect(convertCsvToArray(csv, true)).toEqual([
-        { a: 1, b: 2 },
-        { a: true, b: false },
-        { a: 'truc', b: 'bidule' },
       ]);
     });
 

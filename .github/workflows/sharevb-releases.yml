@@ -1,8 +1,5 @@
 name: Release new versions
 
-env:
-  VITE_VERCEL_ENV: production
-
 on:
   push:
     tags:
@@ -11,18 +8,13 @@ on:
 jobs:
   docker-release:
     runs-on: ubuntu-latest
+    if: false  # disable upstream workflows
     steps:
       - name: Get release version
         run: echo "RELEASE_VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
 
       - name: Checkout
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+        uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac # v4
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
@@ -37,23 +29,6 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build and push (BASE_URL)
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ./Dockerfile
-          build-args: |
-            "BASE_URL=/it-tools/"
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: |
-            sharevb/it-tools:baseurl-it-tools
-            sharevb/it-tools:stable-baseurl-it-tools
-            sharevb/it-tools:${{ env.RELEASE_VERSION}}-baseurl-it-tools
-            ghcr.io/sharevb/it-tools:baseurl-it-tools
-            ghcr.io/sharevb/it-tools:stable-baseurl-it-tools
-            ghcr.io/sharevb/it-tools:${{ env.RELEASE_VERSION}}-baseurl-it-tools
-
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
@@ -62,14 +37,11 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
-            sharevb/it-tools:latest
-            sharevb/it-tools:stable
-            sharevb/it-tools:${{ env.RELEASE_VERSION}}
             ghcr.io/sharevb/it-tools:latest
-            ghcr.io/sharevb/it-tools:stable
             ghcr.io/sharevb/it-tools:${{ env.RELEASE_VERSION}}
 
   github-release:
+    if: false  # disable upstream workflows
     runs-on: ubuntu-latest
     needs: docker-release
     steps:
@@ -77,7 +49,7 @@ jobs:
         run: echo "RELEASE_VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
 
       - name: Checkout
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac # v4
 
       - run: |
           echo "Before: corepack version => $(corepack --version || echo 'not installed')"
@@ -88,11 +60,11 @@ jobs:
 
       - uses: actions/setup-node@v3
         with:
-          node-version: 22
+          node-version: 20
           cache: 'pnpm'
 
       - name: Install dependencies
-        run: pnpm i --ignore-scripts
+        run: pnpm i
 
       - name: Build the app
         run: pnpm build
@@ -119,14 +91,8 @@ jobs:
           body: |
             ## Docker images
 
-            - Docker Hub Registry
-              - `sharevb/it-tools:latest`
-              - `sharevb/it-tools:stable`
-              - `sharevb/it-tools:${{ env.RELEASE_VERSION}}`
-
             - GitHub Container Registry
               - `ghcr.io/sharevb/it-tools:latest`
-              - `ghcr.io/sharevb/it-tools:stable`
               - `ghcr.io/sharevb/it-tools:${{ env.RELEASE_VERSION}}`
 
             ## Changelog

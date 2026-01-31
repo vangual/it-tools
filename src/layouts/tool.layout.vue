@@ -1,13 +1,10 @@
 <script lang="ts" setup>
-import { Lock, World } from '@vicons/tabler';
-
 import { useRoute } from 'vue-router';
 import { useHead } from '@vueuse/head';
 import type { HeadObject } from '@vueuse/head';
 import VueMarkdown from 'vue-markdown-render';
 
 import { useThemeVars } from 'naive-ui';
-import { useTheme } from '../ui/c-link/c-link.theme';
 import BaseLayout from './base.layout.vue';
 import FavoriteButton from '@/components/FavoriteButton.vue';
 import type { Tool } from '@/tools/tools.types';
@@ -18,31 +15,7 @@ const head = computed<HeadObject>(() => ({
   title: `${route.meta.name} - IT Tools`,
   meta: [
     {
-      itemprop: 'name',
-      content: `${route.meta.name} - IT Tools`,
-    },
-    {
-      property: 'og:title',
-      content: `${route.meta.name} - IT Tools`,
-    },
-    {
-      property: 'twitter:title',
-      content: `${route.meta.name} - IT Tools`,
-    },
-    {
       name: 'description',
-      content: route.meta?.description as string,
-    },
-    {
-      itemprop: 'description',
-      content: route.meta?.description as string,
-    },
-    {
-      property: 'og:description',
-      content: route.meta?.description as string,
-    },
-    {
-      property: 'twitter:description',
       content: route.meta?.description as string,
     },
     {
@@ -71,11 +44,9 @@ const toolFooter = computed<string>(() => {
         packageName,
         packageName.includes('://') ? packageName : `https://www.npmjs.com/package/${packageName}`),
     );
-  return ((npmPackages.length > 0 ? `${t('tools.tool.layout.text.made-with-npmpackages', [npmPackages.join(', ')])}\n` : '') + footer).trim();
+  return ((npmPackages.length > 0 ? `Made with ${npmPackages.join(', ')}\n` : '') + footer).trim();
 });
 const themeVars = useThemeVars();
-
-const linkTheme = useTheme();
 </script>
 
 <template>
@@ -85,30 +56,6 @@ const linkTheme = useTheme();
         <div flex flex-nowrap items-center justify-between>
           <n-h1>
             {{ toolTitle }}
-            <n-tooltip
-              placement="right"
-              trigger="click"
-              content-class="tool-privacy-info"
-            >
-              <template #trigger>
-                <World
-                  v-if="route.meta.externAccessDescription"
-                  class="tool-privacy-icon"
-                />
-                <Lock
-                  v-else
-                  class="tool-privacy-icon"
-                />
-              </template>
-              <VueMarkdown
-                v-if="route.meta.externAccessDescription"
-                :source="route.meta.externAccessDescription"
-                :options="{ linkify: true }"
-              />
-              <template v-else>
-                Runs entirely in your browser. No external requests.
-              </template>
-            </n-tooltip>
           </n-h1>
 
           <div>
@@ -125,9 +72,7 @@ const linkTheme = useTheme();
     </div>
 
     <div class="tool-content">
-      <Suspense>
-        <slot />
-      </Suspense>
+      <slot />
     </div>
 
     <div class="tool-footer">
@@ -136,23 +81,7 @@ const linkTheme = useTheme();
   </BaseLayout>
 </template>
 
-<style lang="less">
-.tool-privacy-info {
-  p {
-    margin:0;
-  }
-  a {
-    color: inherit !important;
-    font-style: italic;
-  }
-}
-</style>
-
 <style lang="less" scoped>
-.tool-privacy-icon {
-  display: inline-block;
-  height: .6em;
-}
 .tool-content {
   display: flex;
   flex-direction: row;
@@ -163,13 +92,13 @@ const linkTheme = useTheme();
   overflow-x: auto;
 
   ::v-deep(& > *) {
-    flex: 0 1 1200px;
+    flex: 0 1 600px;
     min-width:0;
   }
 }
 
 .tool-layout {
-  max-width: 1200px;
+  max-width: 600px;
   margin: 0 auto;
   box-sizing: border-box;
 
@@ -211,30 +140,4 @@ const linkTheme = useTheme();
       font-style: italic;
     }
   }
-::v-deep(.external-tool) a {
-  line-height: inherit;
-  font-family: inherit;
-  font-size: inherit;
-  border: none;
-  cursor: pointer;
-  text-decoration: none;
-  font-weight: 400;
-  color: v-bind('linkTheme.default.textColor');
-  border-radius: 4px;
-  transition: color cubic-bezier(0.4, 0, 0.2, 1) 0.3s;
-
-  outline-offset: 1px;
-
-  &:hover {
-    color: v-bind('linkTheme.default.hover.textColor');
-  }
-
-  &:active {
-    color: v-bind('linkTheme.default.textColor');
-  }
-
-  &:focus {
-    color: v-bind('linkTheme.default.outline.color');
-  }
-}
 </style>

@@ -21,7 +21,7 @@ Some text
 
 Some text
 
-### Title with Link [TOC](http://sharevb-it-tools.vercel.app)
+### Title with Link [TOC](http://it-tools.tech)
 
 \`\`\`
 ## some bash code
@@ -58,7 +58,7 @@ Some text
 Some text
 
 <!-- TOC ANCHOR --><a name="title-with-link-toc"></a>
-### Title with Link [TOC](http://sharevb-it-tools.vercel.app)
+### Title with Link [TOC](http://it-tools.tech)
 
 \`\`\`
 ## some bash code
@@ -93,7 +93,7 @@ Some text
 
 Some text
 
-### Title with Link [TOC](http://sharevb-it-tools.vercel.app)
+### Title with Link [TOC](http://it-tools.tech)
 
 \`\`\`
 ## some bash code
@@ -130,7 +130,7 @@ Some text
 Some text
 
 {%- # TOC ANCHOR -%}<a name="title-with-link-toc"></a>
-### Title with Link [TOC](http://sharevb-it-tools.vercel.app)
+### Title with Link [TOC](http://it-tools.tech)
 
 \`\`\`
 ## some bash code
@@ -165,7 +165,7 @@ Some text
 
 Some text
 
-### Title with Link [TOC](http://sharevb-it-tools.vercel.app)
+### Title with Link [TOC](http://it-tools.tech)
 
 \`\`\`
 ## some bash code
@@ -203,7 +203,7 @@ Some text
 Some text
 
 <!-- TOC ANCHOR --><a name="title-with-link-toc"></a>
-### Title with Link [TOC](http://sharevb-it-tools.vercel.app)
+### Title with Link [TOC](http://it-tools.tech)
 
 \`\`\`
 ## some bash code
@@ -242,7 +242,7 @@ Some text
 Some text
 
 <!-- TOC ANCHOR --><a name="title-with-link-toc"></a>
-### Title with Link [TOC](http://sharevb-it-tools.vercel.app)
+### Title with Link [TOC](http://it-tools.tech)
 
 \`\`\`
 ## some bash code
@@ -278,7 +278,7 @@ Some text
 Some text
 
 <!-- TOC ANCHOR --><a name="title-with-link-toc"></a>
-### Title with Link [TOC](http://sharevb-it-tools.vercel.app)
+### Title with Link [TOC](http://it-tools.tech)
 
 \`\`\`
 ## some bash code

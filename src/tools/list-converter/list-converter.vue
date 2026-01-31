@@ -1,47 +1,44 @@
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n';
 import { useStorage } from '@vueuse/core';
 import { convert } from './list-converter.models';
 import type { ConvertOptions } from './list-converter.types';
 
-const { t } = useI18n();
-
 const sortOrderOptions = [
   {
-    label: t('tools.list-converter.texts.label-no-sort'),
+    label: 'No sort',
     value: null,
     disabled: false,
   },
   {
-    label: t('tools.list-converter.texts.label-sort-ascending'),
+    label: 'Sort ascending',
     value: 'asc',
   },
   {
-    label: t('tools.list-converter.texts.label-sort-descending'),
+    label: 'Sort descending',
     value: 'desc',
   },
   {
-    label: t('tools.list-converter.texts.label-sort-asc-numeric'),
+    label: 'Sort asc (Numeric)',
     value: 'asc-num',
   },
   {
-    label: t('tools.list-converter.texts.label-sort-desc-numeric'),
+    label: 'Sort desc (Numeric)',
     value: 'desc-num',
   },
   {
-    label: t('tools.list-converter.texts.label-sort-asc-upper'),
+    label: 'Sort asc (Upper)',
     value: 'asc-upper',
   },
   {
-    label: t('tools.list-converter.texts.label-sort-desc-upper'),
+    label: 'Sort desc (Upper)',
     value: 'desc-upper',
   },
   {
-    label: t('tools.list-converter.texts.label-sort-asc-binary'),
+    label: 'Sort asc (Binary)',
     value: 'asc-bin',
   },
   {
-    label: t('tools.list-converter.texts.label-sort-desc-binary'),
+    label: 'Sort desc (Binary)',
     value: 'desc-bin',
   },
 ];
@@ -51,7 +48,6 @@ const conversionConfig = useStorage<ConvertOptions>('list-converter:conversionCo
   trimItems: true,
   removeDuplicates: true,
   keepLineBreaks: false,
-  outputAsColumn: false,
   itemPrefix: '',
   itemSuffix: '',
   removeItemPrefix: '',
@@ -62,8 +58,6 @@ const conversionConfig = useStorage<ConvertOptions>('list-converter:conversionCo
   sortList: null,
   itemsSeparator: ', ',
   splitBySeparator: '',
-  filterRegex: '',
-  notFilterRegex: '',
 });
 
 function transformer(value: string) {
@@ -77,14 +71,14 @@ function transformer(value: string) {
       <c-card>
         <n-space>
           <div>
-            <n-form-item :label="t('tools.list-converter.texts.label-trim-list-items')" label-placement="left" label-width="150" :show-feedback="false" mb-2>
+            <n-form-item label="Trim list items" label-placement="left" label-width="150" :show-feedback="false" mb-2>
               <n-switch v-model:value="conversionConfig.trimItems" />
             </n-form-item>
-            <n-form-item :label="t('tools.list-converter.texts.label-remove-duplicates')" label-placement="left" label-width="150" :show-feedback="false" mb-2>
+            <n-form-item label="Remove duplicates" label-placement="left" label-width="150" :show-feedback="false" mb-2>
               <n-switch v-model:value="conversionConfig.removeDuplicates" data-test-id="removeDuplicates" />
             </n-form-item>
             <n-form-item
-              :label="t('tools.list-converter.texts.label-convert-to-lowercase')"
+              label="Convert to lowercase"
               label-placement="left"
               label-width="150"
               :show-feedback="false"
@@ -92,17 +86,14 @@ function transformer(value: string) {
             >
               <n-switch v-model:value="conversionConfig.lowerCase" />
             </n-form-item>
-            <n-form-item :label="t('tools.list-converter.texts.label-keep-line-breaks')" label-placement="left" label-width="150" :show-feedback="false" mb-2>
-              <n-switch v-model:value="conversionConfig.keepLineBreaks" :disabled="conversionConfig.outputAsColumn" />
-            </n-form-item>
-            <n-form-item :label="t('tools.list-converter.texts.label-output-as-column')" label-placement="left" label-width="150" :show-feedback="false" mb-2>
-              <n-switch v-model:value="conversionConfig.outputAsColumn" data-test-id="outputAsColumn" />
+            <n-form-item label="Keep line breaks" label-placement="left" label-width="150" :show-feedback="false" mb-2>
+              <n-switch v-model:value="conversionConfig.keepLineBreaks" />
             </n-form-item>
           </div>
           <div>
             <c-select
               v-model:value="conversionConfig.sortList"
-              :label="t('tools.list-converter.texts.label-sort-list')"
+              label="Sort list"
               label-position="left"
               label-width="120px"
               label-align="right"
@@ -111,79 +102,63 @@ function transformer(value: string) {
               w-full
               :disabled="conversionConfig.reverseList"
               data-test-id="sortList"
-              :placeholder="t('tools.list-converter.texts.placeholder-sort-alphabetically')"
+              placeholder="Sort alphabetically"
             />
 
             <c-input-text
               v-model:value="conversionConfig.itemsSeparator"
-              :label="t('tools.list-converter.texts.label-items-separator')"
+              label="Items Separator"
               label-position="left"
               label-width="120px"
               label-align="right"
               mb-2
-              :disabled="conversionConfig.outputAsColumn"
-              test-id="itemsSeparator"
-              :placeholder="t('tools.list-converter.texts.placeholder-items-separator')"
+              placeholder="Items separator"
             />
 
             <c-input-text
               v-model:value="conversionConfig.splitBySeparator"
-              :label="t('tools.list-converter.texts.label-split-separator')"
+              label="Split Separator"
               label-position="left"
               label-width="120px"
               label-align="right"
               mb-2
-              test-id="splitBySeparator"
-              :placeholder="t('tools.list-converter.texts.placeholder-separator-for-splitting')"
+              placeholder="Separator for splitting"
             />
 
-            <n-form-item :label="t('tools.list-converter.texts.label-filter-item')" label-placement="left" label-width="120" :show-feedback="false" mb-2>
-              <c-input-text
-                v-model:value="conversionConfig.filterRegex"
-                :placeholder="t('tools.list-converter.texts.placeholder-remove-item-filter-regex')"
-                test-id="filterRegex"
-              />
-              <c-input-text
-                v-model:value="conversionConfig.notFilterRegex"
-                :placeholder="t('tools.list-converter.texts.placeholder-remove-item-not-filter-regex')"
-                test-id="notFilterRegex"
-              />
-            </n-form-item>
-
-            <n-form-item :label="t('tools.list-converter.texts.label-unwrap-item')" label-placement="left" label-width="120" :show-feedback="false" mb-2>
+            <n-form-item label="Unwrap item" label-placement="left" label-width="120" :show-feedback="false" mb-2>
               <c-input-text
                 v-model:value="conversionConfig.removeItemPrefix"
-                :placeholder="t('tools.list-converter.texts.placeholder-remove-item-prefix-regex')"
+                placeholder="Remove item prefix regex"
                 test-id="removeItemPrefix"
               />
               <c-input-text
                 v-model:value="conversionConfig.removeItemSuffix"
-                :placeholder="t('tools.list-converter.texts.placeholder-remove-item-suffix-regex')"
+                placeholder="Remove item suffix regex"
                 test-id="removeItemSuffix"
               />
             </n-form-item>
 
-            <n-form-item :label="t('tools.list-converter.texts.label-wrap-item')" label-placement="left" label-width="120" :show-feedback="false" mb-2>
+            <n-form-item label="Wrap item" label-placement="left" label-width="120" :show-feedback="false" mb-2>
               <c-input-text
                 v-model:value="conversionConfig.itemPrefix"
-                :placeholder="t('tools.list-converter.texts.placeholder-item-prefix')"
+                placeholder="Item prefix"
                 test-id="itemPrefix"
               />
               <c-input-text
                 v-model:value="conversionConfig.itemSuffix"
-                :placeholder="t('tools.list-converter.texts.placeholder-item-suffix')"
+                placeholder="Item suffix"
                 test-id="itemSuffix"
               />
             </n-form-item>
-            <n-form-item :label="t('tools.list-converter.texts.label-wrap-list')" label-placement="left" label-width="120" :show-feedback="false" mb-2>
+            <n-form-item label="Wrap list" label-placement="left" label-width="120" :show-feedback="false" mb-2>
               <c-input-text
                 v-model:value="conversionConfig.listPrefix"
-                :placeholder="t('tools.list-converter.texts.placeholder-list-prefix')"
+                placeholder="List prefix"
                 test-id="listPrefix"
               />
               <c-input-text
                 v-model:value="conversionConfig.listSuffix"
-                :placeholder="t('tools.list-converter.texts.placeholder-list-suffix')"
+                placeholder="List suffix"
                 test-id="listSuffix"
               />
             </n-form-item>
@@ -193,13 +168,10 @@ function transformer(value: string) {
     </div>
   </div>
   <format-transformer
-    :input-label="t('tools.list-converter.texts.input-label-your-input-data')"
-    :input-placeholder="t('tools.list-converter.texts.input-placeholder-paste-your-input-data-here')"
-    :output-label="t('tools.list-converter.texts.output-label-your-transformed-data')"
+    input-label="Your input data"
+    input-placeholder="Paste your input data here..."
+    output-label="Your transformed data"
     :transformer="transformer"
     download-file-name="output.txt"
-    input-line-numbers
-    :rows="25"
-    :input-autosize="false"
   />
 </template>

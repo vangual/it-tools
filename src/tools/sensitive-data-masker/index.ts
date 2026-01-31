@@ -1,14 +1,12 @@
 import { ShieldLock } from '@vicons/tabler';
 import { defineTool } from '../tool';
-import { translate as t } from '@/plugins/i18n.plugin';
 
 export const tool = defineTool({
-  name: t('tools.sensitive-data-masker.title'),
+  name: 'Sensitive data masker',
   path: '/sensitive-data-masker',
-  description: t('tools.sensitive-data-masker.description'),
+  description: 'Clean sensitive data from textual content (ie logs)',
   keywords: ['sensitive', 'data', 'masker', 'obfuscator', 'clean', 'log'],
   component: () => import('./sensitive-data-masker.vue'),
   icon: ShieldLock,
   createdAt: new Date('2024-06-16'),
-  category: 'Forensic',
 });

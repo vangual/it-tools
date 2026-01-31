@@ -1,11 +1,11 @@
 import { Database } from '@vicons/tabler';
 import { defineTool } from '../tool';
-import { translate as t } from '@/plugins/i18n.plugin';
+import { translate } from '@/plugins/i18n.plugin';
 
 export const tool = defineTool({
-  name: t('tools.sql-prettify.title'),
+  name: translate('tools.sql-prettify.title'),
   path: '/sql-prettify',
-  description: t('tools.sql-prettify.description'),
+  description: translate('tools.sql-prettify.description'),
   keywords: [
     'sql',
     'prettify',
@@ -25,5 +25,4 @@ export const tool = defineTool({
   component: () => import('./sql-prettify.vue'),
   icon: Database,
   npmPackages: ['sql-formatter'],
-  category: 'Development',
 });

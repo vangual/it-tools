@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n';
 import type { lib } from 'crypto-js';
 import { enc } from 'crypto-js';
 
@@ -8,8 +7,6 @@ import InputCopyable from '../../components/InputCopyable.vue';
 import { convertHexToBin } from '../hash-text/hash-text.service';
 import { useQueryParamOrStorage } from '@/composable/queryParams';
 import { withDefaultOnError } from '@/utils/defaults';
-
-const { t } = useI18n();
 
 const status = ref<'idle' | 'done' | 'error' | 'processing'>('idle');
 const text = ref('');
@@ -91,7 +88,11 @@ const CRCValues = computed(() => withDefaultOnError(() => {
 }, defaultCRCValues));
 
 watch(text,
-  (newValue) => {
+  (_, newValue) => {
+    if (newValue === '') {
+      return;
+    }
+
     file.value = null;
     hashes.value = getCRCs(newValue);
     status.value = 'done';
@@ -103,17 +104,17 @@ watch(text,
   <div>
     <c-card>
       <c-file-upload
-        :title="t('tools.crc-calculator.texts.title-drag-and-drop-a-file-here-or-click-to-select-a-file')"
+        title="Drag and drop a file here, or click to select a file"
         @file-upload="onUpload"
       />
 
-      <p>{{ t('tools.crc-calculator.texts.tag-or') }}</p>
+      <p>OR</p>
 
       <c-input-text
         v-model:value="text"
         multiline raw-text
-        :placeholder="t('tools.crc-calculator.texts.placeholder-paste-string-to-crc')" rows="3"
-        autosize autofocus :label="t('tools.crc-calculator.texts.label-your-text-to-crc')"
+        placeholder="Paste string to CRC..." rows="3"
+        autosize autofocus label="Your text to CRC:"
       />
 
       <n-divider />
@@ -121,22 +122,22 @@ watch(text,
       <c-select
         v-model:value="encoding"
         mb-4
-        :label="t('tools.crc-calculator.texts.label-digest-encoding')"
+        label="Digest encoding"
         :options="[
           {
-            label: t('tools.crc-calculator.texts.label-binary-base-2'),
+            label: 'Binary (base 2)',
             value: 'Bin',
           },
           {
-            label: t('tools.crc-calculator.texts.label-hexadecimal-base-16'),
+            label: 'Hexadecimal (base 16)',
             value: 'Hex',
           },
           {
-            label: t('tools.crc-calculator.texts.label-base64-base-64'),
+            label: 'Base64 (base 64)',
             value: 'Base64',
           },
           {
-            label: t('tools.crc-calculator.texts.label-base64url-base-64-with-url-safe-chars'),
+            label: 'Base64url (base 64 with url safe chars)',
             value: 'Base64url',
           },
         ]"
@@ -145,7 +146,7 @@ watch(text,
 
     <div mt-3 flex justify-center>
       <c-alert v-if="status === 'error'" type="error">
-        {{ t('tools.crc-calculator.texts.tag-an-error-occured-hashing-file') }}
+        An error occured hashing file.
       </c-alert>
       <n-spin
         v-if="status === 'processing'"

@@ -1,10 +1,7 @@
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n';
 import ctz from 'countries-and-timezones';
 import { type Weekdays, allWeekDays, diffDateTimes, getSupportedCountries, getSupportedRegions, getSupportedStates } from './days-calculator.service';
 import { useQueryParamOrStorage } from '@/composable/queryParams';
-
-const { t } = useI18n();
 
 const now = Date.now();
 
@@ -60,8 +57,8 @@ const inputProps = {
 
 <template>
   <div>
-    <c-card :title="t('tools.days-calculator.texts.title-dates-interval')" mb-2>
-      <n-form-item :label="t('tools.days-calculator.texts.label-date-range')" label-placement="left" label-width="100px" label-align="left" mb-1>
+    <c-card title="Dates Interval" mb-2>
+      <n-form-item label="Date Range:" label-placement="left" label-width="100px" label-align="left" mb-1>
         <n-date-picker v-model:value="inputDateRange" type="datetimerange" />
       </n-form-item>
 
@@ -70,7 +67,7 @@ const inputProps = {
         label-position="left"
         label-width="100px"
         searchable
-        :label="t('tools.days-calculator.texts.label-country')"
+        label="Country:"
         :options="allCountries"
         mb-1
       />
@@ -80,9 +77,9 @@ const inputProps = {
         label-position="left"
         label-width="100px"
         searchable
-        :label="t('tools.days-calculator.texts.label-state')"
+        label="State:"
         :options="possibleStates"
-        :placeholder="t('tools.days-calculator.texts.placeholder-select-a-specific-state-or-let-empty-for-general-info')"
+        placeholder="Select a specific state or let empty for general info"
         mb-1
       />
       <c-select
@@ -91,7 +88,7 @@ const inputProps = {
         label-position="left"
         label-width="100px"
         searchable
-        :label="t('tools.days-calculator.texts.label-region')"
+        label="Region:"
         :options="possibleRegions"
         mb-1
       />
@@ -100,39 +97,39 @@ const inputProps = {
         label-position="left"
         label-width="100px"
         searchable
-        :label="t('tools.days-calculator.texts.label-timezone')"
+        label="Timezone:"
         :options="allTimezones"
         mb-2
       />
 
       <div mb-2 flex items-baseline gap-2>
-        <n-form-item :label="t('tools.days-calculator.texts.label-business-start-hour')" label-placement="left" flex-1>
-          <n-input-number-i18n v-model:value="businessStartHour" :min="0" :max="24" />
+        <n-form-item label="Business Start Hour:" label-placement="left" flex-1>
+          <n-input-number v-model:value="businessStartHour" :min="0" :max="24" />
         </n-form-item>
-        <n-form-item :label="t('tools.days-calculator.texts.label-business-end-hour')" label-placement="left" flex-1>
-          <n-input-number-i18n v-model:value="businessEndHour" :min="0" :max="24" />
+        <n-form-item label="Business End Hour:" label-placement="left" flex-1>
+          <n-input-number v-model:value="businessEndHour" :min="0" :max="24" />
         </n-form-item>
       </div>
 
       <div mb-2 flex items-baseline justify-center gap-2>
         <n-checkbox v-model:checked="includeHolidays">
-          {{ t('tools.days-calculator.texts.tag-include-holidays') }}
+          Include Holidays
         </n-checkbox>
         <n-checkbox v-model:checked="includeEndDate">
-          {{ t('tools.days-calculator.texts.tag-include-end-date') }}
+          Include End Date
         </n-checkbox>
       </div>
 
-      <c-card :title="t('tools.days-calculator.texts.title-weekdays')">
+      <c-card title="Weekdays">
         <n-checkbox-group v-model:value="includeWeekDays">
           <n-space justify="center">
-            <n-checkbox value="monday" :label="t('tools.days-calculator.texts.label-monday')" />
-            <n-checkbox value="tuesday" :label="t('tools.days-calculator.texts.label-tuesday')" />
-            <n-checkbox value="wednesday" :label="t('tools.days-calculator.texts.label-wednesday')" />
-            <n-checkbox value="thursday" :label="t('tools.days-calculator.texts.label-thursday')" />
-            <n-checkbox value="friday" :label="t('tools.days-calculator.texts.label-friday')" />
-            <n-checkbox value="saturday" :label="t('tools.days-calculator.texts.label-saturday')" />
-            <n-checkbox value="sunday" :label="t('tools.days-calculator.texts.label-sunday')" />
+            <n-checkbox value="monday" label="Monday" />
+            <n-checkbox value="tuesday" label="Tuesday" />
+            <n-checkbox value="wednesday" label="Wednesday" />
+            <n-checkbox value="thursday" label="Thursday" />
+            <n-checkbox value="friday" label="Friday" />
+            <n-checkbox value="saturday" label="Saturday" />
+            <n-checkbox value="sunday" label="Sunday" />
           </n-space>
         </n-checkbox-group>
       </c-card>
@@ -143,40 +140,40 @@ const inputProps = {
         {{ error }}
       </c-alert>
 
-      <c-card v-if="resultDaysDiff" :title="t('tools.days-calculator.texts.title-result')">
-        <input-copyable v-bind="inputProps" :label="t('tools.days-calculator.texts.label-start-date')" :value="resultDaysDiff.startDate" />
-        <input-copyable v-bind="inputProps" :label="t('tools.days-calculator.texts.label-start-date-iso')" :value="resultDaysDiff.startDate.toISOString()" />
-        <input-copyable v-bind="inputProps" :label="t('tools.days-calculator.texts.label-end-date')" :value="resultDaysDiff.endDate" />
-        <input-copyable v-bind="inputProps" :label="t('tools.days-calculator.texts.label-end-date-iso')" :value="resultDaysDiff.endDate.toISOString()" />
+      <c-card v-if="resultDaysDiff" title="Result">
+        <input-copyable v-bind="inputProps" label="Start Date" :value="resultDaysDiff.startDate" />
+        <input-copyable v-bind="inputProps" label="Start Date (ISO)" :value="resultDaysDiff.startDate.toISOString()" />
+        <input-copyable v-bind="inputProps" label="End Date" :value="resultDaysDiff.endDate" />
+        <input-copyable v-bind="inputProps" label="End Date (ISO)" :value="resultDaysDiff.endDate.toISOString()" />
         <n-divider />
-        <input-copyable v-bind="inputProps" :label="t('tools.days-calculator.texts.label-total-difference-seconds')" :value="resultDaysDiff.totalDifference.seconds" />
-        <input-copyable v-bind="inputProps" :label="t('tools.days-calculator.texts.label-total-difference-minutes')" :value="resultDaysDiff.totalDifference.minutes" />
-        <input-copyable v-bind="inputProps" :label="t('tools.days-calculator.texts.label-total-difference-hours')" :value="resultDaysDiff.totalDifference.hours" />
-        <input-copyable v-bind="inputProps" :label="t('tools.days-calculator.texts.label-total-difference-days')" :value="resultDaysDiff.totalDifference.days" />
-        <input-copyable v-bind="inputProps" :label="t('tools.days-calculator.texts.label-total-difference-weeks')" :value="resultDaysDiff.totalDifference.weeks" />
-        <input-copyable v-bind="inputProps" :label="t('tools.days-calculator.texts.label-total-difference-months')" :value="resultDaysDiff.totalDifference.months" />
-        <input-copyable v-bind="inputProps" :label="t('tools.days-calculator.texts.label-total-difference-years')" :value="resultDaysDiff.totalDifference.years" />
-        <input-copyable v-bind="inputProps" :label="t('tools.days-calculator.texts.label-total-difference')" :value="resultDaysDiff.totalDifferenceFormatted" />
+        <input-copyable v-bind="inputProps" label="Total Difference Seconds" :value="resultDaysDiff.totalDifference.seconds" />
+        <input-copyable v-bind="inputProps" label="Total Difference Minutes" :value="resultDaysDiff.totalDifference.minutes" />
+        <input-copyable v-bind="inputProps" label="Total Difference Hours" :value="resultDaysDiff.totalDifference.hours" />
+        <input-copyable v-bind="inputProps" label="Total Difference Days" :value="resultDaysDiff.totalDifference.days" />
+        <input-copyable v-bind="inputProps" label="Total Difference Weeks" :value="resultDaysDiff.totalDifference.weeks" />
+        <input-copyable v-bind="inputProps" label="Total Difference Months" :value="resultDaysDiff.totalDifference.months" />
+        <input-copyable v-bind="inputProps" label="Total Difference Years" :value="resultDaysDiff.totalDifference.years" />
+        <input-copyable v-bind="inputProps" label="Total Difference" :value="resultDaysDiff.totalDifferenceFormatted" />
         <n-divider />
-        <input-copyable v-bind="inputProps" :label="t('tools.days-calculator.texts.label-difference-seconds')" :value="resultDaysDiff.differenceSeconds" />
-        <input-copyable v-bind="inputProps" :label="t('tools.days-calculator.texts.label-difference')" :value="resultDaysDiff.differenceFormatted" />
+        <input-copyable v-bind="inputProps" label="Difference Seconds" :value="resultDaysDiff.differenceSeconds" />
+        <input-copyable v-bind="inputProps" label="Difference " :value="resultDaysDiff.differenceFormatted" />
         <n-divider />
-        <input-copyable v-bind="inputProps" :label="t('tools.days-calculator.texts.label-business-seconds')" :value="resultDaysDiff.businessSeconds" />
-        <input-copyable v-bind="inputProps" :label="t('tools.days-calculator.texts.label-business-time')" :value="resultDaysDiff.businessSecondsFormatted" />
-        <input-copyable v-bind="inputProps" :label="t('tools.days-calculator.texts.label-business-hours')" :value="resultDaysDiff.businessHours" />
-        <input-copyable v-bind="inputProps" :label="t('tools.days-calculator.texts.label-business-days')" :value="resultDaysDiff.businessDays" />
+        <input-copyable v-bind="inputProps" label="Business Seconds" :value="resultDaysDiff.businessSeconds" />
+        <input-copyable v-bind="inputProps" label="Business Time" :value="resultDaysDiff.businessSecondsFormatted" />
+        <input-copyable v-bind="inputProps" label="Business Hours" :value="resultDaysDiff.businessHours" />
+        <input-copyable v-bind="inputProps" label="Business Days" :value="resultDaysDiff.businessDays" />
         <n-divider />
-        <input-copyable v-bind="inputProps" :placeholder="t('tools.days-calculator.texts.placeholder-none')" :label="t('tools.days-calculator.texts.label-mondays')" :value="resultDaysDiff.mondays" />
-        <input-copyable v-bind="inputProps" :placeholder="t('tools.days-calculator.texts.placeholder-none')" :label="t('tools.days-calculator.texts.label-tuesdays')" :value="resultDaysDiff.tuesdays" />
-        <input-copyable v-bind="inputProps" :placeholder="t('tools.days-calculator.texts.placeholder-none')" :label="t('tools.days-calculator.texts.label-wednesdays')" :value="resultDaysDiff.wednesdays" />
-        <input-copyable v-bind="inputProps" :placeholder="t('tools.days-calculator.texts.placeholder-none')" :label="t('tools.days-calculator.texts.label-thursdays')" :value="resultDaysDiff.thursdays" />
-        <input-copyable v-bind="inputProps" :placeholder="t('tools.days-calculator.texts.placeholder-none')" :label="t('tools.days-calculator.texts.label-fridays')" :value="resultDaysDiff.fridays" />
-        <input-copyable v-bind="inputProps" :placeholder="t('tools.days-calculator.texts.placeholder-none')" :label="t('tools.days-calculator.texts.label-saturdays')" :value="resultDaysDiff.saturdays" />
-        <input-copyable v-bind="inputProps" :placeholder="t('tools.days-calculator.texts.placeholder-none')" :label="t('tools.days-calculator.texts.label-sundays')" :value="resultDaysDiff.sundays" />
+        <input-copyable v-bind="inputProps" placeholder="None" label="Mondays" :value="resultDaysDiff.mondays" />
+        <input-copyable v-bind="inputProps" placeholder="None" label="Tuesdays" :value="resultDaysDiff.tuesdays" />
+        <input-copyable v-bind="inputProps" placeholder="None" label="Wednesdays" :value="resultDaysDiff.wednesdays" />
+        <input-copyable v-bind="inputProps" placeholder="None" label="Thursdays" :value="resultDaysDiff.thursdays" />
+        <input-copyable v-bind="inputProps" placeholder="None" label="Fridays" :value="resultDaysDiff.fridays" />
+        <input-copyable v-bind="inputProps" placeholder="None" label="Saturdays" :value="resultDaysDiff.saturdays" />
+        <input-copyable v-bind="inputProps" placeholder="None" label="Sundays" :value="resultDaysDiff.sundays" />
         <n-divider />
-        <input-copyable v-bind="inputProps" :label="t('tools.days-calculator.texts.label-weekend-days')" :value="resultDaysDiff.weekendDays" />
-        <input-copyable v-bind="inputProps" :label="t('tools.days-calculator.texts.label-full-weekends')" :value="resultDaysDiff.weekends" />
-        <c-card v-if="resultDaysDiff.holidays?.length" :title="t('tools.days-calculator.texts.title-holidays-in-period')">
+        <input-copyable v-bind="inputProps" label="Weekend Days" :value="resultDaysDiff.weekendDays" />
+        <input-copyable v-bind="inputProps" label="Full Weekends" :value="resultDaysDiff.weekends" />
+        <c-card v-if="resultDaysDiff.holidays?.length" title="Holidays in period">
           <ul>
             <li v-for="(holiday, index) in resultDaysDiff.holidays" :key="index">
               {{ holiday.date }}: {{ holiday.name }} ({{ holiday.type }})

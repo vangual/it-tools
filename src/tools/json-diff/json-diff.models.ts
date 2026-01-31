@@ -1,5 +1,4 @@
 import _ from 'lodash';
-import Decimal from 'decimal.js';
 import type { Difference, DifferenceStatus } from './json-diff.types';
 
 export { diff };
@@ -109,9 +108,6 @@ function getType(value: unknown): 'object' | 'array' | 'value' {
   }
   if (Array.isArray(value)) {
     return 'array';
-  }
-  if (Decimal.isDecimal(value)) {
-    return 'value';
   }
   if (typeof value === 'object') {
     return 'object';

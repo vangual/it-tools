@@ -1,5 +1,4 @@
 <script lang="ts">
-/* NO EXTRACT SCRIPT */
 import { defineComponent, ref } from 'vue';
 import { downloadLinks } from './multi-link-downloader.service';
 

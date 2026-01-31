@@ -1,11 +1,10 @@
 import { EyeOff } from '@vicons/tabler';
 import { defineTool } from '../tool';
-import { translate as t } from '@/plugins/i18n.plugin';
 
 export const tool = defineTool({
-  name: t('tools.file-hasher.title'),
+  name: 'File Hasher',
   path: '/file-hasher',
-  description: t('tools.file-hasher.description'),
+  description: 'Compute Hash of files',
   keywords: ['file', 'hash',
     'digest',
     'crypto',
@@ -36,5 +35,4 @@ export const tool = defineTool({
   component: () => import('./file-hasher.vue'),
   icon: EyeOff,
   createdAt: new Date('2024-05-11'),
-  category: 'Crypto',
 });

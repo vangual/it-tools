@@ -13,7 +13,8 @@ test.describe('Tool - Text to Unicode', () => {
     await page.getByTestId('text-to-unicode-input').fill('"it-tools" 文字');
     const unicode = await page.getByTestId('text-to-unicode-output').inputValue();
 
-    expect(unicode).toEqual(String.raw`"it-tools" &#25991;&#23383;`);
+    // eslint-disable-next-line unicorn/escape-case
+    expect(unicode).toEqual(String.raw`\u0022it-tools\u0022 \u6587\u5b57`);
   });
 
   test('Unicode to text conversion', async ({ page }) => {

@@ -1,11 +1,7 @@
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n';
 import type { CKeyValueListItems } from '@/ui/c-key-value-list/c-key-value-list.types';
-import { useITStorage, useQueryParam } from '@/composable/queryParams';
 
-const { t } = useI18n();
-
-const ip = useQueryParam({ tool: 'ip-geo-loc', name: 'ip', defaultValue: '8.8.8.8' });
+const ip = ref('8.8.8.8');
 const errorMessage = ref('');
 
 const fields: Array<{ field: string; name: string }> = [
@@ -25,7 +21,7 @@ const geoInfosData = ref<{
   loc?: string
 }>({});
 const status = ref<'pending' | 'error' | 'success'>('pending');
-const token = useITStorage('ip-geoloc:token', '');
+const token = useStorage('ip-geoloc:token', '');
 
 const openStreetMapUrl = computed(
   () => {
@@ -40,8 +36,8 @@ async function onGetInfos() {
 
     const geoInfoQueryResponse = await fetch(
       token.value !== ''
-        ? `//ipinfo.io/${ip.value}/json?token=${token.value}`
-        : `//ipinfo.io/${ip.value}/json`);
+        ? `https://ipinfo.io/${ip.value}/json?token=${token.value}`
+        : `https://ipinfo.io/${ip.value}/json`);
     if (!geoInfoQueryResponse.ok) {
       throw geoInfoQueryResponse.statusText;
     }
@@ -75,24 +71,24 @@ async function onGetInfos() {
     <div flex items-center gap-2>
       <c-input-text
         v-model:value="ip"
-        :placeholder="t('tools.ip-geo-location.texts.placeholder-enter-an-ipv4-6')"
+        placeholder="Enter an IPv4/6"
         @update:value="() => { status = 'pending' }"
       />
       <c-button align-center @click="onGetInfos">
-        {{ t('tools.ip-geo-location.texts.tag-get-geo-location-infos') }}
+        Get GEO Location Infos
       </c-button>
     </div>
 
     <details mt-2>
-      <summary>{{ t('tools.ip-geo-location.texts.tag-optional-ipinfo-io-token') }}</summary>
+      <summary>Optional ipinfo.io token</summary>
       <c-input-text
         v-model:value="token"
-        :placeholder="t('tools.ip-geo-location.texts.placeholder-optional-ipinfo-io-token')"
+        placeholder="Optional ipinfo.io token"
         @update:value="() => { status = 'pending' }"
       />
       <n-p>
         <n-a href="https://ipinfo.io/">
-          {{ t('tools.ip-geo-location.texts.tag-signup-for-a-free-token') }}
+          Signup for a free token
         </n-a>
       </n-p>
     </details>
@@ -100,12 +96,12 @@ async function onGetInfos() {
     <n-divider />
 
     <c-card v-if="status === 'pending'" mt-5>
-      {{ t('tools.ip-geo-location.texts.tag-click-on-button-above-to-get-latest-infos') }}
+      Click on button above to get latest infos
     </c-card>
 
     <c-card v-if="status === 'success' && openStreetMapUrl" mt-4>
       <c-button :href="openStreetMapUrl" target="_blank">
-        {{ t('tools.ip-geo-location.texts.tag-localize-on-open-street-map') }}
+        Localize on Open Street Map
       </c-button>
     </c-card>
 
@@ -113,7 +109,7 @@ async function onGetInfos() {
       <c-key-value-list :items="geoInfos" />
     </c-card>
 
-    <n-alert v-if="status === 'error'" :title="t('tools.ip-geo-location.texts.title-errors-occured')" type="error" mt-5>
+    <n-alert v-if="status === 'error'" title="Errors occured" type="error" mt-5>
       {{ errorMessage }}
     </n-alert>
   </div>

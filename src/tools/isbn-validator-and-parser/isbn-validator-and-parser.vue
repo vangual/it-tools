@@ -1,12 +1,8 @@
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n';
 import ISBN3 from 'isbn3';
 import type { CKeyValueListItems } from '@/ui/c-key-value-list/c-key-value-list.types';
-import { useQueryParam } from '@/composable/queryParams';
 
-const { t } = useI18n();
-
-const rawIsbn = useQueryParam({ tool: 'isbn-validator', name: 'isbn', defaultValue: '9782021304534' });
+const rawIsbn = ref('9782021304534');
 
 const isbnInfos = computed<CKeyValueListItems>(() => {
   const isbn = ISBN3.parse(rawIsbn.value);
@@ -17,27 +13,27 @@ const isbnInfos = computed<CKeyValueListItems>(() => {
 
   return [
     {
-      label: t('tools.isbn-validator-and-parser.texts.label-is-isbn-valid'),
+      label: 'Is ISBN valid ?',
       value: isbn.isValid,
     },
     {
-      label: t('tools.isbn-validator-and-parser.texts.label-country'),
+      label: 'Country',
       value: isbn.groupname,
     },
     {
-      label: t('tools.isbn-validator-and-parser.texts.label-isbn-13'),
+      label: 'ISBN 13',
       value: isbn.isbn13,
     },
     {
-      label: t('tools.isbn-validator-and-parser.texts.label-isbn-13-formatted'),
+      label: 'ISBN 13 Formatted',
       value: isbn.isbn13h,
     },
     {
-      label: t('tools.isbn-validator-and-parser.texts.label-isbn-10'),
+      label: 'ISBN 10',
       value: isbn.isbn10,
     },
     {
-      label: t('tools.isbn-validator-and-parser.texts.label-isbn-10-formatted'),
+      label: 'ISBN 10 Formatted',
       value: isbn.isbn10h,
     },
   ];
@@ -89,15 +85,16 @@ const isbnAuditInfos = computed<{ isValid: boolean; clues: CKeyValueListItems }>
 
 <template>
   <div>
-    <c-input-text v-model:value="rawIsbn" :placeholder="t('tools.isbn-validator-and-parser.texts.placeholder-enter-an-isbn-to-check-for-validity')" test-id="isbn-input" />
+    <c-input-text v-model:value="rawIsbn" placeholder="Enter an ISBN to check for validity..." test-id="isbn-input" />
     <n-alert v-if="!isbnAuditInfos.isValid" type="error">
-      {{ t('tools.isbn-validator-and-parser.texts.tag-invalid-isbn') }}<input-copyable v-if="normalizedISBN" :label="t('tools.isbn-validator-and-parser.texts.label-probably-correct')" label-position="left" :value="normalizedISBN" disabled="true" />
+      Invalid ISBN.
+      <input-copyable v-if="normalizedISBN" label="Probably correct" label-position="left" :value="normalizedISBN" disabled="true" />
     </n-alert>
 
-    <c-card v-if="isbnInfos.length > 0" mt-5 :title="t('tools.isbn-validator-and-parser.texts.title-isbn-infos')">
+    <c-card v-if="isbnInfos.length > 0" mt-5 title="ISBN Infos">
       <c-key-value-list :items="isbnInfos" data-test-id="isbn-info" />
     </c-card>
-    <c-card v-if="isbnAuditInfos.clues.length > 0" mt-5 :title="t('tools.isbn-validator-and-parser.texts.title-isbn-audit-infos')">
+    <c-card v-if="isbnAuditInfos.clues.length > 0" mt-5 title="ISBN Audit Infos">
       <c-key-value-list :items="isbnAuditInfos" data-test-id="isbn-info" />
     </c-card>
   </div>

@@ -14,28 +14,9 @@ import type {
   PrivateKey, Signature, SignatureFormatType,
 } from 'sshpk';
 import { Base64 } from 'js-base64';
-import 'webcrypto-liner-shim';
 import * as openpgp from 'openpgp';
 import * as forge from 'node-forge';
 import { type LabelValue, getCSRLabelValues, getCertificateLabelValues, getFingerprintLabelValues, getPGPPrivateKeyLabelValuesAsync, getPGPPublicKeyLabelValuesAsync, getPrivateKeyLabelValues, getPublicKeyLabelValues, getSignatureLabelValues } from './certificate-key-parser.infos';
-
-import { translate as t } from '@/plugins/i18n.plugin';
-
-export async function getKeysOrCertificatesInfosAsync(keyOrCertificateValue: string | Buffer, passphrase: string) {
-  const parts = keyOrCertificateValue.toString().trim().split(/(-----BEGIN [^-]+-----\n)/).filter(s => s !== '');
-  if (!parts.length) {
-    return [await getKeyOrCertificateInfosAsync(keyOrCertificateValue, passphrase)];
-  }
-  const parsedPEMs: Array<{
-    values: LabelValue[]
-    certificateX509DER?: undefined | string
-  }> = [];
-  for (let i = 0; i < parts.length; i += 2) {
-    const pemPart = parts[i] + parts[i + 1];
-    parsedPEMs.push(await getKeyOrCertificateInfosAsync(pemPart, passphrase));
-  }
-  return parsedPEMs;
-}
 
 export async function getKeyOrCertificateInfosAsync(keyOrCertificateValue: string | Buffer, passphrase: string) {
   try {
@@ -142,8 +123,8 @@ export async function getKeyOrCertificateInfosAsync(keyOrCertificateValue: strin
     return {
       values: [
         {
-          label: t('tools.certificate-key-parser.service.text.type'),
-          value: t('tools.certificate-key-parser.service.text.unknown-format-or-invalid-passphrase'),
+          label: 'Type:',
+          value: 'Unknown format or invalid passphrase',
         }],
     };
   }
@@ -151,7 +132,7 @@ export async function getKeyOrCertificateInfosAsync(keyOrCertificateValue: strin
     return {
       values: [
         {
-          label: t('tools.certificate-key-parser.service.text.error'),
+          label: 'Error:',
           value: e.toString(),
         }] as LabelValue[],
     };

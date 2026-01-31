@@ -1,9 +1,6 @@
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n';
 import WSC from 'w-websocket-client/dist/w-websocket-client.umd.js';
 import { useQueryParamOrStorage } from '@/composable/queryParams';
-
-const { t } = useI18n();
 
 const url = useQueryParamOrStorage({ name: 'url', storageName: 'ws-tester:url', defaultValue: 'ws://host:port' });
 const token = useQueryParamOrStorage({ name: 'token', storageName: 'ws-tester:token', defaultValue: '*' });
@@ -40,30 +37,30 @@ function connect() {
 
 <template>
   <div>
-    <c-card :title="t('tools.websocket-tester.texts.title-connection')">
+    <c-card title="Connection">
       <c-input-text
         v-model:value="url"
-        :placeholder="t('tools.websocket-tester.texts.placeholder-enter-url-of-websocket-server-here')"
-        :label="t('tools.websocket-tester.texts.label-url')"
+        placeholder="Enter url of WebSocket server here"
+        label="Url"
         raw-text
       />
       <c-input-text
         v-model:value="token"
-        :placeholder="t('tools.websocket-tester.texts.placeholder-enter-token-here')"
-        :label="t('tools.websocket-tester.texts.label-token')"
+        placeholder="Enter token here"
+        label="Token"
         raw-text
       />
       <div v-if="!connected" mt-5 flex justify-center>
         <c-button @click="connect()">
-          {{ t('tools.websocket-tester.texts.tag-connect') }}
+          Connect
         </c-button>
       </div>
     </c-card>
-    <c-card v-if="connected" :title="t('tools.websocket-tester.texts.title-send')">
+    <c-card v-if="connected" title="Send">
       <c-input-text
         v-model:value="message"
-        :placeholder="t('tools.websocket-tester.texts.placeholder-enter-message-to-send-here')"
-        :label="t('tools.websocket-tester.texts.label-message')"
+        placeholder="Enter message to send here"
+        label="Message"
         rows="5"
         autosize
         raw-text
@@ -72,11 +69,11 @@ function connect() {
       />
       <div mt-5 flex justify-center>
         <c-button @click="send()">
-          {{ t('tools.websocket-tester.texts.tag-send') }}
+          Send
         </c-button>
       </div>
     </c-card>
-    <c-card :title="t('tools.websocket-tester.texts.title-logs')">
+    <c-card title="Logs">
       <ul>
         <li v-for="(line, index) in logs" :key="index">
           {{ line }}

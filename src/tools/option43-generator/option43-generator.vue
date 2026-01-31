@@ -1,79 +1,76 @@
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n';
+import { useStorage } from '@vueuse/core';
 import { getOption43Infos } from './option43-generator.service';
-import { useITStorage } from '@/composable/queryParams';
-
-const { t } = useI18n();
 
 const dhcpVendorOptions = [
-  { value: 'genuine', label: t('tools.option43-generator.texts.label-native') },
-  { value: 'cisco_01', label: t('tools.option43-generator.texts.label-cisco-ios-device') },
-  { value: 'juniper_01', label: t('tools.option43-generator.texts.label-juniper-ex-device') },
-  { value: 'juniper_02', label: t('tools.option43-generator.texts.label-juniper-srx-device') },
-  { value: 'linux_01', label: t('tools.option43-generator.texts.label-linux-dhcpd') },
-  { value: 'ruckus_01', label: t('tools.option43-generator.texts.label-ruckus-smartcellgateway') },
-  { value: 'lancom_01', label: t('tools.option43-generator.texts.label-lancom') },
-  { value: 'fortinet_01', label: t('tools.option43-generator.texts.label-fortinet') },
+  { value: 'genuine', label: 'Native' },
+  { value: 'cisco_01', label: 'Cisco IOS device' },
+  { value: 'juniper_01', label: 'Juniper EX device' },
+  { value: 'juniper_02', label: 'Juniper SRX device' },
+  { value: 'linux_01', label: 'Linux DHCPD' },
+  { value: 'ruckus_01', label: 'Ruckus SmartCellGateway' },
+  { value: 'lancom_01', label: 'Lancom' },
+  { value: 'fortinet_01', label: 'Fortinet' },
 ];
 const wifiVendorOptions = [
-  { value: 'cisco_01', label: t('tools.option43-generator.texts.label-cisco-aironet') },
-  { value: 'aruba_01', label: t('tools.option43-generator.texts.label-aruba') },
-  { value: 'ruckus_01', label: t('tools.option43-generator.texts.label-ruckus-smartzone') },
-  { value: 'ruckus_02', label: t('tools.option43-generator.texts.label-ruckus-zonedirector') },
-  { value: 'ruckus_01', label: t('tools.option43-generator.texts.label-ruckus-smartcellgateway') },
-  { value: 'ubiquiti_01', label: t('tools.option43-generator.texts.label-ubiquiti') },
-  { value: 'fortinet_01', label: t('tools.option43-generator.texts.label-fortinet-old') },
-  { value: 'fortinet_02', label: t('tools.option43-generator.texts.label-fortinet-new-capwap') },
-  { value: 'netgear_01', label: t('tools.option43-generator.texts.label-netgear') },
-  { value: 'cambium_01', label: t('tools.option43-generator.texts.label-cambium-cnmaestro') },
+  { value: 'cisco_01', label: 'Cisco Aironet' },
+  { value: 'aruba_01', label: 'Aruba' },
+  { value: 'ruckus_01', label: 'Ruckus SmartZone' },
+  { value: 'ruckus_02', label: 'Ruckus ZoneDirector' },
+  { value: 'ruckus_01', label: 'Ruckus SmartCellGateway' },
+  { value: 'ubiquiti_01', label: 'Ubiquiti' },
+  { value: 'fortinet_01', label: 'Fortinet (old)' },
+  { value: 'fortinet_02', label: 'Fortinet (new/CAPWAP)' },
+  { value: 'netgear_01', label: 'Netgear' },
+  { value: 'cambium_01', label: 'Cambium cnMaestro' },
 ];
 
-const dhcpVendor = useITStorage('option43-generator:dhcp', 'genuine');
-const wifiVendor = useITStorage('option43-generator:wifi', 'cisco_01');
+const dhcpVendor = useStorage('option43-generator:dhcp', 'genuine');
+const wifiVendor = useStorage('option43-generator:wifi', 'cisco_01');
 const ipAdresses = ref('192.168.0.15'); // NOSONAR
 
 const option43Infos = computed(() => getOption43Infos(ipAdresses.value, wifiVendor.value, dhcpVendor.value));
 </script>
 
 <template>
-  <div style="margin: 0 auto;">
+  <div style="margin: 0 auto; max-width: 600px">
     <c-card>
       <c-select
         v-model:value="wifiVendor"
-        :label="t('tools.option43-generator.texts.label-wifi-vendor')"
+        label="Wifi Vendor:"
         label-position="left"
         label-width="120px"
         label-align="right"
         mb-2
         :options="wifiVendorOptions"
         w-full
-        :placeholder="t('tools.option43-generator.texts.placeholder-select-a-wifi-vendor')"
+        placeholder="Select a Wifi Vendor"
       />
 
       <c-select
         v-model:value="dhcpVendor"
-        :label="t('tools.option43-generator.texts.label-dhcp-vendor')"
+        label="DHCP Vendor:"
         label-position="left"
         label-width="120px"
         label-align="right"
         mb-2
         :options="dhcpVendorOptions"
         w-full
-        :placeholder="t('tools.option43-generator.texts.placeholder-select-a-dhcp-vendor')"
+        placeholder="Select a DHCP Vendor"
       />
 
       <c-input-text
         v-model:value="ipAdresses"
-        :label="t('tools.option43-generator.texts.label-ip-address-es-one-per-line')"
+        label="IP Address(es) (one per line):"
         label-position="left"
         label-width="120px"
         label-align="right"
         multiline mb-2
-        :placeholder="t('tools.option43-generator.texts.placeholder-enter-your-ip-addresses-one-per-line')"
+        placeholder="Enter your IP Addresses (one per line)"
       />
     </c-card>
 
-    <c-card :title="t('tools.option43-generator.texts.title-option-43-result')">
+    <c-card title="Option 43 Result">
       <!-- //NOSONAR --><div v-html="option43Infos" />
     </c-card>
   </div>

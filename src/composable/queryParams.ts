@@ -1,9 +1,8 @@
 import { useRouteQuery } from '@vueuse/router';
-import { type MaybeRef, computed } from 'vue';
-import { type RemovableRef, type StorageLike, type UseStorageOptions, get, useStorage } from '@vueuse/core';
-import { getCurrentInstance } from 'vue';
+import { computed } from 'vue';
+import { useStorage } from '@vueuse/core';
 
-export { useQueryParam, useQueryParamOrStorage, useITStorage, getITToolsSetting };
+export { useQueryParam, useQueryParamOrStorage };
 
 const transformers = {
   number: {
@@ -26,12 +25,11 @@ const transformers = {
   },
 };
 
-function useQueryParam<T>({ tool, name, defaultValue }: { tool: string; name: string; defaultValue: T }): RemovableRef<T> {
+function useQueryParam<T>({ name, defaultValue }: { name: string; defaultValue: T }) {
   const type = typeof defaultValue;
   const transformer = transformers[type as keyof typeof transformers] ?? transformers.string;
-  const defaultValueOrSetting = getITToolsSetting(`${tool}:${name}`, defaultValue);
 
-  const proxy = useRouteQuery(name, transformer.toQuery(defaultValueOrSetting as never));
+  const proxy = useRouteQuery(name, transformer.toQuery(defaultValue as never));
 
   return computed<T>({
     get() {
@@ -47,13 +45,11 @@ function useQueryParamOrStorage<T>({ name, storageName, defaultValue }: { name: 
   const type = typeof defaultValue;
   const transformer = transformers[type as keyof typeof transformers] ?? transformers.string;
 
-  const defaultValueOrSetting = getITToolsSetting(`${storageName.split(':')[0]}:${name}`, defaultValue);
-
-  const storageRef = useStorage(storageName, defaultValueOrSetting);
-  const proxyDefaultValue = transformer.toQuery(defaultValueOrSetting as never);
+  const storageRef = useStorage(storageName, defaultValue);
+  const proxyDefaultValue = transformer.toQuery(defaultValue as never);
   const proxy = useRouteQuery(name, proxyDefaultValue);
 
-  const r = isRef(defaultValueOrSetting) ? defaultValueOrSetting as Ref<T> : ref(get(defaultValueOrSetting));
+  const r = ref(defaultValue);
 
   watch(r,
     (value) => {
@@ -67,32 +63,4 @@ function useQueryParamOrStorage<T>({ name, storageName, defaultValue }: { name: 
     : storageRef.value as T) as never;
 
   return r;
-}
-
-function useITStorage<T>(key: string, defaults: MaybeRef<T>, storage?: StorageLike, options?: UseStorageOptions<T>): RemovableRef<T> {
-  const defaultValueOrSetting = getITToolsSetting(key, defaults);
-  return useStorage<T>(key, defaultValueOrSetting, storage, options);
-}
-
-function getITToolsSetting<T>(key: string, defaultValue: MaybeRef<T>) {
-  const itToolsSettings = useITToolsSettings();
-  if (!itToolsSettings) {
-    return defaultValue;
-  }
-  if (key.includes(':')) {
-    const [tool, subkey] = key.split(':');
-    return (itToolsSettings[tool] || {})[subkey] as T ?? defaultValue;
-  }
-  else {
-    return (itToolsSettings)[key] as T ?? defaultValue;
-  }
-}
-
-let itToolsSettings: Record<string, Record<string, any> | any>;
-function useITToolsSettings(): Record<string, Record<string, any>> {
-  if (!itToolsSettings) {
-    const vm = getCurrentInstance();
-    itToolsSettings = vm?.appContext.config.globalProperties.$itToolsSettings as Record<string, Record<string, any>>;
-  }
-  return itToolsSettings;
 }

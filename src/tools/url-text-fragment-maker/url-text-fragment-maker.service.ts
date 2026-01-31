@@ -1,5 +1,3 @@
-import { translate as t } from '@/plugins/i18n.plugin';
-
 export function getUrlWithTextFragment(
   { url, textStartSearch, textStopSearch, prefixSearch, suffixSearch }:
   { url: string
@@ -18,11 +16,11 @@ export function getUrlWithTextFragment(
     }
   };
   if (!isValidUrl(url)) {
-    throw new Error(t('tools.url-parser.texts.message-invalid-url'));
+    throw new Error('Invalid url');
   }
 
   if (!url.match(/^https?:\/\//)) {
-    throw new Error(t('tools.url-parser.texts.url-must-have-http-or-https-prefix'));
+    throw new Error('Url must have http:// or https:// prefix');
   }
 
   const [textStartSearchFirstText, ...textStartSearchOtherTexts] = textStartSearch.split(',');

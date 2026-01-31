@@ -1,11 +1,9 @@
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n';
+import { computed, ref } from 'vue';
 import { bundledLanguagesInfo, createHighlighter } from 'shiki/bundle/full';
 import { bundledThemesInfo } from 'shiki/themes';
 import { useQueryParamOrStorage } from '@/composable/queryParams';
-import { useCopy, useCopyHtml } from '@/composable/copy';
-
-const { t } = useI18n();
+import { useCopy, useCopyClipboardItems } from '@/composable/copy';
 
 const code = ref(`// Using 'typeof' to infer types
 const person = { name: "Alice", age: 30 };
@@ -74,7 +72,11 @@ const formattedCodeHtml = computedAsync(async () => {
     ],
   });
 });
-const { copy: copyHtml } = useCopyHtml({ sourceHtml: formattedCodeHtml });
+const htmlClipboardItems = computed(() => [{
+  mime: 'text/html',
+  content: formattedCodeHtml.value,
+}]);
+const { copy: copyHtml } = useCopyClipboardItems({ source: htmlClipboardItems });
 const { copy: copyText } = useCopy({ source: code });
 </script>
 
@@ -83,7 +85,7 @@ const { copy: copyText } = useCopy({ source: code });
     <div mb-3 flex items-baseline gap-1>
       <c-select
         v-model:value="currentLang"
-        :label="t('tools.code-highlighter.texts.label-language')"
+        label="Language"
         label-position="left"
         searchable
         :options="langs"
@@ -91,7 +93,7 @@ const { copy: copyText } = useCopy({ source: code });
       />
       <c-select
         v-model:value="currentTheme"
-        :label="t('tools.code-highlighter.texts.label-theme')"
+        label="Theme"
         label-position="left"
         searchable
         :options="themes"
@@ -101,22 +103,22 @@ const { copy: copyText } = useCopy({ source: code });
 
     <c-input-text
       v-model:value="code"
-      :label="t('tools.code-highlighter.texts.label-code-snippet-to-format')"
+      label="Code snippet to format:"
       multiline
-      :placeholder="t('tools.code-highlighter.texts.placeholder-put-your-code-snippet-here')"
+      placeholder="Put your code snippet here"
       rows="5"
       mb-3
     />
 
     <div flex justify-center gap-2>
-      <n-form-item :label="t('tools.code-highlighter.texts.label-show-line-numbers')" label-placement="left">
+      <n-form-item label="Show line numbers" label-placement="left">
         <n-switch v-model:value="showLineNumbers" />
       </n-form-item>
       <c-button @click="copyHtml()">
-        {{ t('tools.code-highlighter.texts.tag-copy-html-word') }}
+        Copy HTML Formatted
       </c-button>
       <c-button @click="copyText()">
-        {{ t('tools.code-highlighter.texts.tag-copy-code-text') }}
+        Copy Code Text
       </c-button>
     </div>
 

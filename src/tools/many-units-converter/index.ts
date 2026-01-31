@@ -1,11 +1,10 @@
 import { Calculator } from '@vicons/tabler';
 import { defineTool } from '../tool';
-import { translate as t } from '@/plugins/i18n.plugin';
 
 export const tool = defineTool({
-  name: t('tools.many-units-converter.title'),
+  name: 'Many Units Converter',
   path: '/many-units-converter',
-  description: t('tools.many-units-converter.description'),
+  description: 'Convert all kind of units',
   keywords: [
     'units',
     'uom',
@@ -30,5 +29,4 @@ export const tool = defineTool({
   component: () => import('./many-units-converter.vue'),
   icon: Calculator,
   createdAt: new Date('2024-08-15'),
-  category: 'Converters',
 });

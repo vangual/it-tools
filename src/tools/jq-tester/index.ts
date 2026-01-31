@@ -1,14 +1,12 @@
 import { Braces } from '@vicons/tabler';
 import { defineTool } from '../tool';
-import { translate as t } from '@/plugins/i18n.plugin';
 
 export const tool = defineTool({
-  name: t('tools.jq-tester.title'),
+  name: 'Jq/JSONPath Tester',
   path: '/jq-tester',
-  description: t('tools.jq-tester.description'),
-  keywords: ['jq', 'json', 'tester', 'jsonpath', 'query', 'path'],
+  description: 'Test jq/JSONPath expression against a JSON content',
+  keywords: ['jq', 'json', 'tester', 'jsonpath'],
   component: () => import('./jq-tester.vue'),
   icon: Braces,
   createdAt: new Date('2024-08-15'),
-  category: 'JSON',
 });

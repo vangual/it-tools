@@ -28,7 +28,6 @@ const props = withDefaults(
     type?: 'text' | 'password'
     multiline?: boolean
     rows?: number | string
-    maxRows?: number | string
     autosize?: boolean
     autofocus?: boolean
     monospace?: boolean
@@ -57,19 +56,17 @@ const props = withDefaults(
     type: 'text',
     multiline: false,
     rows: 3,
-    maxRows: undefined,
     autosize: false,
     autofocus: false,
     monospace: false,
     pasteHtml: false,
   },
 );
-
 const emit = defineEmits(['update:value']);
 const value = useVModel(props, 'value', emit);
 const showPassword = ref(false);
 
-const { id, placeholder, label, validationRules, labelPosition, labelWidth, labelAlign, autosize, readonly, disabled, clearable, type, multiline, rows, maxRows, rawText, autofocus, monospace, pasteHtml } = toRefs(props);
+const { id, placeholder, label, validationRules, labelPosition, labelWidth, labelAlign, autosize, readonly, disabled, clearable, type, multiline, rows, rawText, autofocus, monospace, pasteHtml } = toRefs(props);
 
 const validation
   = props.validation
@@ -109,7 +106,7 @@ function onPasteInputHtml(evt: ClipboardEvent) {
 }
 
 watch(
-  [value, autosize, multiline, maxRows, inputWrapperRef, textareaRef],
+  [value, autosize, multiline, inputWrapperRef, textareaRef],
   () => nextTick(() => {
     if (props.multiline && autosize.value) {
       resizeTextarea();
@@ -118,80 +115,14 @@ watch(
   { immediate: true },
 );
 
-/**
- * Checks if the given HTMLElement overflows
- * copied from stackoverflow: https://stackoverflow.com/questions/143815/determine-if-an-html-elements-content-overflows
- * @param el The HTMLElement to check
- */
-function checkOverflow(el: HTMLElement) {
-  const curOverflow = el.style.overflow;
-  if (!curOverflow || curOverflow === 'visible') {
-    el.style.overflow = 'hidden';
-  }
-
-  const isOverflowing = el.clientWidth < el.scrollWidth || el.clientHeight < el.scrollHeight;
-
-  el.style.overflow = curOverflow;
-
-  return isOverflowing;
-}
-
-function getMaxHeight(textarea: HTMLTextAreaElement) {
-  const maxRowsValue = Number(maxRows.value);
-  if (!Number.isFinite(maxRowsValue) || maxRowsValue <= 0) {
-    return null;
-  }
-
-  const computedStyle = window.getComputedStyle(textarea);
-  const lineHeight = Number.parseFloat(computedStyle.lineHeight);
-  const paddingTop = Number.parseFloat(computedStyle.paddingTop);
-  const paddingBottom = Number.parseFloat(computedStyle.paddingBottom);
-  const borderTop = Number.parseFloat(computedStyle.borderTopWidth);
-  const borderBottom = Number.parseFloat(computedStyle.borderBottomWidth);
-
-  if (!Number.isFinite(lineHeight)) {
-    return null;
-  }
-
-  return (lineHeight * maxRowsValue) + paddingTop + paddingBottom + borderTop + borderBottom;
-}
-
 function resizeTextarea() {
-  if (textareaRef.value === undefined) {
-    return; // cannot chnge textarea if element is not available
-  }
-
-  if (!multiline) {
-    return; // textarea wont be displayed if multiline === false
-  }
-
-  const textAreaElement = textareaRef.value!;
-  const maxHeight = getMaxHeight(textAreaElement);
-
-  if (maxHeight !== null) {
-    textAreaElement.style.maxHeight = `${maxHeight}px`;
-  }
-  else {
-    textAreaElement.style.maxHeight = '';
-    textAreaElement.style.overflowY = '';
-  }
-
-  if (!checkOverflow(textAreaElement)) {
-    if (maxHeight !== null) {
-      textAreaElement.style.overflowY = 'hidden';
-    }
+  if (!textareaRef.value || !inputWrapperRef.value) {
     return;
   }
 
-  const scrollHeight = textAreaElement.scrollHeight + 2;
-  if (maxHeight !== null) {
-    const cappedHeight = Math.min(scrollHeight, maxHeight);
-    textAreaElement.style.height = `${cappedHeight}px`;
-    textAreaElement.style.overflowY = scrollHeight > maxHeight ? 'auto' : 'hidden';
-    return;
-  }
+  const scrollHeight = textareaRef.value.scrollHeight + 2;
 
-  textAreaElement.style.height = `${scrollHeight}px`;
+  inputWrapperRef.value.style.height = `${scrollHeight}px`;
 }
 
 const htmlInputType = computed(() => {
@@ -230,8 +161,6 @@ onMounted(() => {
 
 defineExpose({
   inputWrapperRef,
-  textareaRef,
-  inputRef,
   focus,
   blur,
 });
@@ -346,7 +275,6 @@ defineExpose({
     flex: 1 1 0;
     min-width: 0;
   }
-
   .input-wrapper {
     display: flex;
     flex-direction: row;
@@ -370,27 +298,8 @@ defineExpose({
         overflow-wrap: break-word;
         border: none;
         outline: none;
-        /* This font family structure will let the text use one of the fonts that are available on the system.
-        When an emoji is used, it will fall back to the first font that has proper support for it. ('Noto Color Emoji' and below).
-        Thus this structure will make sure that text and emojis are rendered correctly without interfering with each other.
-        */
-        font-family:
-          system-ui, /* System default */
-          -apple-system, /* Apple system font */
-          'Segoe UI', /* Windows */
-          'Roboto', /* Android */
-          'Helvetica Neue', /* macOS fallback */
-          Arial, /* Universal fallback */
-          'Noto Color Emoji', /* Best flag and complex emoji support */
-          'Apple Color Emoji', /* Apple devices emoji */
-          'Segoe UI Emoji', /* Windows emoji */
-          'Twemoji Mozilla', /* Firefox emoji fallback */
-          'EmojiOne Color', /* Additional emoji fallback */
-          sans-serif;
+        font-family: inherit;
         font-size: inherit;
-        font-feature-settings: 'liga' off;
-        text-rendering: optimizeQuality;
-        line-height: 1.2;
         color: v-bind('appTheme.text.baseColor');
 
         &::placeholder {
@@ -411,26 +320,6 @@ defineExpose({
       -moz-box-shadow: none;
       box-shadow: none;
       border: none;
-      /* This font family structure will let the text use one of the fonts that are available on the system.
-      When an emoji is used, it will fall back to the first font that has proper support for it. ('Noto Color Emoji' and below).
-      Thus this structure will make sure that text and emojis are rendered correctly without interfering with each other.
-      */
-      font-family:
-        system-ui, /* System default */
-        -apple-system, /* Apple system font */
-        'Segoe UI', /* Windows */
-        'Roboto', /* Android */
-        'Helvetica Neue', /* macOS fallback */
-        Arial, /* Universal fallback */
-        'Noto Color Emoji', /* Best flag and complex emoji support */
-        'Apple Color Emoji', /* Apple devices emoji */
-        'Segoe UI Emoji', /* Windows emoji */
-        'Twemoji Mozilla', /* Firefox emoji fallback */
-        'EmojiOne Color', /* Additional emoji fallback */
-        sans-serif;
-      font-feature-settings: 'liga' off;
-      text-rendering: optimizeQuality;
-      line-height: 1.2;
       color: v-bind('appTheme.text.baseColor');
 
       &::placeholder {

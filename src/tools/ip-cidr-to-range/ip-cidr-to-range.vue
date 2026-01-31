@@ -1,14 +1,10 @@
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n';
 import isCidr from 'is-cidr';
 import { expandCidr } from 'cidr-tools';
 import { getIPNetworkType, parseAsCIDR } from '@/utils/ip';
 import { useValidation } from '@/composable/validation';
-import { useQueryParamOrStorage } from '@/composable/queryParams';
 
-const { t } = useI18n();
-
-const rawCIDR = useQueryParamOrStorage({ name: 'cidr', storageName: 'ip-cidr-to-range:cidr', defaultValue: '192.168.1.0/24' }); // NOSONAR
+const rawCIDR = useStorage('ip-cidr-to-range:cidr', '192.168.1.0/24'); // NOSONAR
 
 const result = computed(() => {
   const parsedCIDR = parseAsCIDR(rawCIDR.value) || rawCIDR.value;
@@ -27,7 +23,7 @@ const result = computed(() => {
 
 const cidrValidation = useValidation({
   source: rawCIDR,
-  rules: [{ message: t('tools.ip-cidr-to-range.texts.message-invalid-ipv4-6-cidr'), validator: cidr => isCidr(parseAsCIDR(cidr) || cidr) }],
+  rules: [{ message: 'Invalid ipv4/6 CIDR', validator: cidr => isCidr(parseAsCIDR(cidr) || cidr) }],
 });
 
 const showResult = computed(() => cidrValidation.isValid && result.value !== undefined);
@@ -37,15 +33,15 @@ const showResult = computed(() => cidrValidation.isValid && result.value !== und
   <div>
     <c-input-text
       v-model:value="rawCIDR"
-      :label="t('tools.ip-cidr-to-range.texts.label-ipv4-6-cidr-ie-1-0-0-0-23-or-1-1-1-1-255-255-252-0-or-1-1-1-1-2-2-2-2-or-10-0-0')"
-      :placeholder="t('tools.ip-cidr-to-range.texts.placeholder-ipv4-6-cidr-ie-1-0-0-0-23-or-1-1-1-1-255-255-252-0-or-1-1-1-1-2-2-2-2-or-10-0-0')"
+      label="IPv4/6 CIDR (ie, 1.0.0.0/23 or 1.1.1.1/255.255.252.0 or 1.1.1.1-2.2.2.2 or 10.0.0.*)"
+      placeholder="IPv4/6 CIDR (ie, 1.0.0.0/23  or 1.1.1.1/255.255.252.0 or 1.1.1.1-2.2.2.2 or 10.0.0.*)"
       :validation="cidrValidation"
       clearable
     />
 
-    <c-card v-if="showResult" :title="t('tools.ip-cidr-to-range.texts.title-resulting-cidr')" mt-4>
+    <c-card v-if="showResult" title="Resulting CIDR" mt-4>
       <input-copyable
-        :label="t('tools.ip-cidr-to-range.texts.label-cidr')"
+        label="CIDR"
         label-position="left"
         label-width="150px"
         label-align="right"
@@ -55,9 +51,9 @@ const showResult = computed(() => cidrValidation.isValid && result.value !== und
       />
     </c-card>
 
-    <c-card v-if="showResult" :title="t('tools.ip-cidr-to-range.texts.title-ipv4-6-range')" mt-4>
+    <c-card v-if="showResult" title="IPv4/6 range" mt-4>
       <input-copyable
-        :label="t('tools.ip-cidr-to-range.texts.label-start-ip-address')"
+        label="Start IP Address"
         label-position="left"
         label-width="150px"
         label-align="right"
@@ -66,7 +62,7 @@ const showResult = computed(() => cidrValidation.isValid && result.value !== und
         disabled mb-2
       />
       <input-copyable
-        :label="t('tools.ip-cidr-to-range.texts.label-end-ip-address')"
+        label="End IP Address"
         label-position="left"
         label-width="150px"
         label-align="right"
@@ -76,7 +72,7 @@ const showResult = computed(() => cidrValidation.isValid && result.value !== und
       />
 
       <input-copyable
-        :label="t('tools.ip-cidr-to-range.texts.label-network-type')"
+        label="Network type"
         label-position="left"
         label-width="150px"
         label-align="right"

@@ -1,14 +1,12 @@
 import { ClearAll } from '@vicons/tabler';
 import { defineTool } from '../tool';
-import { translate as t } from '@/plugins/i18n.plugin';
 
 export const tool = defineTool({
-  name: t('tools.url-cleaner.title'),
+  name: 'Url Cleaner',
   path: '/url-cleaner',
-  description: t('tools.url-cleaner.description'),
+  description: 'Clean Ads tracker, UTM, Facebook and other ads provider parameters from an URL',
   keywords: ['url', 'cleaner', 'utm', 'fbclip'],
   component: () => import('./url-cleaner.vue'),
   icon: ClearAll,
   createdAt: new Date('2024-03-13'),
-  category: 'Web',
 });

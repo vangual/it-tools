@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n';
 import type { lib } from 'crypto-js';
 import {
   HmacMD5,
@@ -15,8 +14,6 @@ import {
 
 import { convertHexToBin } from '../hash-text/hash-text.service';
 import { useCopy } from '@/composable/copy';
-
-const { t } = useI18n();
 
 const algos = {
   MD5: HmacMD5,
@@ -54,20 +51,20 @@ const { copy } = useCopy({ source: hmac });
 
 <template>
   <div flex flex-col gap-4>
-    <c-input-text v-model:value="plainText" multiline raw-text :placeholder="t('tools.hmac-generator.texts.placeholder-plain-text-to-compute-the-hash')" rows="3" autosize autofocus :label="t('tools.hmac-generator.texts.label-plain-text-to-compute-the-hash')" />
+    <c-input-text v-model:value="plainText" multiline raw-text placeholder="Plain text to compute the hash..." rows="3" autosize autofocus label="Plain text to compute the hash" />
     <div flex gap-2>
-      <c-input-text v-model:value="secret" :placeholder="t('tools.hmac-generator.texts.placeholder-enter-the-secret-key')" :label="t('tools.hmac-generator.texts.label-secret-key')" raw-text clearable flex-1 />
+      <c-input-text v-model:value="secret" placeholder="Enter the secret key..." label="Secret key" raw-text clearable flex-1 />
       <c-select
-        v-model:value="keyEncoding" :label="t('tools.hmac-generator.texts.label-key-encoding')"
+        v-model:value="keyEncoding" label="Key encoding"
         flex-1
-        :placeholder="t('tools.hmac-generator.texts.placeholder-select-the-key-encoding')"
+        placeholder="Select the key encoding..."
         :options="[
           {
-            label: t('tools.hmac-generator.texts.label-plain-text'),
+            label: 'Plain Text',
             value: 'Text',
           },
           {
-            label: t('tools.hmac-generator.texts.label-hexadecimal-text'),
+            label: 'Hexadecimal Text',
             value: 'Hex',
           },
         ]"
@@ -75,39 +72,39 @@ const { copy } = useCopy({ source: hmac });
     </div>
     <div flex gap-2>
       <c-select
-        v-model:value="hashFunction" :label="t('tools.hmac-generator.texts.label-hashing-function')"
+        v-model:value="hashFunction" label="Hashing function"
         flex-1
-        :placeholder="t('tools.hmac-generator.texts.placeholder-select-an-hashing-function')"
+        placeholder="Select an hashing function..."
         :options="Object.keys(algos).map((label) => ({ label, value: label }))"
       />
       <c-select
-        v-model:value="encoding" :label="t('tools.hmac-generator.texts.label-output-encoding')"
+        v-model:value="encoding" label="Output encoding"
         flex-1
-        :placeholder="t('tools.hmac-generator.texts.placeholder-select-the-result-encoding')"
+        placeholder="Select the result encoding..."
         :options="[
           {
-            label: t('tools.hmac-generator.texts.label-binary-base-2'),
+            label: 'Binary (base 2)',
             value: 'Bin',
           },
           {
-            label: t('tools.hmac-generator.texts.label-hexadecimal-base-16'),
+            label: 'Hexadecimal (base 16)',
             value: 'Hex',
           },
           {
-            label: t('tools.hmac-generator.texts.label-base64-base-64'),
+            label: 'Base64 (base 64)',
             value: 'Base64',
           },
           {
-            label: t('tools.hmac-generator.texts.label-base64-url-base-64-with-url-safe-chars'),
+            label: 'Base64-url (base 64 with url safe chars)',
             value: 'Base64url',
           },
         ]"
       />
     </div>
-    <input-copyable v-model:value="hmac" type="textarea" :placeholder="t('tools.hmac-generator.texts.placeholder-the-result-of-the-hmac')" :label="t('tools.hmac-generator.texts.label-hmac-of-your-text')" />
+    <input-copyable v-model:value="hmac" type="textarea" placeholder="The result of the HMAC..." label="HMAC of your text" />
     <div flex justify-center>
       <c-button @click="copy()">
-        {{ t('tools.hmac-generator.texts.tag-copy-hmac') }}
+        Copy HMAC
       </c-button>
     </div>
   </div>

@@ -1,11 +1,8 @@
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n';
 import type { Ref } from 'vue';
 import parseTorrent, { toMagnetURI } from 'parse-torrent';
 import { withDefaultOnError } from '@/utils/defaults';
 import { useValidation } from '@/composable/validation';
-
-const { t } = useI18n();
 
 const inputType = ref<'file' | 'content'>('file');
 const torrentContent = ref('');
@@ -43,7 +40,7 @@ async function onUpload(file: File) {
   }
 }
 
-watch(torrentContent, (newValue) => {
+watch(torrentContent, (_, newValue) => {
   if (newValue !== '') {
     fileInput.value = null;
   }
@@ -51,7 +48,7 @@ watch(torrentContent, (newValue) => {
 
 const { attrs: validationAttrs } = useValidation({
   source: torrentInfos,
-  rules: [{ message: t('tools.torrent-to-magnet.texts.message-invalid-torrent-content'), validator: torrent => torrent?.length > 0 }],
+  rules: [{ message: 'Invalid torrent content', validator: torrent => torrent?.length > 0 }],
 });
 </script>
 
@@ -61,26 +58,26 @@ const { attrs: validationAttrs } = useValidation({
       <n-space>
         <n-radio
           value="file"
-          :label="t('tools.torrent-to-magnet.texts.label-file')"
+          label="File"
         />
         <n-radio
           value="content"
-          :label="t('tools.torrent-to-magnet.texts.label-content')"
+          label="Content"
         />
       </n-space>
     </n-radio-group>
 
     <c-file-upload
       v-if="inputType === 'file'"
-      :title="t('tools.torrent-to-magnet.texts.title-drag-and-drop-torrent-file-here-or-click-to-select-a-file')"
+      title="Drag and drop torrent file here, or click to select a file"
       @file-upload="onUpload"
     />
 
     <c-input-text
       v-if="inputType === 'content'"
       v-model:value="torrentContent"
-      :label="t('tools.torrent-to-magnet.texts.label-torrent-magnet-content')"
-      :placeholder="t('tools.torrent-to-magnet.texts.placeholder-paste-your-torrent-magnet-content-here')"
+      label="Torrent/Magnet Content"
+      placeholder="Paste your Torrent/Magnet content here"
       multiline
       mb-2
     />
@@ -88,13 +85,13 @@ const { attrs: validationAttrs } = useValidation({
     <n-divider />
 
     <input-copyable
-      :label="t('tools.torrent-to-magnet.texts.label-magnet-uri')"
+      label="Magnet URI"
       label-position="left"
       label-width="100px"
       label-align="right"
       mb-2
       :value="validationAttrs.validationStatus === 'error' ? '' : magnetURI"
-      :placeholder="t('tools.torrent-to-magnet.texts.placeholder-please-use-a-correct-torrent')"
+      placeholder="Please use a correct torrent"
     />
 
     <input-copyable
@@ -106,7 +103,7 @@ const { attrs: validationAttrs } = useValidation({
       label-align="right"
       mb-2
       :value="validationAttrs.validationStatus === 'error' ? '' : value"
-      :placeholder="t('tools.torrent-to-magnet.texts.placeholder-please-use-a-correct-torrent')"
+      placeholder="Please use a correct torrent"
     />
   </div>
 </template>

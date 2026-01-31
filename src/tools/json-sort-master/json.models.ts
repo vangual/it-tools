@@ -1,4 +1,5 @@
 import { type MaybeRef, get } from '@vueuse/core';
+import JSON5 from 'json5';
 
 export { sortObjectKeys, sortObjectValues, formatJson };
 
@@ -16,7 +17,7 @@ function sortObjectKeys<T>(obj: T, sortMethod: string): T {
     .reduce((sortedObj, key) => {
       sortedObj[key] = sortObjectKeys((obj as Record<string, unknown>)[key], sortMethod);
       return sortedObj;
-    }, Object.create(obj, {}) as Record<string, unknown>) as T;
+    }, {} as Record<string, unknown>) as T;
 }
 
 function sortObjectValues<T>(obj: T, sortMethod: string, keyName: string): T {
@@ -46,7 +47,7 @@ function sortObjectValues<T>(obj: T, sortMethod: string, keyName: string): T {
     return sortedKeys.reduce((sortedObj, key) => {
       sortedObj[key] = sortObjectValues((obj as Record<string, unknown>)[key], sortMethod, keyName);
       return sortedObj;
-    }, Object.create(obj, {}) as Record<string, unknown>) as T;
+    }, {} as Record<string, unknown>) as T;
   }
 
   return obj;
@@ -63,7 +64,7 @@ function formatJson({
   keyName: MaybeRef<string>
   indentSize?: MaybeRef<number>
 }) {
-  const parsedObject = JSON.parseBigNum(get(rawJson));
+  const parsedObject = JSON5.parse(get(rawJson));
 
   if (['key_name', 'key_name_desc'].includes(get(sortMethod))) {
     return JSON.stringify(sortObjectKeys(parsedObject, get(sortMethod)), null, get(indentSize));

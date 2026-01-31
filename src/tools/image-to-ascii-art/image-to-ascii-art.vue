@@ -1,14 +1,10 @@
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n';
 import { ImageToAsciiArt } from 'image-to-ascii-art';
 import TextareaCopyable from '@/components/TextareaCopyable.vue';
-import { languages, printToLanguage } from '@/utils/ascii-lang-utils';
-import { useITStorage } from '@/composable/queryParams';
-
-const { t } = useI18n();
+import { languages, translateToLanguage } from '@/utils/ascii-lang-utils';
 
 const inputBase64 = ref('');
-const language = useITStorage('image-to-ascii-art:language', 'raw');
+const language = useStorage('image-to-ascii-art:language', 'raw');
 const scale = ref(100);
 const errored = ref(false);
 const processing = ref(false);
@@ -43,7 +39,7 @@ const output = computedAsync(async () => {
         drawHeight: scaleValue * 0.4,
       },
     });
-    outputValue = printToLanguage(await imageToAsciiArt.convert(inputBase64Value), languageValue);
+    outputValue = translateToLanguage(await imageToAsciiArt.convert(inputBase64Value), languageValue);
     imageToAsciiArt.destroy();
   }
   catch (e) {
@@ -60,20 +56,20 @@ async function onFileUploaded(uploadedFile: File) {
 </script>
 
 <template>
-  <c-card>
+  <c-card style="max-width: 600px;">
     <div style="flex: 0 0 100%">
       <div mx-auto max-w-600px>
         <c-file-upload
-          :title="t('tools.image-to-ascii-art.texts.title-drag-and-drop-a-image-file-here-or-click-to-select-a-file')"
+          title="Drag and drop a Image file here, or click to select a file"
           paste-image
           @file-upload="onFileUploaded"
         />
       </div>
     </div>
 
-    <n-form-item :label="t('tools.image-to-ascii-art.texts.label-output-scale')" label-placement="left" mt-2>
+    <n-form-item label="Output scale" label-placement="left" mt-2>
       <n-slider v-model:value="scale" :step="1" :min="1" :max="100" mr-2 />
-      <n-input-number-i18n v-model:value="scale" size="small" :min="1" :max="100" />
+      <n-input-number v-model:value="scale" size="small" :min="1" :max="100" />
     </n-form-item>
 
     <c-select v-model:value="language" :options="languagesOptions" searchable mt-3 />
@@ -82,14 +78,14 @@ async function onFileUploaded(uploadedFile: File) {
 
     <div v-if="processing" flex items-center justify-center>
       <n-spin size="medium" />
-      <span class="ml-2">{{ t('tools.image-to-ascii-art.texts.tag-processing') }}</span>
+      <span class="ml-2">Processing...</span>
     </div>
 
     <c-alert v-if="errored" mt-1 text-center type="error">
-      {{ t('tools.image-to-ascii-art.texts.tag-current-settings-resulted-in-error') }}
+      Current settings resulted in error.
     </c-alert>
 
-    <n-form-item v-if="!processing && !errored" :label="t('tools.image-to-ascii-art.texts.label-ascii-art-text')">
+    <n-form-item v-if="!processing && !errored" label="Ascii Art text:">
       <TextareaCopyable
         :value="output"
         mb-1 mt-1

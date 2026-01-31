@@ -59,17 +59,6 @@ const units = reactive<
         [current.unit]: current,
       }), {}));
 
-const excludeSIPrefixes = ref(true);
-const filteredUnits = computed(() => {
-  if (!excludeSIPrefixes.value) {
-    return Object.entries(units);
-  }
-
-  return Object.entries(units).filter(
-    ([_, { title }]) => !SI_PREFIX_NAMES_REGEX.test(title),
-  );
-});
-
 function update(key: string) {
   if (!units[key]) {
     return;
@@ -113,15 +102,7 @@ update(defaultUnit.value);
 
 <template>
   <div>
-    <n-space justify="center" mb-3>
-      <n-checkbox v-model:checked="excludeSIPrefixes">
-        {{ $t('tools.UnitsConverter.texts.exclude-si-prefixes') }}
-      </n-checkbox>
-      <c-link target="_blank" to="/si-prefixes-converter">
-        {{ $t('tools.UnitsConverter.text.si-converter') }}
-      </c-link>
-    </n-space>
-    <n-input-group v-for="[key, { title, unit }] in filteredUnits" :key="key" mb-3 w-full>
+    <n-input-group v-for="[key, { title, unit }] in Object.entries(units)" :key="key" mb-3 w-full>
       <n-input-group-label :style="{ width: labelWidth }">
         {{ title }}
       </n-input-group-label>

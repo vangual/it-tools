@@ -1,11 +1,11 @@
 import { Tags } from '@vicons/tabler';
 import { defineTool } from '../tool';
-import { translate as t } from '@/plugins/i18n.plugin';
+import { translate } from '@/plugins/i18n.plugin';
 
 export const tool = defineTool({
-  name: t('tools.og-meta-generator.title'),
+  name: translate('tools.og-meta-generator.title'),
   path: '/og-meta-generator',
-  description: t('tools.og-meta-generator.description'),
+  description: translate('tools.og-meta-generator.description'),
   keywords: [
     'meta',
     'tag',
@@ -24,5 +24,4 @@ export const tool = defineTool({
   component: () => import('./meta-tag-generator.vue'),
   icon: Tags,
   npmPackages: ['@it-tools/oggen'],
-  category: 'Development',
 });

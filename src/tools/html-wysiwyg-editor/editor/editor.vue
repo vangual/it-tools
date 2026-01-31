@@ -4,10 +4,12 @@ import { Editor, EditorContent } from '@tiptap/vue-3';
 import StarterKit from '@tiptap/starter-kit';
 import { useThemeVars } from 'naive-ui';
 import { Color } from '@tiptap/extension-color';
-import { TextStyleKit } from '@tiptap/extension-text-style';
+import TextStyle from '@tiptap/extension-text-style';
 import Highlight from '@tiptap/extension-highlight';
-import { TableKit } from '@tiptap/extension-table';
-import TextAlign from '@tiptap/extension-text-align';
+import Table from '@tiptap/extension-table';
+import TableCell from '@tiptap/extension-table-cell';
+import TableHeader from '@tiptap/extension-table-header';
+import TableRow from '@tiptap/extension-table-row';
 import MenuBar from './menu-bar.vue';
 
 const props = defineProps<{ html: string }>();
@@ -19,50 +21,19 @@ const editor = new Editor({
   content: html.value,
   extensions: [
     StarterKit,
+    TextStyle,
     Color,
-    TextStyleKit,
     Highlight.configure({ multicolor: true }),
-    TextAlign.configure({
-      types: ['heading', 'paragraph'],
+    Table.configure({
+      resizable: true,
     }),
-    TableKit.configure({
-      table: { resizable: true },
-    }),
+    TableRow,
+    TableHeader,
+    TableCell,
   ],
 });
 
-watch(html, (newHtml) => {
-  if (getCorrectedHtml() !== newHtml) {
-    editor.commands.setContent(newHtml);
-  }
-});
-
-function getCorrectedHtml() {
-  return patchTipTapHTML(editor.getHTML());
-}
-
-function patchTipTapHTML(content: string | null) {
-  if (content === null) {
-    return null;
-  }
-
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(content, 'text/html');
-
-  const listItems = doc.querySelectorAll('li');
-  listItems.forEach((li) => {
-    const p = li.querySelector('p');
-    if (p) {
-      while (p.firstChild) {
-        li.insertBefore(p.firstChild, p);
-      }
-      p.remove();
-    }
-  });
-  return doc.body.innerHTML;
-}
-
-editor.on('update', () => emit('update:html', getCorrectedHtml()));
+editor.on('update', ({ editor }) => emit('update:html', editor.getHTML()));
 
 tryOnBeforeUnmount(() => {
   editor.destroy();
@@ -139,7 +110,6 @@ tryOnBeforeUnmount(() => {
     }
 
     .selectedCell:after {
-      background: v-bind('themeVars.tableColorHover');
       content: "";
       left: 0; right: 0; top: 0; bottom: 0;
       pointer-events: none;

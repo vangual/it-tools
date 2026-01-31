@@ -8,20 +8,19 @@ import { useQueryParamOrStorage } from '@/composable/queryParams';
 
 const regex = useQueryParamOrStorage({ name: 'regex', storageName: 'regex-tester:regex', defaultValue: '' });
 const text = ref('');
-const global = useQueryParamOrStorage({ storageName: 'regex-tester:g', name: 'global', defaultValue: true });
-const ignoreCase = useQueryParamOrStorage({ storageName: 'regex-tester:i', name: 'igncase', defaultValue: false });
-const multiline = useQueryParamOrStorage({ storageName: 'regex-tester:m', name: 'multi', defaultValue: false });
-const dotAll = useQueryParamOrStorage({ storageName: 'regex-tester:da', name: 'dotall', defaultValue: true });
-const unicode = useQueryParamOrStorage({ storageName: 'regex-tester:u', name: 'uni', defaultValue: true });
-const unicodeSets = useQueryParamOrStorage({ storageName: 'regex-tester:us', name: 'unisets', defaultValue: false });
+const global = ref(true);
+const ignoreCase = ref(false);
+const multiline = ref(false);
+const dotAll = ref(true);
+const unicode = ref(true);
+const unicodeSets = ref(false);
 const visualizerSVG = ref<ShadowRootExpose>();
-const { t } = useI18n();
 
 const regexValidation = useValidation({
   source: regex,
   rules: [
     {
-      message: t('tools.regex-tester.texts.message-invalid-regex-0'),
+      message: 'Invalid regex: {0}',
       validator: value => new RegExp(value),
       getErrorMessage: (value) => {
         const _ = new RegExp(value);
@@ -89,47 +88,40 @@ watchEffect(
     }
   },
 );
-
-tryOnBeforeUnmount(() => {
-  const visualizer = visualizerSVG.value?.shadow_root;
-  if (visualizer) {
-    visualizer.parentElement?.removeChild(visualizer);
-  }
-});
 </script>
 
 <template>
-  <div>
-    <c-card :title="t('tools.regex-tester.regex')" mb-1>
+  <div max-w-600px>
+    <c-card title="Regex" mb-1>
       <c-input-text
         v-model:value="regex"
-        :label="t('tools.regex-tester.regex-input')"
-        :placeholder="t('tools.regex-tester.regex-input-placeholder')"
+        label="Regex to test:"
+        placeholder="Put the regex to test"
         multiline
         rows="3"
         :validation="regexValidation"
       />
-      <c-link target="_blank" to="/regex-memo" mb-1 mt-1>
-        {{ t('tools.regex-tester.link') }}
-      </c-link>
+      <router-link target="_blank" to="/regex-memo" mb-1 mt-1>
+        See Regular Expression Cheatsheet
+      </router-link>
       <n-space>
         <n-checkbox v-model:checked="global">
-          <span :title="t('tools.regex-tester.global')">{{ t('tools.regex-tester.texts.tag-global-search') }}<code>{{ t('tools.regex-tester.texts.tag-g') }}</code>{{ t('tools.regex-tester.texts.tag-') }}</span>
+          <span title="Global search">Global search. (<code>g</code>)</span>
         </n-checkbox>
         <n-checkbox v-model:checked="ignoreCase">
-          <span :title="t('tools.regex-tester.ignoreCase')">{{ t('tools.regex-tester.texts.tag-case-insensitive-search') }}<code>{{ t('tools.regex-tester.texts.tag-i') }}</code>{{ t('tools.regex-tester.texts.tag-') }}</span>
+          <span title="Case-insensitive search">Case-insensitive search. (<code>i</code>)</span>
         </n-checkbox>
         <n-checkbox v-model:checked="multiline">
-          <span :title="t('tools.regex-tester.multiline')">{{ t('tools.regex-tester.texts.tag-multiline') }}<code>{{ t('tools.regex-tester.texts.tag-m') }}</code>{{ t('tools.regex-tester.texts.tag-') }}</span>
+          <span title="Allows ^ and $ to match next to newline characters.">Multiline(<code>m</code>)</span>
         </n-checkbox>
         <n-checkbox v-model:checked="dotAll">
-          <span :title="t('tools.regex-tester.dotAll')">{{ t('tools.regex-tester.texts.tag-singleline') }}<code>{{ t('tools.regex-tester.texts.tag-s') }}</code>{{ t('tools.regex-tester.texts.tag-') }}</span>
+          <span title="Allows . to match newline characters.">Singleline(<code>s</code>)</span>
         </n-checkbox>
         <n-checkbox v-model:checked="unicode">
-          <span :title="t('tools.regex-tester.unicode')">{{ t('tools.regex-tester.texts.tag-unicode') }}<code>{{ t('tools.regex-tester.texts.tag-u') }}</code>{{ t('tools.regex-tester.texts.tag-') }}</span>
+          <span title="Unicode; treat a pattern as a sequence of Unicode code points.">Unicode(<code>u</code>)</span>
         </n-checkbox>
         <n-checkbox v-model:checked="unicodeSets">
-          <span :title="t('tools.regex-tester.unicodeSets')">{{ t('tools.regex-tester.texts.tag-unicode-sets') }}<code>{{ t('tools.regex-tester.texts.tag-v') }}</code>{{ t('tools.regex-tester.texts.tag-') }}</span>
+          <span title="An upgrade to the u mode with more Unicode features.">Unicode Sets (<code>v</code>)</span>
         </n-checkbox>
       </n-space>
 
@@ -137,28 +129,28 @@ tryOnBeforeUnmount(() => {
 
       <c-input-text
         v-model:value="text"
-        :label="t('tools.regex-tester.text-input')"
-        :placeholder="t('tools.regex-tester.text-input-placeholder')"
+        label="Text to match:"
+        placeholder="Put the text to match"
         multiline
         rows="5"
       />
     </c-card>
 
-    <c-card :title="t('tools.regex-tester.matches')" mb-1 mt-3>
+    <c-card title="Matches" mb-1 mt-3>
       <n-table v-if="results?.length > 0">
         <thead>
           <tr>
             <th scope="col">
-              {{ t('tools.regex-tester.text-index') }}
+              Index in text
             </th>
             <th scope="col">
-              {{ t('tools.regex-tester.value') }}
+              Value
             </th>
             <th scope="col">
-              {{ t('tools.regex-tester.captures') }}
+              Captures
             </th>
             <th scope="col">
-              {{ t('tools.regex-tester.groups') }}
+              Groups
             </th>
           </tr>
         </thead>
@@ -184,17 +176,17 @@ tryOnBeforeUnmount(() => {
         </tbody>
       </n-table>
       <c-alert v-else>
-        {{ t('tools.regex-tester.no-match') }}
+        No match
       </c-alert>
     </c-card>
 
-    <c-card :title="t('tools.regex-tester.sample')" mt-3>
+    <c-card title="Sample matching text" mt-3>
       <pre style="white-space: pre-wrap; word-break: break-all;">{{ sample }}</pre>
     </c-card>
 
-    <c-card :title="t('tools.regex-tester.diagram')" style="overflow-x: scroll;" mt-3>
+    <c-card title="Regex Diagram" style="overflow-x: scroll;" mt-3>
       <shadow-root ref="visualizerSVG">
-        {{ t('tools.regex-tester.texts.tag-xa0') }}
+&#xa0;
       </shadow-root>
     </c-card>
   </div>

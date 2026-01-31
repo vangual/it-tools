@@ -5,7 +5,6 @@ import { formatMs } from './chronometer.service';
 
 const isRunning = ref(false);
 const counter = ref(0);
-const { t } = useI18n();
 
 let previousRafDate = Date.now();
 const { pause: pauseRaf, resume: resumeRaf } = useRafFn(
@@ -38,14 +37,14 @@ function pause() {
     </c-card>
     <div mt-5 flex justify-center gap-3>
       <c-button v-if="!isRunning" type="primary" @click="resume">
-        {{ t('tools.chronometer.button.start') }}
+        Start
       </c-button>
       <c-button v-else type="warning" @click="pause">
-        {{ t('tools.chronometer.button.stop') }}
+        Stop
       </c-button>
 
       <c-button @click="counter = 0">
-        {{ t('tools.chronometer.button.reset') }}
+        Reset
       </c-button>
     </div>
   </div>

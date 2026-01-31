@@ -1,23 +1,19 @@
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n';
 import JSON5 from 'json5';
 import jsonpath from 'jsonpath';
-import * as jq from 'jq-wasm';
+import jq from 'jq-wasm';
 import TextareaCopyable from '@/components/TextareaCopyable.vue';
 import { useValidation } from '@/composable/validation';
-import { useQueryParam } from '@/composable/queryParams';
-
-const { t } = useI18n();
 
 type JQType = 'jq' | 'jsonpath';
 const indent = 2;
 
-const jqOrJsonPath = useQueryParam({ tool: 'jq-tester', name: 'expr', defaultValue: '' });
+const jqOrJsonPath = ref('');
 const json = ref('');
-const jqtype = useQueryParam<JQType>({ tool: 'jq-tester', name: 'type', defaultValue: 'jq' });
+const jqtype = ref<JQType>('jq');
 const jqtypes = [
-  { value: 'jq', label: t('tools.jq-tester.texts.label-jq') },
-  { value: 'jsonpath', label: t('tools.jq-tester.texts.label-jsonpath') },
+  { value: 'jq', label: 'jq' },
+  { value: 'jsonpath', label: 'JSONPath' },
 ];
 
 const result = computedAsync(async () => {
@@ -26,7 +22,7 @@ const result = computedAsync(async () => {
   const jqtypeValue = jqtype.value;
 
   try {
-    const obj = JSON.parseBigNum(jsonString);
+    const obj = JSON5.parse(jsonString);
     if (jqtypeValue === 'jq') {
       return JSON.stringify(await jq.json(obj, jqOrJsonPathString), null, indent);
     }
@@ -42,19 +38,19 @@ const jsonValidation = useValidation({
   rules: [
     {
       validator: v => JSON5.parse(v),
-      message: t('tools.jq-tester.texts.message-provided-json-is-not-valid'),
+      message: 'Provided JSON is not valid.',
     },
   ],
 });
 </script>
 
 <template>
-  <div>
-    <c-card :title="t('tools.jq-tester.texts.title-input')" mb-2>
+  <div style="max-width: 600px;">
+    <c-card title="Input" mb-2>
       <c-input-text
         v-model:value="jqOrJsonPath"
-        :label="t('tools.jq-tester.texts.label-jq-or-jsonpath')"
-        :placeholder="t('tools.jq-tester.texts.placeholder-put-your-jq-or-jsonpath-here')"
+        label="jq or JSONPath"
+        placeholder="Put your jq or JSONPath here..."
         mb-2
       />
 
@@ -72,30 +68,26 @@ const jsonValidation = useValidation({
       </div>
 
       <div mb-2 flex justify-center>
-        <c-link v-if="jqtype === 'jq'" target="_blank" to="/jq-memo" mb-1 mt-1>
-          {{ t('tools.jq-tester.texts.tag-see') }}
-          <code>
-            {{ t('tools.jq-tester.texts.tag-jq') }}
-          </code>
-          {{ t('tools.jq-tester.texts.tag-cheatsheet') }}
-        </c-link>
-        <c-link v-if="jqtype === 'jsonpath'" target="_blank" to="/jsonpath-memo" mb-1 mt-1>
-          {{ t('tools.jq-tester.texts.tag-see-jsonpath-cheatsheet') }}
-        </c-link>
+        <router-link v-if="jqtype === 'jq'" target="_blank" to="/jq-memo" mb-1 mt-1>
+          See <code>jq</code> Cheatsheet
+        </router-link>
+        <router-link v-if="jqtype === 'jsonpath'" target="_blank" to="/jsonpath-memo" mb-1 mt-1>
+          See JSONPath Cheatsheet
+        </router-link>
       </div>
 
       <c-input-text
         v-model:value="json"
-        :label="t('tools.jq-tester.texts.label-json')"
+        label="JSON"
         multiline
-        :placeholder="t('tools.jq-tester.texts.placeholder-put-your-json-here')"
+        placeholder="Put your JSON here..."
         rows="5"
         :validation="jsonValidation"
         mb-2
       />
     </c-card>
 
-    <c-card :title="t('tools.jq-tester.texts.title-result')">
+    <c-card title="Result">
       <TextareaCopyable :value="result" language="json" />
     </c-card>
   </div>

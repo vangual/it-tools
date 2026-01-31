@@ -1,16 +1,18 @@
 <script lang="ts" setup>
-import { Coffee, Home2, Menu2 } from '@vicons/tabler';
 import { NIcon, useThemeVars } from 'naive-ui';
-import { storeToRefs } from 'pinia';
+
 import { RouterLink } from 'vue-router';
+import { Home2, Menu2 } from '@vicons/tabler';
+
+import { storeToRefs } from 'pinia';
 import HeroGradient from '../assets/hero-gradient.svg?component';
 import MenuLayout from '../components/MenuLayout.vue';
 import NavbarButtons from '../components/NavbarButtons.vue';
-import CollapsibleToolMenu from '@/components/CollapsibleToolMenu.vue';
-import { config } from '@/config';
 import { useStyleStore } from '@/stores/style.store';
-import { useToolStore } from '@/tools/tools.store';
+import { config } from '@/config';
 import type { ToolCategory } from '@/tools/tools.types';
+import { useToolStore } from '@/tools/tools.store';
+import CollapsibleToolMenu from '@/components/CollapsibleToolMenu.vue';
 
 const themeVars = useThemeVars();
 const styleStore = useStyleStore();
@@ -115,20 +117,6 @@ const tools = computed<ToolCategory[]>(() => [
         <div>
           <NavbarButtons v-if="!styleStore.isSmallScreen" />
         </div>
-
-        <c-tooltip position="bottom" :tooltip="$t('home.support')">
-          <c-button
-            round
-            href="https://www.buymeacoffee.com/sharevb"
-            rel="noopener"
-            target="_blank"
-            class="support-button"
-            :bordered="false"
-          >
-            <span v-if="!styleStore.isSmallScreen" mr-2>{{ $t('home.buyMeACoffee') }}</span>
-            <NIcon :component="Coffee" />
-          </c-button>
-        </c-tooltip>
       </div>
       <slot />
     </template>
@@ -168,26 +156,20 @@ const tools = computed<ToolCategory[]>(() => [
 }
 
 .sider-content {
-  padding-top: 20px;
+  padding-top: 160px;
   padding-bottom: 200px;
 }
 
 .hero-wrapper {
-  position: sticky;
-  display: flex;
+  position: absolute;
+  display: block;
   left: 0;
+  width: 100%;
   z-index: 10;
-  height: 150px;
   overflow: hidden;
-  position: relative;
 
   .gradient {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: block;
+    margin-top: -65px;
   }
 
   .text-wrapper {

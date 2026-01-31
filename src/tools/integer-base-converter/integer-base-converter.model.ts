@@ -1,5 +1,3 @@
-import { translate as t } from '@/plugins/i18n.plugin';
-
 export function hasNumberPrefix(value: string) {
   return (value ?? '').trim().match(/^(0[xob].|&[hob].)/i);
 }
@@ -50,7 +48,7 @@ export function convertBase(
     .reverse()
     .reduce((carry: bigint, digit: string, index: number) => {
       if (!fromRange.includes(digit)) {
-        throw new Error(t('tools.integer-base-converter.model.text.invalid-digit-digit-for-base-finalfrombase', [digit, finalFromBase]));
+        throw new Error(`Invalid digit "${digit}" for base ${finalFromBase}.`);
       }
       return (carry += BigInt(fromRange.indexOf(digit)) * BigInt(finalFromBase) ** BigInt(index));
     }, 0n);

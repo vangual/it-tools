@@ -1,20 +1,18 @@
 <script setup lang="ts">
 import { useVModel } from '@vueuse/core';
 import { useCopy } from '@/composable/copy';
-import { translate as t } from '@/plugins/i18n.plugin';
 
 const props = defineProps<{
   value: string
   multiline?: boolean
   rows?: number | string
   autosize?: boolean
-  readonly?: boolean
 }>();
 const emit = defineEmits(['update:value']);
 
 const value = useVModel(props, 'value', emit);
 const { copy, isJustCopied } = useCopy({ source: value, createToast: false });
-const tooltipText = computed(() => isJustCopied.value ? t('inputCopyable.copied') : t('inputCopyable.copy'));
+const tooltipText = computed(() => isJustCopied.value ? 'Copied!' : 'Copy to clipboard');
 </script>
 
 <template>
@@ -23,7 +21,6 @@ const tooltipText = computed(() => isJustCopied.value ? t('inputCopyable.copied'
     :multiline="multiline"
     :rows="rows"
     :autosize="autosize"
-    :readonly="readonly"
   >
     <template #suffix>
       <c-tooltip :tooltip="tooltipText">

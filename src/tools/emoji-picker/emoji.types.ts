@@ -1,10 +1,8 @@
-export interface EmojiInfo {
-  emoji: string
-  name: string
+import type emojiUnicodeData from 'unicode-emoji-json';
+
+export type EmojiInfo = {
   title: string
-  group: string
-  keywords?: string[]
-  codePoints?: string
+  emoji: string
+  codePoints: string | undefined
   unicode: string
-  allCodePoints?: string
-}
+} & typeof emojiUnicodeData[string];

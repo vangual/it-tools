@@ -1,14 +1,12 @@
 import { RecordMail } from '@vicons/tabler';
 import { defineTool } from '../tool';
-import { translate as t } from '@/plugins/i18n.plugin';
 
 export const tool = defineTool({
-  name: t('tools.x-vr-spamcause-decoder.title'),
+  name: 'X-VR-SpamCause Decoder',
   path: '/x-vr-spamcause-decoder',
-  description: t('tools.x-vr-spamcause-decoder.description'),
+  description: 'Decode X-VR-SPAMCAUSE header in OVH mails',
   keywords: ['ovh', 'vade', 'retro', 'vr', 'spam', 'spamcause', 'decoder'],
   component: () => import('./x-vr-spamcause-decoder.vue'),
   icon: RecordMail,
   createdAt: new Date('2024-08-15'),
-  category: 'Network',
 });

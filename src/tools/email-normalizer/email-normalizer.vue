@@ -3,7 +3,6 @@ import { normalizeEmail } from 'email-normalizer';
 import { withDefaultOnError } from '@/utils/defaults';
 import { useCopy } from '@/composable/copy';
 
-const { t } = useI18n();
 const emails = ref('');
 const normalizedEmails = computed(() => {
   if (!emails.value) {
@@ -18,17 +17,17 @@ const normalizedEmails = computed(() => {
     .join('\n');
 });
 
-const { copy } = useCopy({ source: normalizedEmails, text: t('tools.email-normalizer.copied'), createToast: true });
+const { copy } = useCopy({ source: normalizedEmails, text: 'Normalized emails copied to the clipboard', createToast: true });
 </script>
 
 <template>
   <div>
     <div class="mb-2">
-      {{ t('tools.email-normalizer.input') }}
+      Raw emails to normalize:
     </div>
     <c-input-text
       v-model:value="emails"
-      :placeholder="t('tools.email-normalizer.input-placeholder')"
+      placeholder="Put your emails here (one per line)..."
       rows="3"
       multiline
       autocomplete="off"
@@ -40,11 +39,11 @@ const { copy } = useCopy({ source: normalizedEmails, text: t('tools.email-normal
     />
 
     <div class="mb-2 mt-4">
-      {{ t('tools.email-normalizer.output') }}
+      Normalized emails:
     </div>
     <c-input-text
       :value="normalizedEmails"
-      :placeholder="t('tools.email-normalizer.output-placeholder')"
+      placeholder="Normalized emails will appear here..."
       rows="3"
       autocomplete="off"
       autocorrect="off"
@@ -56,10 +55,10 @@ const { copy } = useCopy({ source: normalizedEmails, text: t('tools.email-normal
     />
     <div class="mt-4 flex justify-center gap-2">
       <c-button @click="emails = ''">
-        {{ t('tools.email-normalizer.button.clear') }}
+        Clear emails
       </c-button>
       <c-button :disabled="!normalizedEmails" @click="copy()">
-        {{ t('tools.email-normalizer.button.copy') }}
+        Copy normalized emails
       </c-button>
     </div>
   </div>

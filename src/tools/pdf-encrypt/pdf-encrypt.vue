@@ -1,24 +1,20 @@
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n';
 import { Base64 } from 'js-base64';
 import createQPDFModule from 'qpdf-wasm-esm-embedded';
 import { useDownloadFileFromBase64Refs } from '@/composable/downloadBase64';
-import { useQueryParamOrStorage } from '@/composable/queryParams';
-
-const { t } = useI18n();
 
 const status = ref<'idle' | 'done' | 'error' | 'processing'>('idle');
 const file = ref<File | null>(null);
 
-const restrictAccessibility = useQueryParamOrStorage({ name: 'a11y', storageName: 'pdf-encrypt:accessibility', defaultValue: false });
-const restrictAnnotate = useQueryParamOrStorage({ name: 'annot', storageName: 'pdf-encrypt:annotate', defaultValue: false });
-const restrictAssemble = useQueryParamOrStorage({ name: 'assemble', storageName: 'pdf-encrypt:assemble', defaultValue: false });
-const restrictExtract = useQueryParamOrStorage({ name: 'extract', storageName: 'pdf-encrypt:extract', defaultValue: false });
-const restrictForm = useQueryParamOrStorage({ name: 'form', storageName: 'pdf-encrypt:form', defaultValue: false });
-const restrictModifyOther = useQueryParamOrStorage({ name: 'othermodify', storageName: 'pdf-encrypt:modoth', defaultValue: false });
-const clearTextMetadata = useQueryParamOrStorage({ name: 'clearmeta', storageName: 'pdf-encrypt:clearmeta', defaultValue: false });
-const restrictModify = useQueryParamOrStorage({ name: 'modify', storageName: 'pdf-encrypt:mod', defaultValue: 'all' });
-const restrictPrint = useQueryParamOrStorage({ name: 'print', storageName: 'pdf-encrypt:print', defaultValue: 'full' });
+const restrictAccessibility = useStorage('pdf-encrypt:accessibility', false);
+const restrictAnnotate = useStorage('pdf-encrypt:annotate', false);
+const restrictAssemble = useStorage('pdf-encrypt:assemble', false);
+const restrictExtract = useStorage('pdf-encrypt:extract', false);
+const restrictForm = useStorage('pdf-encrypt:form', false);
+const restrictModifyOther = useStorage('pdf-encrypt:modoth', false);
+const clearTextMetadata = useStorage('pdf-encrypt:clearmeta', false);
+const restrictModify = useStorage('pdf-encrypt:mod', 'all');
+const restrictPrint = useStorage('pdf-encrypt:print', 'full');
 const userPassword = ref('');
 const ownerPassword = ref('');
 
@@ -32,7 +28,6 @@ const { download } = useDownloadFileFromBase64Refs(
     filename: fileName,
     extension: fileExtension,
   });
-const qpdfCommand = ref('');
 
 function onFileUploaded(uploadedFile: File) {
   file.value = uploadedFile;
@@ -82,7 +77,6 @@ async function onProcessClicked() {
 }
 
 async function callMainWithInOutPdf(data: ArrayBuffer, args: string[], expected_exitcode: number) {
-  qpdfCommand.value = args.join(' ');
   logs.value = [];
   const mod = await createQPDFModule({
     print(text: string) {
@@ -100,16 +94,16 @@ async function callMainWithInOutPdf(data: ArrayBuffer, args: string[], expected_
   return mod.FS.readFile('out.pdf');
 }
 
-const printRestrictionOptions = [{ value: 'none', label: t('tools.pdf-encrypt.texts.label-disallow-printing') },
-  { value: 'low', label: t('tools.pdf-encrypt.texts.label-allow-only-low-resolution-printing') },
-  { value: 'full', label: t('tools.pdf-encrypt.texts.label-allow-full-printing') },
+const printRestrictionOptions = [{ value: 'none', label: 'Disallow printing' },
+  { value: 'low', label: 'Allow only low-resolution printing' },
+  { value: 'full', label: 'Allow full printing' },
 ];
 const modificationRestrictionOptions = [
-  { value: 'none', label: t('tools.pdf-encrypt.texts.label-allow-no-modifications') },
-  { value: 'assembly', label: t('tools.pdf-encrypt.texts.label-allow-document-assembly-only') },
-  { value: 'form', label: t('tools.pdf-encrypt.texts.label-allow-document-assembly-only-filling-in-form-fields-and-signing') },
-  { value: 'annotate', label: t('tools.pdf-encrypt.texts.label-allow-document-assembly-only-filling-in-form-fields-and-signing-commenting-and-modifying-forms') },
-  { value: 'all', label: t('tools.pdf-encrypt.texts.label-allow-full-document-modification') },
+  { value: 'none', label: 'Allow no modifications' },
+  { value: 'assembly', label: 'Allow document assembly only' },
+  { value: 'form', label: 'Allow document assembly only + filling in form fields and signing' },
+  { value: 'annotate', label: 'Allow document assembly only + filling in form fields and signing + commenting and modifying forms' },
+  { value: 'all', label: 'Allow full document modification' },
 ];
 </script>
 
@@ -118,80 +112,80 @@ const modificationRestrictionOptions = [
     <div style="flex: 0 0 100%">
       <div mx-auto max-w-600px>
         <c-file-upload
-          :title="t('tools.pdf-encrypt.texts.title-drag-and-drop-a-pdf-file-here-or-click-to-select-a-file')"
+          title="Drag and drop a PDF file here, or click to select a file"
           accept=".pdf"
           @file-upload="onFileUploaded"
         />
         <div mt-2 text-center>
-          <strong>{{ t('tools.pdf-encrypt.texts.tag-output-file') }}</strong> {{ fileName }}
+          <strong>Output file:</strong> {{ fileName }}
         </div>
       </div>
     </div>
 
-    <c-card :title="t('tools.pdf-encrypt.texts.title-permissions')" mb-3 mt-3>
+    <c-card title="Permissions" mb-3 mt-3>
       <n-space>
         <n-checkbox v-model:checked="restrictAccessibility">
-          {{ t('tools.pdf-encrypt.texts.tag-restrict-accessibility-usually-ignored') }}
+          Restrict accessibility (usually ignored)
         </n-checkbox>
         <n-checkbox v-model:checked="restrictAnnotate">
-          {{ t('tools.pdf-encrypt.texts.tag-restrict-commenting-filling-form-fields') }}
+          Restrict commenting/filling form fields
         </n-checkbox>
         <n-checkbox v-model:checked="restrictAssemble">
-          {{ t('tools.pdf-encrypt.texts.tag-restrict-document-assembly') }}
+          Restrict document assembly
         </n-checkbox>
         <n-checkbox v-model:checked="restrictExtract">
-          {{ t('tools.pdf-encrypt.texts.tag-restrict-text-graphic-extraction') }}
+          Restrict text/graphic extraction
         </n-checkbox>
         <n-checkbox v-model:checked="restrictForm">
-          {{ t('tools.pdf-encrypt.texts.tag-restrict-filling-form-fields') }}
+          Restrict filling form fields
         </n-checkbox>
         <n-checkbox v-model:checked="restrictModifyOther">
-          {{ t('tools.pdf-encrypt.texts.tag-restrict-other-modifications') }}
+          Restrict other modifications
         </n-checkbox>
         <n-checkbox v-model:checked="clearTextMetadata">
-          {{ t('tools.pdf-encrypt.texts.tag-prevent-encryption-of-metadata') }}
+          Prevent encryption of metadata
         </n-checkbox>
       </n-space>
       <c-select
         v-model:value="restrictModify"
         :options="modificationRestrictionOptions"
-        :label="t('tools.pdf-encrypt.texts.label-control-modify-access-by-level')"
+        label="Control modify access by level"
         mt-3
       />
       <c-select
         v-model:value="restrictPrint"
         :options="printRestrictionOptions"
-        :label="t('tools.pdf-encrypt.texts.label-control-printing-access')"
+        label="Control printing access"
         mt-3
       />
     </c-card>
     <n-form-item
-      :label="t('tools.pdf-encrypt.texts.label-owner-password')"
+      label="Owner password:"
       label-placement="left"
       mb-1
     >
       <n-input
         :value="ownerPassword"
         type="password"
-        :placeholder="t('tools.pdf-encrypt.texts.placeholder-owner-password-optional')"
+        placeholder="Owner password (optional)"
       />
     </n-form-item>
 
     <n-form-item
-      :label="t('tools.pdf-encrypt.texts.label-user-password')"
+      label="User password:"
       label-placement="left"
       mb-1
     >
       <n-input
         :value="userPassword"
         type="password"
-        :placeholder="t('tools.pdf-encrypt.texts.placeholder-user-password-optional')"
+        placeholder="User password (optional)"
       />
     </n-form-item>
 
     <div mt-3 flex justify-center>
       <c-button :disabled="!file" @click="onProcessClicked()">
-        {{ t('tools.pdf-encrypt.texts.tag-encrypt-pdf') }}
+        Encrypt PDF
       </c-button>
     </div>
 
@@ -207,8 +201,7 @@ const modificationRestrictionOptions = [
       />
     </div>
 
-    <c-card :title="t('tools.pdf-encrypt.texts.title-logs')">
-      <input-copyable :label="t('tools.pdf-encrypt.texts.label-qpdf')" :value="qpdfCommand" mb-1 />
+    <c-card title="Logs">
       <pre>{{ logs.join('\n') }}</pre>
     </c-card>
   </div>

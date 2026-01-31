@@ -1,11 +1,11 @@
 import { Math } from '@vicons/tabler';
 import { defineTool } from '../tool';
-import { translate as t } from '@/plugins/i18n.plugin';
+import { translate } from '@/plugins/i18n.plugin';
 
 export const tool = defineTool({
-  name: t('tools.math-evaluator.title'),
+  name: translate('tools.math-evaluator.title'),
   path: '/math-evaluator',
-  description: t('tools.math-evaluator.description'),
+  description: translate('tools.math-evaluator.description'),
   keywords: [
     'math',
     'evaluator',
@@ -42,5 +42,4 @@ export const tool = defineTool({
   component: () => import('./math-evaluator.vue'),
   icon: Math,
   npmPackages: ['mathjs'],
-  category: 'Maths',
 });

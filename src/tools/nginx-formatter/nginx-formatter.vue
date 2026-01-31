@@ -1,10 +1,7 @@
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n';
 import { formatContent } from 'nginx-config-formatter';
 import type { UseValidationRule } from '@/composable/validation';
 import { withDefaultOnError } from '@/utils/defaults';
-
-const { t } = useI18n();
 
 const defaultValue = `server {
 listen 80 default_server;
@@ -37,17 +34,17 @@ function transformer(value: string) {
 const rules: UseValidationRule<string>[] = [
   {
     validator: (v: string) => v === '' || formatContent(v),
-    message: t('tools.nginx-formatter.texts.message-provided-nginx-config-is-not-valid'),
+    message: 'Provided Nginx config is not valid.',
   },
 ];
 </script>
 
 <template>
   <format-transformer
-    :input-label="t('tools.nginx-formatter.texts.input-label-your-nginx-config')"
+    input-label="Your Nginx config"
     :input-default="defaultValue"
-    :input-placeholder="t('tools.nginx-formatter.texts.input-placeholder-paste-your-nginx-config-here')"
-    :output-label="t('tools.nginx-formatter.texts.output-label-prettified-nginx-config')"
+    input-placeholder="Paste your Nginx config here..."
+    output-label="Prettified Nginx config"
     :input-validation-rules="rules"
     :transformer="transformer"
   />

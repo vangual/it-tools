@@ -1,11 +1,10 @@
 import { IconFileDownload } from '@tabler/icons-vue';
 import { defineTool } from '../tool';
-import { translate as t } from '@/plugins/i18n.plugin';
 
 export const tool = defineTool({
-  name: t('tools.multi-link-downloader.title'),
+  name: 'Multi link downloader',
   path: '/multi-link-downloader',
-  description: t('tools.multi-link-downloader.description'),
+  description: 'The tool will asynchronously combine the contents of the provided links into a single zip file for you to download. (Requires an internet connection)',
   keywords: ['multi', 'link', 'downloader'],
   component: () => import('./multi-link-downloader.vue'),
   icon: IconFileDownload,
